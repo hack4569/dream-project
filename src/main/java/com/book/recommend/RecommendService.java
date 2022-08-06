@@ -15,6 +15,6 @@ public interface RecommendService {
 	public int saveRecommend(RecommendVO recommendVO) throws Exception;
 	public Recommend saveRecommend(Recommend recommend) throws Exception;
 	public void saveHistory(long itemId) throws Exception;
-	public List<Map<String,Object>> getRecommendList(String user_id) throws Exception;
+	public List<List> getRecommendList(String user_id) throws Exception;
 	public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam);
 }

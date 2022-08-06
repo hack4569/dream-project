@@ -92,11 +92,11 @@ public class RecommendController {
 	}
 	
 	@RequestMapping(value="/list")
-	public @ResponseBody List<Map<String,Object>> list() throws Exception{
+	public @ResponseBody List<List> list() throws Exception{
 
 		//로그인 유무에 따른 로직 구현
 		String user_id = "admin";
-		List<Map<String,Object>> list =  recommendService.getRecommendList(user_id);
+		List<List> list =  recommendService.getRecommendList(user_id);
 		                                                               
 		return list;
 	}
