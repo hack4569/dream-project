@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout/default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>책추천</title>
+</head>
+<body>
+	<th:block layout:fragment="content">
+            <!-- Preloader Screen -->
+			<div id="flexSlider_preloader">
+				<div class="flexSlider_preloader_effectContainer">
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-1"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-2"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-3"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-4"></div>
+				</div>
+				<h2>Loading…</h2>
+				<h3>슬라이더 모듈 개발프로젝트</h3>
+			</div>
+			<!-- /Preloader Screen -->
+		
+			<!-- Navigator -->
+			<a id="flexSlider_arrow-Upper" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-up"></i></a>
+			<a id="flexSlider_arrow-Lower" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-down"></i></a>
+			<a id="flexSlider_arrow-Left" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-left"></i></a>
+			<a id="flexSlider_arrow-Right" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-right"></i></a>
+			<!-- /Navigator -->
+            <!-- JavaScript Libraries for Styling, additional:
+			================================================== -->
+            <script th:src="@{/js/swipe-listener.min.js}"></script>
+            <!-- JavaScript for Customization:
+			================================================== -->
+			<!-- <script src="./js/customJSsrc/flexSliderProject_main_nocircular.js"></script> -->
+			<script th:src="@{/js/customJSsrc/flexSliderProject_main_nocircular.js}"></script>	
+	</th:block>
+    
+      
+</body>
+</html>

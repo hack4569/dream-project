@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout/default">
+<head>
+	<meta charset="UTF-8" />
+	<!-- Viewport metatag definitions
+        ================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- Font-awesome Free version
+        ================================================== -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+	<!-- <link rel="stylesheet" href="./fontawesome-free-5.11.2-web/css/all.css"> -->
+	<!-- <script src="./fontawesome-free-5.11.2-web/js/all.js"></script> -->
+	<!-- /Font-awesome Free version ================================================== -->
+
+
+	<!-- Pre-loaded UI definitions
+    ================================================== -->
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+	<!-- /Pre-loaded UI definitions ================================================== -->
+
+
+	<!-- Open-licensed Fonts on web
+    ================================================== -->
+	<link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+
+	<!-- /Custom UI definitions ================================================== -->
+	<link rel="stylesheet" th:href="@{/css/flexSliderProject_style.css}">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<!-- 컨텐츠페이지의 CSS 영역이 들어감 -->
+	<th:block layout:fragment="css"></th:block>
+	<!-- 공통으로 쓰이는 css파일을넣는다.-->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link th:href="@{/css/style.css}" rel="stylesheet">
+	<!-- 컨텐츠페이지의 스크립트 영역이 들어감 -->
+	<th:block layout:fragment="script"></th:block>
+	<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">책추천</title>
+</head>
+	<th:block layout:fragment="content">
+	<div class="wrapper">
+        <form class="form-signin" action="/recommend/save.do" method="post"> 
+          <input type="hidden" name="mode" value="save">    
+          <h2 class="form-signin-heading">추천 책 등록하기1</h2>
+          	<label for="bookName" class="form-label">책검색</label>
+			<div class="input-group mb-3">
+			  <input type="text" class="bookName form-control" id="bookName">
+			  <button type="button" id="search" class="btn btn-warning">검색</button>
+			</div>
+			
+          <div id="bookInfo" class="bookInfo mb-3" >
+          		<table id="bookTable" class="bookTable table table-hover">
+				</table>
+          </div>
+             
+          <label class="form-label">추천글</label>
+		  <div class="form-floating mb-3">
+			  <textarea class="form-control" name="brief" id="brief" style="height: 100px"></textarea>
+			  <label for="brief">이 책을 표현하는 간단한 한마디 부탁드릴게요:)</label>
+		  </div>
+		  <div class="form-floating mb-3">
+			  <textarea class="form-control" name="detail" id="detail" style="height: 200px"></textarea>
+			  <label for="detail">왜 많고 많은 책 중에 이 책을 선택하게 되었는지 구체적으로 알려주세요:)</label>
+		  </div>
+		  <div class="col-12">
+		    <button type="submit" class="btn btn-primary">제출하기</button>
+		  </div>
+        </form>
+        
+      </div>
+      <script>
+      //url: "/recommend/search.do", // 전송 주소
+      //data: { Query: $("#bookName").val() }, // 보낼 데이터
+
+		$(function () {
+			$("#search").click(function () {
+			  var that = this;
+				$.ajax({
+					method: "GET",
+					url:"/recommend/search.do?query="+$("#bookName").val()
+				})
+				.done(function (response) { // 응답이 오면 처리를 하는 코드
+				  console.dir(response,'data');
+				  const data = response.item;
+				  const dataLen = response.totalResults;
+				  const bookTable = $("#bookTable");
+				  let tableHtml = '';
+				  if(dataLen){
+						$('.content').css("display", 'block');
+					for(var i=0; i<dataLen; i++){
+						let {author,categoryId, cover, isbn, itemId, mallType, pubDate, publisher,title} = data[i];
+
+						tableHtml = `
+								<tr>
+									<td><img src='${cover}' alt='${title},${author},${publisher}'></td>
+									<td>
+										<p>${title}</p>
+										<p>${author}</p>
+										<p>${publisher}</p>
+									</td>
+									<td>
+										<input type='radio' class='btn-check' id='itemId${i}' name='itemId' value='${itemId}'>
+										<label class='btn btn-outline-primary' for='itemId${i}'>선택</label>
+									</td>
+								</tr>
+						`;
+
+						bookTable.append(tableHtml);
+					}
+				  }else{
+				  	alert("검색결과가 없습니다.");
+				  }
+				});
+			})
+		});
+            </script>
+	</th:block>
+
+</html>

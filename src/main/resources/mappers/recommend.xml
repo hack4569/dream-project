@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.book.recommend.RecommendDAO">
+   <insert id="saveBook"  parameterType="java.util.Map" >
+		<![CDATA[
+		 insert into book_info(item_id, isbn, malltype, title, author, publisher, pub_date, url, category_id)
+		 values(#{itemId}, #{isbn13}, #{mallType}, #{title}, #{author}, #{publisher}, #{pubDate}, #{link}, #{categoryId})
+		]]>      
+	</insert>
+	<insert id="saveHistory"  parameterType="Long" >
+		<![CDATA[
+		 insert into book_history(user_id,item_id,create_dt)
+		 values('admin',#{itemId},NOW())
+		]]>      
+	</insert>
+	<insert id="saveRecommend"  parameterType="java.util.Map" >
+		<![CDATA[
+		 insert into book_recommend(item_id, comment, comment_detail, approval, user_id, create_dt)
+		 values(#{itemId}, #{book_comment_brief}, #{book_comment_detail}, 'Y',#{userId}, NOW())
+		]]>      
+	</insert>
+	<select id="getRecommendList" parameterType="java.util.List" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT * FROM BOOK_RECOMMEND 
+			WHERE item_id IN 
+		]]> 
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.item_id}
+        </foreach>
+	</select>
+	<select id="getFilteredList" parameterType="String" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT * FROM BOOK_INFO 
+			WHERE item_id NOT IN ( SELECT ITEM_ID FROM BOOK_HISTORY WHERE USER_ID = #{user_id} )
+				ORDER BY RAND()
+				LIMIT 0,3;
+		]]> 
+	</select>
+</mapper>

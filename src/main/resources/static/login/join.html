@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../include/css/reset.css">
+    <link rel="stylesheet" href="../include/css/style.css">
+    <link rel="stylesheet" href="../include/css/fontawesome.css">
+    <link rel="stylesheet" href="../include/bootstrap-3.3.2-dist/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../include/bootstrap-3.3.2-dist/js/bootstrap.js"></script>
+    <script src="../include/js/script.js"></script>
+    <script src="../include/js/ie-checker.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <form class="form-signin" action="./join_process.php" method="post"> 
+          <input type="hidden" name="mode" value="save">    
+          <h2 class="form-signin-heading">Please Sign Up</h2>
+          <input type="text" id="id" class="form-control" name="userid" placeholder="id"  autofocus="" /><br>
+          <input type="password" class="form-control" name="user_password" placeholder="Password"/><br>  
+          <input type="password" class="form-control" name="password_chk" placeholder="Password check"/><br>     
+          <input type="text" class="form-control" name="job_past" placeholder="현재까지 종사한 직업"/><br>
+          <input type="text" class="form-control" name="job_hope" placeholder="희망직업"/><br>
+          <div>
+    	    <input id="bookName" type="text">
+          <a href="#;" id="search">검색</a>
+            <p class="content"></p>
+          </div>
+            <textarea class="form-control" name="book_comment1" placeholder="추천하시는 한 줄 내용을 적어주세요"></textarea><br>
+            <textarea class="form-control" name="book_comment2" placeholder="추천하시는 상세내용을 적어주세요(선택)"></textarea><br>  
+            <input type="text" class="form-control" name="job_recommend" placeholder="추천직업"/>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>   
+        </form>
+        
+      </div>
+      <script>
+                $(function () {
+                    $("#search").click(function () {
+                      var that = this;
+                        $.ajax({
+                            method: "GET",
+                            url: "https://dapi.kakao.com/v3/search/book?target=title", // 전송 주소
+                            data: { query: $("#bookName").val() }, // 보낼 데이터
+                            headers: { Authorization: "KakaoAK 7649769a6d99cb04c251939cc85526f7"}
+                        })
+                            .done(function (msg) { // 응답이 오면 처리를 하는 코드
+                              console.dir(that);
+                              console.dir(msg);
+                              if(msg.documents.length>0){
+                                $('.content').css("display", 'block');
+                                for(var i=0; i<msg.documents.length; i++){
+                                    var var_isbn = msg.documents[i].isbn; 
+                                    var var_authors = msg.documents[i].authors; 
+                                    var var_publisher = msg.documents[i].publisher;
+                                    var var_title = msg.documents[i].title;
+                                    var var_url = msg.documents[i].url;
+                                    var var_status = msg.documents[i].status;
+                                    var var_datetime = msg.documents[i].datetime;
+                                    if(var_authors.length>1){
+                                      var _authors = '';
+                                      for(var j=0; j<var_authors.length; j++){
+                                        _authors = var_authors[j]._authors;
+                                      } 
+                                    }else{
+                                      var _authors = msg.documents[i].authors[0];
+                                    }
+                                    var bookDiv = $('<div class="bookBox" onclick="info_book()"></div>');
+                                    $(".content").append(bookDiv);
+                                    bookDiv.append("<input type='radio' name='bookIndex' value="+i+">");
+                                    bookDiv.append('<p>' +_authors+'</p>');
+                                    bookDiv.append("<p>" + var_publisher + "</p>");
+                                    bookDiv.append("<p>" + var_title + "</p>");
+                                    bookDiv.append("<img src="+msg.documents[i].thumbnail+">");
+                                    bookDiv.append("<input type='hidden' name='isbn[]' value='"+var_isbn+"'>");
+                                    bookDiv.append("<input type='hidden' name='book_url[]' value='"+var_url+"'>");
+                                    bookDiv.append("<input type='hidden' name='authors[]' value='"+_authors+"'>");
+                                    bookDiv.append("<input type='hidden' name='publisher[]' value='"+var_publisher+"'>");
+                                    bookDiv.append("<input type='hidden' name='title[]' value='"+var_title+"'>");
+                                    bookDiv.append("<input type='hidden' name='status[]' value='"+var_status+"'>");
+                                    bookDiv.append("<input type='hidden' name='datetime[]' value='"+var_datetime+"'>");
+                                }
+                              }
+                            });
+                    })
+                });
+            </script>
+</body>
+</html>

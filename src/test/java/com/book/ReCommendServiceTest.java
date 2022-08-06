@@ -32,7 +32,6 @@ public class ReCommendServiceTest {
     public void recommendServiceTest2(){
 
         List<List> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
-
         RestTemplate rt = new RestTemplate();
         List<AladinBook> aladinBestSellerBooks = new ArrayList<>();
         aladinBestSellerBooks = this.bestSellerListTest(aladinBestSellerBooks,1,100);
