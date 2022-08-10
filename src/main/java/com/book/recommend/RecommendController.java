@@ -47,11 +47,6 @@ public class RecommendController {
 	@Autowired
 	RecommendService recommendService;
 
-	@RequestMapping(value= "/index.do")
-	public String index() {
-		return "recommend/index";
-	}
-	
 	@GetMapping(value="/register.do")
 	public String register() {
 		return "recommend/register";

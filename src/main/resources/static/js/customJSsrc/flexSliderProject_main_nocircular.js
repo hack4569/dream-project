@@ -59,11 +59,24 @@ window.addEventListener('load', function() {
 	var arrayForItemsInThisCategory = null;
 	
 	function buildFlexSlider(givenDataSet) {
+	/*
+		givenDataSet = [
+        			    {
+        			        bookId : '',
+        			        commentId : '',
+        			        comment_brief : [],
+        			        title : '',
+        			        url : ''
+        			    }
+        			];
+      */
 		indexMapArray = [];	
 		// extracting categories sort
 		var extractedRawCategories = Array.prototype.slice.call(givenDataSet).map(function(eachElement) {
+			console.log(eachElement,'eachEmliment');
 			return String(eachElement.item_id);
 		}).unique();
+		console.log(extractedRawCategories,'extractedRawCategories');
 		for (var categoriesCounter = 0; categoriesCounter < extractedRawCategories.length; categoriesCounter++) {
 			// creating Category Container
 			
@@ -77,7 +90,8 @@ window.addEventListener('load', function() {
 			itemIdElement.setAttribute("value",extractedRawCategories[categoriesCounter]);
 			
 			newCategoryContainer.append(itemIdElement);
-			
+
+
 			var commentArr = givenDataSet[categoriesCounter].comment_brief;
 			arrayForItemsInThisCategory = [];
 			for (var itemCounter = 0; itemCounter < commentArr.length; itemCounter++) {
@@ -427,7 +441,9 @@ window.addEventListener('load', function() {
 		if (xmlHTTPInstanceforFlexSlider.status === 200) {
 			if (xmlHTTPInstanceforFlexSlider.responseText !== '' && xmlHTTPInstanceforFlexSlider.responseText !== null && xmlHTTPInstanceforFlexSlider.responseText !== undefined) {
 				// callback
+				debugger;
 				const themessageBodyParts = JSON.parse(xmlHTTPInstanceforFlexSlider.responseText);
+				console.dir(themessageBodyParts,'themessageBodyParts3');
 				coordArray = buildFlexSlider(themessageBodyParts);
 				coordArray[0][0].style.display = "flex";
 				document.getElementsByClassName('flexSlider_eachCategory')[0].style.display = "flex";
