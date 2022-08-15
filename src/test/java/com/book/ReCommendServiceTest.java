@@ -4,6 +4,7 @@ import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.Phrase;
 import com.book.common.ApiParam;
+import com.book.recommend.RecommendCommentDto;
 import com.book.recommend.RecommendDto;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +32,7 @@ public class ReCommendServiceTest {
     @Test
     public void recommendServiceTest2(){
 
-        List<List> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
+        List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         RestTemplate rt = new RestTemplate();
         List<AladinBook> aladinBestSellerBooks = new ArrayList<>();
         aladinBestSellerBooks = this.bestSellerListTest(aladinBestSellerBooks,1,100);
@@ -41,8 +42,6 @@ public class ReCommendServiceTest {
 
         //상품 조회
         for(int i=0; i<aladinBestSellerBooks.size(); i++) {
-            List<RecommendDto> recommendList = new ArrayList<>(); //책추천리스트
-
             String uri1 = aladinHost + "/ttb/api/ItemLookUp.aspx";
             ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
             URI url1 = UriComponentsBuilder.fromHttpUrl(uri1).queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
@@ -54,17 +53,25 @@ public class ReCommendServiceTest {
             System.out.println(aladinMaster1);
             String[] descriptionArr = aladinMaster1.getItem().get(0).getFullDescription().split("\\.");
 
-            RecommendDto descriptionDto = new RecommendDto();
-            descriptionDto.setType("fullDescription");
+            AladinBook book = aladinMaster1.getItem().get(0);
+
+            List<RecommendCommentDto> recommendCommentList = new ArrayList<>();
+//            RecommendCommentDto recommendCommentDto = new RecommendCommentDto();
+
+
 
             //글자가 많을 경우 2개 또는 ... 처리
             String content = "";
             for(int j=0; j<descriptionArr.length; j++){
                 content += descriptionArr[j];
             }
-            descriptionDto.setContent(content);
+            //recommendCommentDto.setType("dscription");
+            //recommendCommentDto.setContent(content);
+            RecommendCommentDto recommendCommentDto = RecommendCommentDto.builder()
+                    .type("description")
+                            .content(content).build();
 
-            recommendList.add(descriptionDto);
+            recommendCommentList.add(recommendCommentDto);
 
             Phrase phrase;
             int phraseLen = aladinMaster1.getItem().get(0).getSubInfo().getPhraseList().size();
@@ -76,13 +83,20 @@ public class ReCommendServiceTest {
                 for(int k=0; k<phraseArr.length; k++){
                     phraseContent += phraseArr[k];
                 }
-                RecommendDto phraseDto = new RecommendDto();
-                phraseDto.setType("phrase");
-                phraseDto.setContent(phraseContent);
+                RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
+                        .type("phrase")
+                        .content(phraseContent).build();
 
-                recommendList.add(phraseDto);
+                recommendCommentList.add(recommendCommentPhrase);
             }
-            slideRecommendList.add(recommendList);
+            RecommendDto recommendDto = RecommendDto.builder()
+                    .itemId(book.getItemId())
+                    .title(book.getTitle())
+                    .link(book.getLink())
+                    .recommendCommentList(recommendCommentList)
+                    .build();
+
+            slideRecommendList.add(recommendDto);
         }
         System.out.println(slideRecommendList+"slideRecommendList");
     }

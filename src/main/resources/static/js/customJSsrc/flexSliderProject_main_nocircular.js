@@ -63,18 +63,19 @@ window.addEventListener('load', function() {
 		givenDataSet = [
         			    {
         			        bookId : '',
-        			        commentId : '',
-        			        comment_brief : [],
+        			        comment_brief : [
+        			            comment_id : ""
+        			        ],
         			        title : '',
         			        url : ''
         			    }
         			];
       */
+      console.dir(givenDataSet,'givenDataSet');
 		indexMapArray = [];	
 		// extracting categories sort
 		var extractedRawCategories = Array.prototype.slice.call(givenDataSet).map(function(eachElement) {
-			console.log(eachElement,'eachEmliment');
-			return String(eachElement.item_id);
+			return String(eachElement.itemId);
 		}).unique();
 		console.log(extractedRawCategories,'extractedRawCategories');
 		for (var categoriesCounter = 0; categoriesCounter < extractedRawCategories.length; categoriesCounter++) {
@@ -92,13 +93,13 @@ window.addEventListener('load', function() {
 			newCategoryContainer.append(itemIdElement);
 
 
-			var commentArr = givenDataSet[categoriesCounter].comment_brief;
+			var commentArr = givenDataSet[categoriesCounter].recommendCommentList;
 			arrayForItemsInThisCategory = [];
 			for (var itemCounter = 0; itemCounter < commentArr.length; itemCounter++) {
 				/* Rendering the new item */
 				var newItemContainerDarkWrapper = document.createElement('div');
 				
-				var headlineText = document.createTextNode(String(commentArr[itemCounter]));
+				var headlineText = document.createTextNode(String(commentArr[itemCounter].content));
 				var headlineTextNode = document.createElement('h2');//예정 - p
 				headlineTextNode.appendChild(headlineText);
 				newItemContainerDarkWrapper.appendChild(headlineTextNode);
@@ -114,7 +115,7 @@ window.addEventListener('load', function() {
 				
 				var newItemContainer = document.createElement('a');
 				newItemContainer.classList.add('flexSlider_eachItem');
-				newItemContainer.href = givenDataSet[categoriesCounter].url;
+				newItemContainer.href = givenDataSet[categoriesCounter].link;
 				// newItemContainer.style.backgroundImage = "url('" + String(itemSetofThisCategory[itemCounter].baseimguri) + "')";
 				newItemContainer.style.backgroundColor = "#"+String((Math.random()*0xFFFFFF<<0).toString(16)); // randomly colorizing background
 				newItemContainer.appendChild(newItemContainerDarkWrapper);
@@ -133,7 +134,7 @@ window.addEventListener('load', function() {
 			
 			//첫번째 카테고리만 history로 save
 			var bookIdsArray = document.getElementsByClassName('flexSlider_eachBookId');
-			saveHistory(bookIdsArray[0].value);
+			//saveHistory(bookIdsArray[0].value);
 			bookHistory.push(bookIdsArray[0].value);
 		}
 		return indexMapArray;
@@ -143,7 +144,7 @@ window.addEventListener('load', function() {
 		
 		// extracting categories sort
 		var extractedRawCategories = Array.prototype.slice.call(givenDataSet).map(function(eachElement) {
-			return String(eachElement.item_id);
+			return String(eachElement.itemId);
 		}).unique();
 
 		for (var categoriesCounter = 0; categoriesCounter < extractedRawCategories.length; categoriesCounter++) {
@@ -159,7 +160,7 @@ window.addEventListener('load', function() {
 			
 			newCategoryContainer.append(itemIdElement);
 			
-			var commentArr = givenDataSet[categoriesCounter].comment_brief;
+			var commentArr = givenDataSet[categoriesCounter].recommendCommentList;
 			arrayForItemsInThisCategory = [];
 			for (var itemCounter = 0; itemCounter < commentArr.length; itemCounter++) {
 				/* Rendering the new item */
@@ -181,8 +182,7 @@ window.addEventListener('load', function() {
 				
 				var newItemContainer = document.createElement('a');
 				newItemContainer.classList.add('flexSlider_eachItem');
-				newItemContainer.href = givenDataSet[categoriesCounter].url;
-				console.dir(newItemContainer);
+				newItemContainer.href = givenDataSet[categoriesCounter].link;
 				newItemContainer.style.backgroundColor = "#"+String((Math.random()*0xFFFFFF<<0).toString(16)); // randomly colorizing background
 				newItemContainer.appendChild(newItemContainerDarkWrapper);
 				
@@ -332,11 +332,11 @@ window.addEventListener('load', function() {
 		var bookIdsArray = document.getElementsByClassName('flexSlider_eachBookId');
 
 		if (currentFocusGrid.currentCategory >= categoryArray.length-1) {
-			addSlider().then(
-				()=>{
-					moveFocusRightward();
-				}
-			);
+//			addSlider().then(
+//				()=>{
+//					moveFocusRightward();
+//				}
+//			);
 		} else {
 			setTimeout(function() {
 				categoryArray[currentFocusGrid.currentCategory].style.left = '0vw';
@@ -365,7 +365,7 @@ window.addEventListener('load', function() {
 								setTimeout(function() {
 									//book history insert
 									console.log("bookIdsArray",bookIdsArray);
-									saveHistory(bookIdsArray[currentFocusGrid.currentCategory+1].value);
+									//saveHistory(bookIdsArray[currentFocusGrid.currentCategory+1].value);
 									console.log("currentFocusGrid.currentCategory",currentFocusGrid.currentCategory);
 									currentFocusGrid.currentCategory += 1;
 								}, 0);
@@ -441,9 +441,7 @@ window.addEventListener('load', function() {
 		if (xmlHTTPInstanceforFlexSlider.status === 200) {
 			if (xmlHTTPInstanceforFlexSlider.responseText !== '' && xmlHTTPInstanceforFlexSlider.responseText !== null && xmlHTTPInstanceforFlexSlider.responseText !== undefined) {
 				// callback
-				debugger;
 				const themessageBodyParts = JSON.parse(xmlHTTPInstanceforFlexSlider.responseText);
-				console.dir(themessageBodyParts,'themessageBodyParts3');
 				coordArray = buildFlexSlider(themessageBodyParts);
 				coordArray[0][0].style.display = "flex";
 				document.getElementsByClassName('flexSlider_eachCategory')[0].style.display = "flex";
@@ -466,8 +464,7 @@ window.addEventListener('load', function() {
 			xmlHTTPInstanceforAddFlexSlider.onload = function(){
 				if(xmlHTTPInstanceforAddFlexSlider.status === 200){
 					if (xmlHTTPInstanceforAddFlexSlider.responseText !== '' && xmlHTTPInstanceforAddFlexSlider.responseText !== null && xmlHTTPInstanceforAddFlexSlider.responseText !== undefined) {
-						console.log("addSlider");						
-						console.log("xmlHTTPInstanceforAddFlexSlider.responseText",xmlHTTPInstanceforAddFlexSlider.responseText);
+
 						var themessageBodyParts = JSON.parse(xmlHTTPInstanceforAddFlexSlider.responseText);
 						buildAddFlexSlider(themessageBodyParts);
 						resolve("success");

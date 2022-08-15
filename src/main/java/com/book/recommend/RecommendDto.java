@@ -1,15 +1,18 @@
 package com.book.recommend;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RecommendDto {
-    private String type;
-    private String content;//fulldescription, phrase
+    private long itemId;
+    private List<RecommendCommentDto> recommendCommentList;
+    private String title;
+    private String link;
+    private String cover;
 }

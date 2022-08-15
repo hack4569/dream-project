@@ -46,9 +46,9 @@ public class RecommendServiceImpl implements RecommendService {
 	private RecommendRepository recommendRepository;
 
 	@Override
-	public List<List> getRecommendList(String user_id) throws Exception{
+	public List<RecommendDto> getRecommendList(String user_id) throws Exception{
 
-		List<List> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
+		List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
 		List<AladinBook> aladinBestSellerBooks = new ArrayList<>();
 		int startIdx = 1;
 		int maxResults = 100;
@@ -103,10 +103,9 @@ public class RecommendServiceImpl implements RecommendService {
 		return aladinBooks;
 	}
 
-	public void introduceBook(List<List> slideRecommendList, List<AladinBook> aladinBestSellerBooks){
+	public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks){
 		RestTemplate rt = new RestTemplate();
 		for(int i=0; i<aladinBestSellerBooks.size(); i++) {
-			List<RecommendDto> recommendList = new ArrayList<>(); //책추천리스트
 
 			String uri = aladinHost + "/ttb/api/ItemLookUp.aspx";
 			ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
@@ -117,17 +116,20 @@ public class RecommendServiceImpl implements RecommendService {
 			AladinMaster aladinMaster = response.getBody();
 			String[] descriptionArr = aladinMaster.getItem().get(0).getFullDescription().split("\\.");
 
-			RecommendDto descriptionDto = new RecommendDto();
-			descriptionDto.setType("fullDescription");
+
+			AladinBook book = aladinMaster.getItem().get(0);
+			List<RecommendCommentDto> recommendCommentList = new ArrayList<>();
 
 			//글자가 많을 경우 2개 또는 ... 처리
 			String content = "";
 			for(int j=0; j<descriptionArr.length; j++){
 				content += descriptionArr[j];
 			}
-			descriptionDto.setContent(content);
+			RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
+					.type("description")
+					.content(content).build();
 
-			recommendList.add(descriptionDto);
+			recommendCommentList.add(recommendCommentDescription);
 
 			Phrase phrase;
 			int phraseLen = aladinMaster.getItem().get(0).getSubInfo().getPhraseList().size();
@@ -139,13 +141,19 @@ public class RecommendServiceImpl implements RecommendService {
 				for(int k=0; k<phraseArr.length; k++){
 					phraseContent += phraseArr[k];
 				}
-				RecommendDto phraseDto = new RecommendDto();
-				phraseDto.setType("phrase");
-				phraseDto.setContent(phraseContent);
+				RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
+						.type("phrase")
+						.content(phraseContent).build();
 
-				recommendList.add(phraseDto);
+				recommendCommentList.add(recommendCommentPhrase);
 			}
-			slideRecommendList.add(recommendList);
+			RecommendDto recommendDto = RecommendDto.builder()
+					.itemId(book.getItemId())
+					.title(book.getTitle())
+					.link(book.getLink())
+					.recommendCommentList(recommendCommentList)
+					.build();
+			slideRecommendList.add(recommendDto);
 		}
 	}
 	private String getCustomDate(String yyyymmdd) {
