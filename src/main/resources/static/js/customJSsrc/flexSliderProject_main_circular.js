@@ -66,7 +66,7 @@ window.addEventListener('load', function() {
 		
 		// extracting categories sort
 		var extractedRawCategories = Array.prototype.slice.call(givenDataSet).map(function(eachElement) {
-			return String(eachElement.category_id);
+			return String(eachElement.itemId);
 		}).unique();
 		console.log("extractedRawCategories",extractedRawCategories);
 		for (var categoriesCounter = 0; categoriesCounter < extractedRawCategories.length; categoriesCounter++) {
@@ -80,13 +80,13 @@ window.addEventListener('load', function() {
 			//});
 			//console.log("test", itemSetofThisCategory);
 			//itemSetofThisCategory.sort(function (former, latter) { return former.title - latter.title; });
-			var commentArr = givenDataSet[categoriesCounter].comment_brief;
+			var commentArr = givenDataSet[categoriesCounter].recommendCommentList;
 			var arrayForItemsInThisCategory = [];
 			for (var itemCounter = 0; itemCounter < commentArr.length; itemCounter++) {
 				/* Rendering the new item */
 				var newItemContainerDarkWrapper = document.createElement('div');
 				
-				var headlineText = document.createTextNode(String(commentArr[itemCounter]));
+				var headlineText = document.createTextNode(String(commentArr[itemCounter].content));
 				var headlineTextNode = document.createElement('h2');//예정 - p
 				headlineTextNode.appendChild(headlineText);
 				newItemContainerDarkWrapper.appendChild(headlineTextNode);
@@ -107,7 +107,7 @@ window.addEventListener('load', function() {
 				
 				var newItemContainer = document.createElement('a');
 				newItemContainer.classList.add('flexSlider_eachItem');
-				newItemContainer.href = givenDataSet[categoriesCounter].url;
+				newItemContainer.href = givenDataSet[categoriesCounter].link;
 				console.dir(newItemContainer);
 				// newItemContainer.style.backgroundImage = "url('" + String(itemSetofThisCategory[itemCounter].baseimguri) + "')";
 				newItemContainer.style.backgroundColor = "#"+String((Math.random()*0xFFFFFF<<0).toString(16)); // randomly colorizing background
@@ -499,7 +499,7 @@ window.addEventListener('load', function() {
 	jsonizedGivenDataToLoad.connectKey = "wishket_flexSlider_20200318";
 	const jsonizedGivenDataset = JSON.stringify(jsonizedGivenDataToLoad);
 	
-	const uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list.do";
+	const uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list";
 	const proxyPagetoBypassCORS = "https://cors-anywhere.herokuapp.com/";
 	
 	const xmlHTTPInstanceforFlexSlider = new XMLHttpRequest();

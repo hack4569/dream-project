@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-  layout:decorator="layout/default">
+<html th:replace="~{layout/default :: layout(~{::title}, ~{::section}, ~{::footer})}" lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
-    <title>책추천</title>
+	<title>책추천</title>
 </head>
 <body>
-	<th:block layout:fragment="content">
+	<section>
             <!-- Preloader Screen -->
 			<div id="flexSlider_preloader">
 				<div class="flexSlider_preloader_effectContainer">
@@ -37,8 +31,6 @@
 			================================================== -->
 			<!-- <script src="./js/customJSsrc/flexSliderProject_main_nocircular.js"></script> -->
 			<script th:src="@{/js/customJSsrc/flexSliderProject_main_nocircular.js}"></script>	
-	</th:block>
-    
-      
+	</section>
 </body>
 </html>

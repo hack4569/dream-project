@@ -48,7 +48,7 @@ window.addEventListener('load', function() {
 		document.getElementById('flexSlider_preloader').style.visibility = 'hidden';
 		document.getElementById('flexSlider_preloader').style.display = 'none';
 	}, 2000);
-		
+
 	var currentFocusGrid = {
 		currentCategory: 0,
 		currentItem: 0
@@ -57,7 +57,7 @@ window.addEventListener('load', function() {
 	var bookHistory = [];
 	var indexMapArray = null;
 	var arrayForItemsInThisCategory = null;
-	
+
 	function buildFlexSlider(givenDataSet) {
 	/*
 		givenDataSet = [
@@ -72,7 +72,7 @@ window.addEventListener('load', function() {
         			];
       */
       console.dir(givenDataSet,'givenDataSet');
-		indexMapArray = [];	
+		indexMapArray = [];
 		// extracting categories sort
 		var extractedRawCategories = Array.prototype.slice.call(givenDataSet).map(function(eachElement) {
 			return String(eachElement.itemId);
@@ -80,16 +80,16 @@ window.addEventListener('load', function() {
 		console.log(extractedRawCategories,'extractedRawCategories');
 		for (var categoriesCounter = 0; categoriesCounter < extractedRawCategories.length; categoriesCounter++) {
 			// creating Category Container
-			
+
 			var newCategoryContainer = document.createElement('div');
 			newCategoryContainer.classList.add('flexSlider_eachCategory');
-			
+
 			var itemIdElement = document.createElement('input');
 			itemIdElement.classList.add('flexSlider_eachBookId');
 			itemIdElement.setAttribute("type","hidden");
 			itemIdElement.setAttribute("name","flexSlider_eachBookId");
 			itemIdElement.setAttribute("value",extractedRawCategories[categoriesCounter]);
-			
+
 			newCategoryContainer.append(itemIdElement);
 
 
