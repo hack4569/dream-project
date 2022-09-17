@@ -1,6 +1,7 @@
 package com.book.recommend;
 
 import com.book.common.ApiParam;
+import com.book.model.Category;
 import com.book.model.Recommend;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,6 @@ public interface RecommendService {
 	public int saveRecommend(RecommendVO recommendVO) throws Exception;
 	public Recommend saveRecommend(Recommend recommend) throws Exception;
 	public void saveHistory(long itemId) throws Exception;
-	public List<RecommendDto> getRecommendList(String user_id) throws Exception;
+	public List<RecommendDto> getRecommendList(String user_id, Category category) throws Exception;
 	public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam);
 }

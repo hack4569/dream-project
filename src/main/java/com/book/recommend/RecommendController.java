@@ -11,13 +11,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.book.book.CategoryRepository;
 import com.book.common.ApiCommonUtil;
 import com.book.common.ApiParam;
+import com.book.model.Category;
 import com.book.model.Recommend;
+import com.book.model.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -33,6 +40,8 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,58 +50,35 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Controller
-@RequestMapping(value = "/recommend")
+@RequestMapping(value = {"/recommend", "/"})
 public class RecommendController {
 
 	@Autowired
 	RecommendService recommendService;
 
-	@GetMapping(value="/register.do")
-	public String register() {
-		return "recommend/register";
-	}
-	
-	@RequestMapping(value="/save.do")
-	public String save(@ModelAttribute RecommendVO recommendVO, HttpServletRequest request) throws Exception{
-		Recommend recommend = Recommend.builder()
-				.itemId(recommendVO.getItemId())
-				.commentBrief(recommendVO.getBrief())
-				.commentDetail(recommendVO.getDetail())
-				.userId("admin")
-				.build();
-		recommend = recommendService.saveRecommend(recommend);
-		return "Y";
-		/*
-		String sItemId = request.getParameter("itemId");
-		int itemId = Integer.parseInt(sItemId);
-		
-		String uri = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbhack45691028002&itemIdType=itemId&ItemId="+itemId+"&output=js&Version=20131101&OptResult=reviewList";
-		//책정보
-		Map<String,Object> map1 = new HashMap<>();
-		//책리뷰
-		recommendVO.setUserId("admin");
-		
-		//책정보 조회
-		map1 = recommendService.selectDetail(itemId);
-		
-		//책정보 저장
-		int res1 = recommendService.saveBook(map1);
-		
-		//책리뷰 저장
-		int res2 = recommendService.saveRecommend(recommendVO);
+	@Autowired
+	CategoryRepository categoryRepository;
 
-		return null;
+	@Autowired
+	CategoryMapper categoryMapper;
 
-		 */
+	@GetMapping(value= "/")
+	public String index(Model model, Category category) {
+		List<Category> list = categoryMapper.getDistinctCategory();
+		model.addAttribute("categoryList",list);
+		model.addAttribute("subCid",category.getSubCid());
+		return "recommend/index";
 	}
 	
 	@RequestMapping(value="/list")
-	public @ResponseBody List<RecommendDto> list() throws Exception{
+	public @ResponseBody List<RecommendDto> list(Category category) throws Exception{
 
 		//로그인 유무에 따른 로직 구현
 		String user_id = "admin";
-		List<RecommendDto> list =  recommendService.getRecommendList(user_id);
-		                                                               
+
+		category.setSubCid("1");
+		List<RecommendDto> list =  recommendService.getRecommendList(user_id, category);
+
 		return list;
 	}
 	
@@ -108,13 +94,5 @@ public class RecommendController {
 		return recommendService.getSearchBookList(request, apiParam);
 	}
 
-	public static Map<String, Object> getMapFromJSONObject(JSONObject obj) {
-		if (obj==null) { 
-			throw new IllegalArgumentException(String.format("BAD REQUEST obj %s", obj)); 
-		} try { 
-			return new ObjectMapper().readValue(obj.toJSONString(), Map.class); 
-		} catch (Exception e) {
-			throw new RuntimeException(e); } 
-	}
 
 }

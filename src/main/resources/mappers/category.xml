@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.book.model.mapper.CategoryMapper">
+    <resultMap id="categoryResult" type="com.book.model.Category">
+        <id property="cid" column="cid" />
+        <result property="subCid" column="sub_cid" />
+    </resultMap>
+
+    <select id="getDistinctCategory" resultMap="categoryResult">
+        SELECT *
+            FROM CATEGORY
+        WHERE 1=1
+            GROUP BY SUB_CID
+    </select>
+    <select id="getCategoryByParam" parameterType="com.book.model.Category" resultMap="categoryResult">
+        SELECT *
+        FROM CATEGORY
+        WHERE 1=1
+            <if test="subCid != '' and subCid != null">
+                AND SUB_CID = #{subCid}
+            </if>
+    </select>
+</mapper>

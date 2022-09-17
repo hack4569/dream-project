@@ -130,7 +130,7 @@ window.addEventListener('load', function() {
 			
 			// mapping the new items into each category, and submitting the complete category on the HTMLbody
 			indexMapArray.push(arrayForItemsInThisCategory);
-			document.getElementsByTagName('body')[0].appendChild(newCategoryContainer);
+			document.getElementById('slide-section').appendChild(newCategoryContainer);
 			
 			//첫번째 카테고리만 history로 save
 			var bookIdsArray = document.getElementsByClassName('flexSlider_eachBookId');
@@ -196,7 +196,7 @@ window.addEventListener('load', function() {
 			}
 			// mapping the new items into each category, and submitting the complete category on the HTMLbody
 			indexMapArray.push(arrayForItemsInThisCategory);
-			document.getElementsByTagName('body')[0].appendChild(newCategoryContainer);
+			document.getElementById('slide-section').appendChild(newCategoryContainer);
 		}
 	}
 	
@@ -395,7 +395,7 @@ window.addEventListener('load', function() {
 	});
 	
 	
-	var swipeEventsContainer = document.getElementsByTagName('body')[0];
+	var swipeEventsContainer = document.getElementById('slide-section');
 	var swipeEventslistener = SwipeListener(swipeEventsContainer);
 	swipeEventsContainer.addEventListener('swipe', function (e) {
 		var directions = e.detail.directions;
@@ -427,8 +427,10 @@ window.addEventListener('load', function() {
 	var jsonizedGivenDataToLoad = new Object();
 	jsonizedGivenDataToLoad.connectKey = "wishket_flexSlider_20200318";
 	const jsonizedGivenDataset = JSON.stringify(jsonizedGivenDataToLoad);
-	
-	let uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list";
+
+	let bkCategory = document.getElementById("bkCategory");
+	let bkCategoryValue = bkCategory.options[bkCategory.selectedIndex].value;
+	let uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list?subCid="+bkCategoryValue;
 	const proxyPagetoBypassCORS = "https://cors-anywhere.herokuapp.com/";
 	
 	const xmlHTTPInstanceforFlexSlider = new XMLHttpRequest();

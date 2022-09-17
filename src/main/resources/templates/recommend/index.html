@@ -4,7 +4,9 @@
 	<title>책추천</title>
 </head>
 <body>
+
 	<section>
+
             <!-- Preloader Screen -->
 			<div id="flexSlider_preloader">
 				<div class="flexSlider_preloader_effectContainer">
@@ -17,7 +19,7 @@
 				<h3>슬라이더 모듈 개발프로젝트</h3>
 			</div>
 			<!-- /Preloader Screen -->
-		
+
 			<!-- Navigator -->
 			<a id="flexSlider_arrow-Upper" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-up"></i></a>
 			<a id="flexSlider_arrow-Lower" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-down"></i></a>
@@ -30,7 +32,25 @@
             <!-- JavaScript for Customization:
 			================================================== -->
 			<!-- <script src="./js/customJSsrc/flexSliderProject_main_nocircular.js"></script> -->
-			<script th:src="@{/js/customJSsrc/flexSliderProject_main_nocircular.js}"></script>	
+			<script th:src="@{/js/customJSsrc/flexSliderProject_main_nocircular.js}"></script>
 	</section>
+<section id="slide-section" class="slide-section">
+	<div id="category" class="category">
+		<div class="container">
+			<select name="category" id="bkCategory">
+				<th:block th:each="item : ${categoryList}">
+					<option th:value="${item.subCid}" th:text="${item.depth1}" th:selected="${item.subCid} == ${subCid}"></option>
+				</th:block>
+			</select>
+		</div>
+	</div>
+</section>
+<script th:inline="javascript">
+	$("#bkCategory").change(function(){
+	var subCid = "[[${subCid}]]";
+		var selectValue = $(this).val();
+		location.href = "subCid?="+subCid;
+	});
+</script>
 </body>
 </html>
