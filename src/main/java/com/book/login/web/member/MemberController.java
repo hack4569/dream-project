@@ -22,13 +22,13 @@ public class MemberController {
 
     @GetMapping("/add")
     public String addForm(@ModelAttribute("member") Member member){
-        return "/members/addMemberForm";
+        return "members/addMemberForm";
     }
 
     @PostMapping("/add")
     public String save(@Valid @ModelAttribute Member member, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            return "/members/addMemberForm";
+            return "members/addMemberForm";
         }
         return null;
     }
