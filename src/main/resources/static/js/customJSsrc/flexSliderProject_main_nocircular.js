@@ -430,7 +430,7 @@ window.addEventListener('load', function() {
 
 	let bkCategory = document.getElementById("bkCategory");
 	let bkCategoryValue = bkCategory.options[bkCategory.selectedIndex].value;
-	let uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list?subCid="+bkCategoryValue;
+	let uriSchemeCMDtoGETformattedDataset = "https://hack4569.gabia.io/list?subCid="+bkCategoryValue;
 	const proxyPagetoBypassCORS = "https://cors-anywhere.herokuapp.com/";
 	
 	const xmlHTTPInstanceforFlexSlider = new XMLHttpRequest();
@@ -482,7 +482,7 @@ window.addEventListener('load', function() {
 	function saveHistory(bookId){
 		if(!bookHistory.includes(bookId)){
 			const xmlHTTPInstanceforAddFlexSlider = new XMLHttpRequest();
-			xmlHTTPInstanceforAddFlexSlider.open("GET", "http://localhost:8080/recommend/saveHistory.do?bookId="+bookId,true);
+			xmlHTTPInstanceforAddFlexSlider.open("GET", "https://hack4569.gabia.io/recommend/saveHistory.do?bookId="+bookId,true);
 			xmlHTTPInstanceforAddFlexSlider.setRequestHeader("Content-Type", "application/json; charset=UTF-8");			 
 			xmlHTTPInstanceforAddFlexSlider.send();
 			
