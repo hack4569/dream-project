@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CommonUtil {
+
     /*	 * 공백 또는 null 체크	 */
     public static boolean isEmpty(Object obj) {
         if(obj == null) return true;

@@ -1,4 +1,4 @@
-package com.book.login.web.login;
+package com.book.user.login;
 
 import lombok.Data;
 

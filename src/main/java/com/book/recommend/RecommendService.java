@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface RecommendService {
 	public Map<String,Object> selectDetail(int ItemId) throws Exception;
@@ -18,4 +19,5 @@ public interface RecommendService {
 	public void saveHistory(long itemId) throws Exception;
 	public List<RecommendDto> getRecommendList(String user_id, Category category) throws Exception;
 	public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam);
+
 }

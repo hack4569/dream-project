@@ -33,6 +33,8 @@
     <title th:replace="${title}"></title>
 </head>
 <body>
+
+<input type="hidden" name="hostName" th:value="${hostName}">
     <!-- page content body 구성 -->
      <!-- page content javascript -->
     <th:block th:replace="${content}"></th:block>

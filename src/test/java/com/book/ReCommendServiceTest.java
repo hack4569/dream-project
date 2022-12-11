@@ -3,7 +3,9 @@ package com.book;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.Phrase;
+import com.book.book.BookFilterDto;
 import com.book.common.ApiParam;
+import com.book.model.Category;
 import com.book.recommend.RecommendCommentDto;
 import com.book.recommend.RecommendDto;
 import org.junit.Test;
@@ -154,4 +156,8 @@ public class ReCommendServiceTest {
         return dateFormatter.format(cal.getTime());
     }
 
+    @Test
+    public void 별피라미드(){
+
+    }
 }
