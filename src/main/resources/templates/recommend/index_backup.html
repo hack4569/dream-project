@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/default :: layout(~{::title}, ~{::section}, ~{::footer})}" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>책추천</title>
+</head>
+<body>
+	<section>
+
+            <!-- Preloader Screen -->
+			<div id="flexSlider_preloader">
+				<div class="flexSlider_preloader_effectContainer">
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-1"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-2"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-3"></div>
+					<div class="flexSlider_preloader_effectItem flexSlider_preloader_effectItem-4"></div>
+				</div>
+				<h2>Loading…</h2>
+				<h3>슬라이더 모듈 개발프로젝트</h3>
+			</div>
+			<!-- /Preloader Screen -->
+
+			<!-- Navigator -->
+			<a id="flexSlider_arrow-Upper" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-up"></i></a>
+			<a id="flexSlider_arrow-Lower" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-down"></i></a>
+			<a id="flexSlider_arrow-Left" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-left"></i></a>
+			<a id="flexSlider_arrow-Right" class="flexSlider_navigators_arrowStyle"><i class="fas fa-angle-double-right"></i></a>
+			<!-- /Navigator -->
+            <!-- JavaScript Libraries for Styling, additional:
+			================================================== -->
+            <script th:src="@{/js/swipe-listener.min.js}"></script>
+            <!-- JavaScript for Customization:
+			================================================== -->
+			<!-- <script src="./js/customJSsrc/flexSliderProject_main_nocircular.js"></script> -->
+			<script th:src="@{/js/customJSsrc/flexSliderProject_main_nocircular.js}"></script>
+		<script th:inline="javascript">
+	var loginHistoryMsg = [[${loginHistoryMsg}]];
+	if(loginHistoryMsg){
+		alert(loginHistoryMsg);
+	}
+	$("#bkCategory").change(function(){
+	var subCid = "[[${subCid}]]";
+		var selectValue = $(this).val();
+		location.href = "subCid?="+subCid;
+	});
+</script>
+	</section>
+<section id="slide-section" class="slide-section">
+	<div id="category" class="category">
+		<div class="container">
+			<select name="category" id="bkCategory">
+				<th:block th:each="item : ${categoryList}">
+					<option th:value="${item.subCid}" th:text="${item.depth1}" th:selected="${item.subCid} == ${subCid}"></option>
+				</th:block>
+			</select>
+		</div>
+	</div>
+</section>
+
+</body>
+</html>
