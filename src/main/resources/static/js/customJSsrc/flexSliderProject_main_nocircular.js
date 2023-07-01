@@ -138,8 +138,7 @@ window.addEventListener('load', function() {
 			
 			//첫번째 카테고리만 history로 save
 			var bookIdsArray = document.getElementsByClassName('flexSlider_eachBookId');
-			//saveHistory(bookIdsArray[0].value);
-			bookHistory.push(bookIdsArray[0].value);
+			saveHistory(bookIdsArray[0].value);
 		}
 		return indexMapArray;
 	}
@@ -369,7 +368,7 @@ window.addEventListener('load', function() {
 								setTimeout(function() {
 									//book history insert
 									console.log("bookIdsArray",bookIdsArray);
-									//saveHistory(bookIdsArray[currentFocusGrid.currentCategory+1].value);
+									saveHistory(bookIdsArray[currentFocusGrid.currentCategory+1].value);
 									console.log("currentFocusGrid.currentCategory",currentFocusGrid.currentCategory);
 									currentFocusGrid.currentCategory += 1;
 								}, 0);
@@ -484,10 +483,11 @@ window.addEventListener('load', function() {
 	}
 	
 	function saveHistory(bookId){
+	debugger;
 		if(!bookHistory.includes(bookId)){
 			const xmlHTTPInstanceforAddFlexSlider = new XMLHttpRequest();
 			//https://hack4569.gabia.io
-			xmlHTTPInstanceforAddFlexSlider.open("GET", constObj.hostName + "/recommend/saveHistory.do?bookId="+bookId,true);
+			xmlHTTPInstanceforAddFlexSlider.open("GET", constObj.hostName + "/recommend/saveHistory?bookId="+bookId,true);
 			xmlHTTPInstanceforAddFlexSlider.setRequestHeader("Content-Type", "application/json; charset=UTF-8");			 
 			xmlHTTPInstanceforAddFlexSlider.send();
 			
@@ -500,7 +500,12 @@ window.addEventListener('load', function() {
 						alert("saveHistory success");
 						return false;
 					}
-				} else console.log("Request Denied: Failure Code "+String(xmlHTTPInstanceforAddFlexSlider.status));
+				} else{
+				    console.log("Request Denied: Failure Code "+String(xmlHTTPInstanceforAddFlexSlider.status));
+				    console.dir(xmlHTTPInstanceforAddFlexSlider);
+				    var msg = JSON.parse(xmlHTTPInstanceforAddFlexSlider.response);
+				    console.log(msg.message);
+				}
 			}
 		}
 	}

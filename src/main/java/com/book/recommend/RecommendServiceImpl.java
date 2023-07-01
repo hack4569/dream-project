@@ -62,7 +62,7 @@ public class RecommendServiceImpl implements RecommendService {
 	private CategoryMapper categoryMapper;
 
 	@Override
-	public List<RecommendDto> getRecommendList(String loginId, Category category) throws Exception{
+	public List<RecommendDto> getRecommendList(String loginId, Category category){
 
 		List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
 		List<AladinBook> customFilteredBooks = new ArrayList<>();
@@ -84,7 +84,7 @@ public class RecommendServiceImpl implements RecommendService {
 		return slideRecommendList;
 	}
 
-	private List<AladinBook> bestSellerList(BookFilterDto bookFilterDto){
+	public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto){
 		String uri = aladinHost + "/ttb/api/ItemList.aspx";
 		RestTemplate rt = new RestTemplate();
 		ApiParam apiParam = ApiParam.builder()
@@ -138,8 +138,9 @@ public class RecommendServiceImpl implements RecommendService {
 
 		//필터3 : history에 없는 데이터
 		List<History> histories = historyRepository.findHistoryByLoginId(bookFilterDto.getLoginId());
-		aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(j-> !histories.contains(j.getItemId())).collect(Collectors.toList());
-
+		for(History history : histories){
+			aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB->bB.getItemId() != history.getItemId()).collect(Collectors.toList());
+		}
 		aladinBooks.addAll(aladinBestSellerBooks);
 
 		int startIdx = bookFilterDto.getStartIdx();
@@ -370,8 +371,13 @@ public class RecommendServiceImpl implements RecommendService {
 	}
 	
 	@Override
-	public void saveHistory(long itemId) throws Exception{
-		recommendDAO.saveHistory(itemId);
+	public History saveHistory(History history){
+		List<History> histories = historyRepository.findHistoryByLoginId(history.getLoginId());
+		histories = histories.stream().filter(j->j.getItemId()==history.getItemId()).collect(Collectors.toList());
+		if(histories.size()>0){
+			return new History();
+		}
+		return historyRepository.save(history);
 	}
 	
 	public static Map<String, Object> getMapFromJSONObject(JSONObject obj) {

@@ -21,11 +21,9 @@ public class QHistory extends EntityPathBase<History> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath isbn13 = createString("isbn13");
+    public final NumberPath<Long> itemId = createNumber("itemId", Long.class);
 
     public final StringPath loginId = createString("loginId");
-
-    public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
     public QHistory(String variable) {
         super(History.class, forVariable(variable));
