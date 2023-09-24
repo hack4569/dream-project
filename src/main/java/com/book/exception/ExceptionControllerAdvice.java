@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 //패키지, 어노테이션, 특정 Controller 단위로 지정할 수 있음.
 //basePackages = "com.book.recommend"
 @Slf4j
-@RestControllerAdvice(assignableTypes = RecommendController.class)
+@RestControllerAdvice
 public class ExceptionControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<ErrorResult> exHandler(UserException e){
+        log.error("UserException Error : {}", e);
         ErrorResult errorResult = new ErrorResult(e.getMessage());
         return new ResponseEntity<ErrorResult>(errorResult, HttpStatus.BAD_REQUEST);
     }
@@ -22,6 +23,7 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public ResponseEntity<ErrorResult> exHandler(Exception e){
+        log.error("Exception Error : {}", e);
         ErrorResult errorResult = new ErrorResult(e.getMessage());
         return new ResponseEntity<ErrorResult>(errorResult, HttpStatus.INTERNAL_SERVER_ERROR);
     }

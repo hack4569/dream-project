@@ -498,8 +498,8 @@ window.addEventListener('load', function() {
 	var jsonizedGivenDataToLoad = new Object();
 	jsonizedGivenDataToLoad.connectKey = "wishket_flexSlider_20200318";
 	const jsonizedGivenDataset = JSON.stringify(jsonizedGivenDataToLoad);
-	
-	const uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/recommend/list";
+	debugger;
+	const uriSchemeCMDtoGETformattedDataset = "http://localhost:8080/api/recommend/list";
 	const proxyPagetoBypassCORS = "https://cors-anywhere.herokuapp.com/";
 	
 	const xmlHTTPInstanceforFlexSlider = new XMLHttpRequest();
