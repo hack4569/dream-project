@@ -1,16 +1,7 @@
 package com.book.recommend;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
+import com.book.aladin.support.AladinApiTemplate;
+import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.Phrase;
@@ -23,9 +14,9 @@ import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Recommend;
 import com.book.model.mapper.CategoryMapper;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
-import org.json.simple.parser.JSONParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -33,14 +24,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("recommendService")
 public class RecommendServiceImpl implements RecommendService {
@@ -60,6 +58,9 @@ public class RecommendServiceImpl implements RecommendService {
 
 	@Autowired
 	private CategoryMapper categoryMapper;
+
+	@Autowired
+	private AladinConstants aladinConstants;
 
 	@Override
 	public List<RecommendDto> getRecommendList(String loginId, Category category){
@@ -85,19 +86,14 @@ public class RecommendServiceImpl implements RecommendService {
 	}
 
 	public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto){
-		String uri = aladinHost + "/ttb/api/ItemList.aspx";
-		RestTemplate rt = new RestTemplate();
+
 		ApiParam apiParam = ApiParam.builder()
 				.querytype("BestSeller")
 				.start(bookFilterDto.getStartIdx())
 				.maxResults(bookFilterDto.getMaxResults()).build();
-		URI url = UriComponentsBuilder.fromHttpUrl(uri)
-				.queryParams(apiParam.getApiParamMap())
-				.encode().build().toUri();
-		RequestEntity requestEntity = new RequestEntity(HttpMethod.GET, url);
-		ResponseEntity<AladinMaster> response = rt.exchange(requestEntity,new ParameterizedTypeReference<AladinMaster>(){});
+		AladinApiTemplate<AladinMaster> aladinApiTemplate = new AladinApiTemplate<>();
+		AladinMaster aladinMaster = aladinApiTemplate.get(aladinConstants.url(AladinConstants.ITEM_LOOKUP), apiParam);
 
-		AladinMaster aladinMaster = response.getBody();
 		List<AladinBook> aladinBestSellerBooks = aladinMaster.getItem();
 		return aladinBestSellerBooks;
 	}
@@ -161,7 +157,8 @@ public class RecommendServiceImpl implements RecommendService {
 			int maxLength = 2;
 			String uri = aladinHost + "/ttb/api/ItemLookUp.aspx";
 			ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
-			URI url = UriComponentsBuilder.fromHttpUrl(uri).queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
+
+			URI url = UriComponentsBuilder.fromHttpUrl(aladinConstants.url(AladinConstants.ITEM_LOOKUP)).queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
 			RequestEntity requestEntity1 = new RequestEntity(HttpMethod.GET, url);
 
 			ResponseEntity<AladinMaster> response = rt.exchange(requestEntity1, new ParameterizedTypeReference<AladinMaster>() {
