@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html th:replace="~{layout/default :: layout(~{::title}, ~{::section}, ~{::footer})}" lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-	<title>책추천</title>
+	<title>BookerT</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<link rel="stylesheet" href="/css/font.css" />
+	<link rel="stylesheet" href="/css/swiper-bundle.css" />
+	<link rel="stylesheet" href="/css/device.css" />
+	<link rel="stylesheet" href="/css/app.css" />
 </head>
-<body>
+
 <body class="device">
 <main class="app">
 	<header class="global-header">
 		<a href="#" class="icon-button icon-button--on global-header__favorite-button">
-			<img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on" src="img/icon_heart--on.png" />
-			<img class="icon-heart icon-heart--off icon-button__icon icon-button__icon--off" src="img/icon_heart--off.png" />
+			<img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on" src="/img/icon_heart--on.png" />
+			<img class="icon-heart icon-heart--off icon-button__icon icon-button__icon--off" src="/img/icon_heart--off.png" />
 		</a>
 		<button type="button" class="book-category-button global-header__page-title">자기계발서</button>
 		<ul class="book-category-list" role="menu">
@@ -25,35 +33,20 @@
 		</a>
 	</header>
 	<main class="app-main">
-		<ul class="book-summaries book-summaries--load-json">
-			<li class="book-summary">
+		<ul class="book-summaries">
+			<li class="book-summary book-summary--violet book-summary--active">
 				<div class="summary-content">
-					<section class="summary-content-section summary-content-section--quote">
-						<svg class="summary-content-section__icon" width="23" height="22" viewBox="0 0 23 22" xmlns="http://www.w3.org/2000/svg">
-							<path
-									d="M0.0121953 22H9.47776V11.738H5.15065C5.15065 8.08307 6.23242 5.90415 9.61298 4.63898V0C4.00126 0.843448 -0.258249 5.76358 0.0121953 11.8083V22ZM13.3992 22H22.8648V11.738H18.5377C18.5377 8.08307 19.6194 5.90415 23 4.63898V0C17.3207 0.843448 13.1288 5.90415 13.3992 11.8083V22Z"
-							/>
-						</svg>
-						<p class="summary-content-section__content"></p>
-					</section>
-
 					<section class="summary-content-section summary-content-section--introduction">
 						<h1 class="summary-content-section__title">introduction</h1>
-						<p class="summary-content-section__content"></p>
-					</section>
-
-					<section class="summary-content-section summary-content-section--review">
-						<h1 class="summary-content-section__title">review</h1>
-						<p class="summary-content-section__content">노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까? 이 책에 그 답이 실려 있다.</p>
-						<div class="summary-content-section__avatar">
-							<img class="summary-content-section__avatar-image" src="img/avatar.png" />
-							<span class="summary-content-section__avatar-name">정신건강전문의, 문요한</span>
-						</div>
+						<p class="summary-content-section__content">
+							특정 질환이 없는데도 아프지 않은 곳이 없고 매일 피곤하며 치매가 생긴 것 같다면 가속노화를 의심해야한다. 노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
+							예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
+						</p>
 					</section>
 				</div>
 				<section class="summary-about">
-					<img class="summary-about__cover" src="img/book_immune.png" />
-					<p class="summary-about__name">면역</p>
+					<img class="summary-about__cover" src="img/book_grow-old-slowly.png" />
+					<p class="summary-about__name">당신도 느리게 나이 들 수 있습니다</p>
 				</section>
 
 				<nav class="summary-nav">
@@ -71,33 +64,6 @@
 			</li>
 		</ul>
 	</main>
-	<section class="recommendation-modal recommendation-modal--violet">
-		<a href="#" class="close-button recommendation-modal__close-button"></a>
-		<main class="recommendation-modal__container">
-			<svg class="recommendation-modal__icon" width="23" height="22" viewBox="0 0 23 22" xmlns="http://www.w3.org/2000/svg">
-				<path
-						d="M0.0121953 22H9.47776V11.738H5.15065C5.15065 8.08307 6.23242 5.90415 9.61298 4.63898V0C4.00126 0.843448 -0.258249 5.76358 0.0121953 11.8083V22ZM13.3992 22H22.8648V11.738H18.5377C18.5377 8.08307 19.6194 5.90415 23 4.63898V0C17.3207 0.843448 13.1288 5.90415 13.3992 11.8083V22Z"
-				/>
-			</svg>
-			<h1 class="recommendation-modal__title">당신은 꿈을 위해 얼마나 노력하셨나요?</h1>
-			<p class="recommendation-modal__content">
-				저는 죽기살기로 3년만이라는 책을 읽고 저의 삶을 다시 되돌아 보는 시간을 가졌습니다. 저는 열심히 살지 않았고, 불평, 불만만 많은 사람이라는 것을 깨닫게 되었습니다. 이 책 속에 저자는 마흔이 넘은 나이에 대기업을 그만두고 한번도
-				해보지 않은 벤츠 판매를 시작하는데 누구보다 열정적으로 일을 합니다.
-			</p>
-			<div class="book-item book-item--white recommendation-modal__book-item">
-				<img class="book-item__thumbnail" src="img/book_old-woman.png" />
-				<div class="book-item__content">
-					<div class="book-item__text">
-						<h3 class="book-item__title">살인 짜는 플롯 노파</h3>
-						<p class="book-item__publisher">출판사 : 문예출판사</p>
-						<p class="book-item__author">저자 : 에리히 프롬</p>
-					</div>
-				</div>
-			</div>
-			<a href="#" class="button recommendation-modal__edit-button">수정하기</a>
-		</main>
-	</section>
-
 	<nav class="global-nav">
 		<div class="global-nav__container">
 			<nav class="global-nav__account-nav">
@@ -120,6 +86,8 @@
 		</div>
 	</nav>
 </main>
-
+<script src="/js/lodash.min.js"></script>
+<script src="/js/swiper-bundle.min.js"></script>
+<script src="/js/application.js"></script>
 </body>
 </html>
