@@ -1,93 +1,83 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>BookerT</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-	<link rel="stylesheet" href="/css/font.css" />
-	<link rel="stylesheet" href="/css/swiper-bundle.css" />
-	<link rel="stylesheet" href="/css/device.css" />
-	<link rel="stylesheet" href="/css/app.css" />
-</head>
+<html th:replace="~{layout/default :: layout( ~{::main})}">
 
 <body class="device">
 <main class="app">
-	<header class="global-header">
-		<a href="#" class="icon-button icon-button--on global-header__favorite-button">
-			<img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on" src="/img/icon_heart--on.png" />
-			<img class="icon-heart icon-heart--off icon-button__icon icon-button__icon--off" src="/img/icon_heart--off.png" />
-		</a>
-		<button type="button" class="book-category-button global-header__page-title">자기계발서</button>
-		<ul class="book-category-list" role="menu">
-			<li class="book-category-item">
-				<a href="#" class="book-category-option" id="book-category-option-1">에세이</a>
-			</li>
-			<li class="book-category-item">
-				<a href="#" class="book-category-option" id="book-category-option-2">소설</a>
-			</li>
-		</ul>
-		<a href="#" class="icon-button global-header__show-menu-button">
-			<span class="icon-hamburger icon-button__icon"></span>
-		</a>
-	</header>
-	<main class="app-main">
-		<ul class="book-summaries">
-			<li class="book-summary book-summary--violet book-summary--active">
-				<div class="summary-content">
-					<section class="summary-content-section summary-content-section--introduction">
-						<h1 class="summary-content-section__title">introduction</h1>
-						<p class="summary-content-section__content">
-							특정 질환이 없는데도 아프지 않은 곳이 없고 매일 피곤하며 치매가 생긴 것 같다면 가속노화를 의심해야한다. 노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
-							예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
-						</p>
-					</section>
-				</div>
-				<section class="summary-about">
-					<img class="summary-about__cover" src="img/book_grow-old-slowly.png" />
-					<p class="summary-about__name">당신도 느리게 나이 들 수 있습니다</p>
-				</section>
+    <input type="hidden" name="hostName" th:value="${hostName}">
+    <header class="global-header">
+        <a href="#" class="icon-button icon-button--on global-header__favorite-button">
+            <img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on"
+                 src="/img/icon_heart--on.png"/>
+            <img class="icon-heart icon-heart--off icon-button__icon icon-button__icon--off"
+                 src="/img/icon_heart--off.png"/>
+        </a>
+        <button type="button" class="book-category-button global-header__page-title">자기계발서</button>
+        <ul class="book-category-list" role="menu">
+            <li class="book-category-item">
+                <a href="#" class="book-category-option" id="book-category-option-1">에세이</a>
+            </li>
+            <li class="book-category-item">
+                <a href="#" class="book-category-option" id="book-category-option-2">소설</a>
+            </li>
+        </ul>
+        <a href="#" class="icon-button global-header__show-menu-button">
+            <span class="icon-hamburger icon-button__icon"></span>
+        </a>
+    </header>
+    <main class="app-main">
+        <ul class="book-summaries">
+            <li class="book-summary book-summary--violet book-summary--active">
+                <div class="summary-content">
+                    <section class="summary-content-section summary-content-section--introduction">
+                        <h1 class="summary-content-section__title">introduction</h1>
+                        <p class="summary-content-section__content">
+                            특정 질환이 없는데도 아프지 않은 곳이 없고 매일 피곤하며 치매가 생긴 것 같다면 가속노화를 의심해야한다. 노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수
+                            있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
+                            예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
+                        </p>
+                    </section>
+                </div>
+                <section class="summary-about">
+                    <img class="summary-about__cover" src="img/book_grow-old-slowly.png"/>
+                    <p class="summary-about__name">당신도 느리게 나이 들 수 있습니다</p>
+                </section>
 
-				<nav class="summary-nav">
-					<ul class="summary-nav-list">
-						<li class="summary-nav-item">
-							<a href="#" class="circle-button circle-button--to-info">
-								<img class="summary-nav-link__icon" src="img/icon_info.png" />
-							</a>
-						</li>
-						<li class="summary-nav-item">
-							<a href="#" class="circle-button circle-button--back summary-nav-item__show-button"> </a>
-						</li>
-					</ul>
-				</nav>
-			</li>
-		</ul>
-	</main>
-	<nav class="global-nav">
-		<div class="global-nav__container">
-			<nav class="global-nav__account-nav">
-				<a href="#" class="button global-nav__account-nav-button">로그인</a>
-			</nav>
-			<ul class="global-nav-list">
-				<li class="global-nav-item">
-					<a href="#" class="global-nav-link">
-						<img class="global-nav-link__icon" src="img/icon_user.svg" />
-						<span class="global-nav-link__name">마이페이지</span>
-					</a>
-				</li>
-				<li class="global-nav-item">
-					<a href="#" class="global-nav-link">
-						<img class="global-nav-link__icon" src="img/icon_book.svg" />
-						<span class="global-nav-link__name">책추천</span>
-					</a>
-				</li>
-			</ul>
-		</div>
-	</nav>
+                <nav class="summary-nav">
+                    <ul class="summary-nav-list">
+                        <li class="summary-nav-item">
+                            <a href="#" class="circle-button circle-button--to-info">
+                                <img class="summary-nav-link__icon" src="img/icon_info.png"/>
+                            </a>
+                        </li>
+                        <li class="summary-nav-item">
+                            <a href="#" class="circle-button circle-button--back summary-nav-item__show-button"> </a>
+                        </li>
+                    </ul>
+                </nav>
+            </li>
+        </ul>
+    </main>
+    <nav class="global-nav">
+        <div class="global-nav__container">
+            <nav class="global-nav__account-nav">
+                <a href="#" class="button global-nav__account-nav-button">로그인</a>
+            </nav>
+            <ul class="global-nav-list">
+                <li class="global-nav-item">
+                    <a href="#" class="global-nav-link">
+                        <img class="global-nav-link__icon" src="img/icon_user.svg"/>
+                        <span class="global-nav-link__name">마이페이지</span>
+                    </a>
+                </li>
+                <li class="global-nav-item">
+                    <a href="#" class="global-nav-link">
+                        <img class="global-nav-link__icon" src="img/icon_book.svg"/>
+                        <span class="global-nav-link__name">책추천</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </main>
-<script src="/js/lodash.min.js"></script>
-<script src="/js/swiper-bundle.min.js"></script>
-<script src="/js/application.js"></script>
 </body>
 </html>
