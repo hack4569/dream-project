@@ -14,13 +14,12 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface RecommendService {
-	public Map<String,Object> selectDetail(int ItemId) throws Exception;
-	public List<RecommendVO> recommendList2(String userId) throws Exception;
-	public int saveBook(Map map) throws Exception;
-	public int saveRecommend(RecommendVO recommendVO) throws Exception;
-	public Recommend saveRecommend(Recommend recommend) throws Exception;
+	public Map<String,Object> selectDetail(int ItemId);
+	public List<RecommendVO> recommendList2(String userId);
+	//public int saveRecommend(RecommendVO recommendVO);
+	public Recommend saveRecommend(Recommend recommend);
 	public History saveHistory(History history);
-	public List<RecommendDto> getRecommendList(String user_id, Category category) throws Exception;
+	public List<RecommendDto> getRecommendList(String user_id, Category category);
 	public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam);
 	public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto);
 }

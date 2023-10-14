@@ -3,7 +3,6 @@ package com.book.recommend;
 import com.book.book.CategoryRepository;
 import com.book.common.ApiParam;
 import com.book.model.Category;
-import com.book.model.History;
 import com.book.model.Member;
 import com.book.model.mapper.CategoryMapper;
 import com.book.session.SessionConst;
@@ -12,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -40,6 +41,12 @@ public class RecommendController {
 	public String index(
 			@SessionAttribute(name=SessionConst.LOGIN_MEMBER, required=false) Member loginMember,
 			Model model, Category category, HttpSession session) throws Exception{
+		//로그인 유무에 따른 로직 구현
+		String loginId = loginMember ==null ? "" : loginMember.getLoginId();
+
+		List<RecommendDto> recommendList =  recommendService.getRecommendList(loginId, category);
+		model.addAttribute("recommendList",recommendList);
+
 		List<Category> list = categoryMapper.getDistinctCategory();
 		model.addAttribute("categoryList",list);
 		model.addAttribute("subCid",category.getSubCid());
@@ -64,25 +71,6 @@ public class RecommendController {
         List<RecommendDto> list =  recommendService.getRecommendList(loginId, category);
 
         return list;
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/saveHistory")
-	public void saveHistory(@SessionAttribute(name=SessionConst.LOGIN_MEMBER, required = false) Member member, @RequestParam("bookId") long bookId, HttpServletRequest request, HttpSession session) throws Exception{
-
-		String loginId = "";
-
-		if(member != null){
-			loginId = member.getLoginId();
-		}
-
-		if(!StringUtils.hasText(loginId) || bookId ==0){
-			return;
-		}
-		History history = new History();
-		history.setItemId(bookId);
-		history.setLoginId(loginId);
-		recommendService.saveHistory(history);
 	}
 
 	@RequestMapping(value="/search.do")

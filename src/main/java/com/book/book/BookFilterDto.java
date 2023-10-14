@@ -11,8 +11,8 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookFilterDto {
-    private int startIdx;
-    private int maxResults;
+    private int startIdx = 1;
+    private int maxResults = 100;
     private String loginId;
     private Category category;
 }

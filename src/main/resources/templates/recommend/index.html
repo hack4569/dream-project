@@ -25,12 +25,13 @@
         </a>
     </header>
     <main class="app-main">
-        <ul class="book-summaries">
-            <li class="book-summary book-summary--violet book-summary--active">
+        <ul class="book-summaries"> <!--book-summaries--load-json-->
+            <li th:each="item : ${recommendList}" class="book-summary book-summary--violet book-summary--active">
                 <div class="summary-content">
-                    <section class="summary-content-section summary-content-section--introduction">
-                        <h1 class="summary-content-section__title">introduction</h1>
-                        <p class="summary-content-section__content">
+                    <input type="hidden" name="itemId" th:value="${item.itemId}">
+                    <section th:each="comment : ${item.recommendCommentList}" class="summary-content-section summary-content-section--introduction">
+<!--                        <h1 class="summary-content-section__title">introduction</h1>-->
+                        <p class="summary-content-section__content" th:text="${comment.content}">
                             특정 질환이 없는데도 아프지 않은 곳이 없고 매일 피곤하며 치매가 생긴 것 같다면 가속노화를 의심해야한다. 노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수
                             있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
                             예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
@@ -38,8 +39,8 @@
                     </section>
                 </div>
                 <section class="summary-about">
-                    <img class="summary-about__cover" src="img/book_grow-old-slowly.png"/>
-                    <p class="summary-about__name">당신도 느리게 나이 들 수 있습니다</p>
+                    <img class="summary-about__cover" th:src="${item.cover}"/>
+                    <p class="summary-about__name" th:text="${item.title}"></p>
                 </section>
 
                 <nav class="summary-nav">

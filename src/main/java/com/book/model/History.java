@@ -17,4 +17,5 @@ public class History {
     private Long id;
     private String loginId;
     private long itemId;
+    private String createdDate;
 }

@@ -19,6 +19,8 @@ public class QHistory extends EntityPathBase<History> {
 
     public static final QHistory history = new QHistory("history");
 
+    public final StringPath createdDate = createString("createdDate");
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final NumberPath<Long> itemId = createNumber("itemId", Long.class);

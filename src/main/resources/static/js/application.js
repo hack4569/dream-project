@@ -113,7 +113,7 @@
 
     const bookSummarySource = doc.querySelector('.book-summary');
     const colors = ['blue-yellow', 'orange-red', 'blue-green', 'blue', 'violet', 'pitch'];
-    const thumbnails = ['book_immune.png', 'book_grow-old-slowly.png', 'book_art-of-love.png'];
+    //const thumbnails = ['book_immune.png', 'book_grow-old-slowly.png', 'book_art-of-love.png'];
     const fieldMap = {
         phrase: 'quote',
         description: 'introduction',
@@ -130,7 +130,7 @@
 
     response.forEach((item, index) => {
         const title = item.title;
-        const thumbnail = thumbnails[index];
+        const thumbnail = item.cover;
         const color = colors[index];
         const summaryContent = item.recommendCommentList;
         const source = bookSummaryItems[index];
@@ -183,9 +183,13 @@
                 // 따라서 flikering 상황이 발생하기 때문에, 클래스를 추가하여 그것을 막습니다.
                 const activeIndex = swiper.activeIndex;
                 const activeSlide = swiper.slides[activeIndex];
-
+                //debugger;
                 activeSlide.classList.add('summary-content-section--active');
 
+                const itemId = document.querySelector(".swiper-slide-active")?.parentElement?.children['itemId']?.value;
+                if (itemId) {
+
+                }
                 setTimeout(() => {
                     activeSlide.classList.remove('summary-content-section--active');
                 }, 1500)

@@ -16,6 +16,11 @@ import java.net.URI;
 
 @Slf4j
 public class AladinApiTemplate<T> {
+    private Class<T> responseType;
+
+    public AladinApiTemplate(Class<T> responseType) {
+        this.responseType = responseType;
+    }
 
     public T get(String uri, ApiParam apiParam) {
         T result = null;
@@ -24,8 +29,9 @@ public class AladinApiTemplate<T> {
                     .queryParams(apiParam.getApiParamMap())
                     .encode().build().toUri();
             RestTemplate rt = new RestTemplate();
-            RequestEntity<T> requestEntity = new RequestEntity(HttpMethod.GET, url);
-            ResponseEntity<T> response = rt.exchange(requestEntity,new ParameterizedTypeReference<T>(){});
+            RequestEntity requestEntity = new RequestEntity(HttpMethod.GET, url);
+            ResponseEntity<T> response = rt.exchange(requestEntity, responseType);
+            //ResponseEntity<T> response = rt.exchange(requestEntity,new ParameterizedTypeReference<AladinMaster>(){});
             result = response.getBody();
         } catch (Exception e){
             String errorMsg = "알라딘 api 에러 발생";

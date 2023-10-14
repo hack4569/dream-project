@@ -11,6 +11,8 @@ public class AladinConstants {
     String aladinHost;
     public static final String ITEM_LOOKUP = "/ttb/api/ItemLookUp.aspx";
 
+    public static final String ITEM_LIST = "/ttb/api/ItemList.aspx";
+
     public String url(String path){
         return aladinHost + path;
     }

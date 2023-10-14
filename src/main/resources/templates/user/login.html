@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/default :: layout( ~{::main})}">
+    <body class="device">
+        <main class="app">
+        <header class="global-header">
+            <span class="global-header__page-title">로그인 정보</span>
+        </header>
+        <main class="app-main">
+            <form class="sign-in-form" action="/user/login" method="post">
+                <div class="text-field text-field--has-error">
+                    <label for="loginId" class="text-field__label">아이디</label>
+                    <input type="input" name="loginId" id="loginId" value="" placeholder="내용을 입력해주세요" class="text-field__input" />
+<!--                    <p class="text-field__error">아이디를 사용할 수 없습니다.</p>-->
+                </div>
+                <div class="text-field">
+                    <label for="reason" class="text-field__label">비밀번호</label>
+                    <input type="password" name="password" id="reason" value="" placeholder="내용을 입력해주세요" class="text-field__input" />
+                </div>
+<!--                <div class="text-field text-field&#45;&#45;has-error">-->
+<!--                    <label for="opinion" class="text-field__label">비밀번호 확인</label>-->
+<!--                    <input type="password" name="opinion" id="opinion" value="" placeholder="내용을 입력해주세요" class="text-field__input" />-->
+<!--&lt;!&ndash;                    <p class="text-field__error">비밀번호가 일치하지 않습니다.</p>&ndash;&gt;-->
+<!--                </div>-->
+                <div class="form-action sign-in-form__action">
+                    <button type="submit" class="button button--form button--black">로그인</button>
+<!--                    <a href="#" class="button button&#45;&#45;form button&#45;&#45;gray">취소</a>-->
+                </div>
+            </form>
+        </main>
+
+    </main>
+    </body>
+</html>
