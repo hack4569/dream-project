@@ -6,6 +6,7 @@ import com.book.model.Category;
 import com.book.model.Member;
 import com.book.model.mapper.CategoryMapper;
 import com.book.session.SessionConst;
+import com.book.user.login.argumentresolver.Login;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,7 @@ public class RecommendController {
 
 	@GetMapping(value= "/")
 	public String index(
-			@SessionAttribute(name=SessionConst.LOGIN_MEMBER, required=false) Member loginMember,
+			@Login Member loginMember,
 			Model model, Category category, HttpSession session) throws Exception{
 		//로그인 유무에 따른 로직 구현
 		String loginId = loginMember ==null ? "" : loginMember.getLoginId();

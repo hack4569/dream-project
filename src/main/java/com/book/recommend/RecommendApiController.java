@@ -6,6 +6,7 @@ import com.book.model.History;
 import com.book.model.Member;
 import com.book.model.mapper.CategoryMapper;
 import com.book.session.SessionConst;
+import com.book.user.login.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +45,7 @@ public class RecommendApiController {
     @ResponseBody
     @PostMapping(value="/history")
     public void saveHistory(
-            @SessionAttribute(name=SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+            @Login Member loginMember,
             @RequestParam("bookId") long bookId,
             HttpServletRequest request, HttpSession session){
 
