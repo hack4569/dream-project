@@ -5,6 +5,7 @@ import com.book.common.ApiParam;
 import com.book.model.Category;
 import com.book.model.Member;
 import com.book.model.mapper.CategoryMapper;
+import com.book.recommend.exception.RecommendExcption;
 import com.book.session.SessionConst;
 import com.book.user.login.argumentresolver.Login;
 import lombok.extern.slf4j.Slf4j;
@@ -41,20 +42,25 @@ public class RecommendController {
 	@GetMapping(value= "/")
 	public String index(
 			@Login Member loginMember,
-			Model model, Category category, HttpSession session) throws Exception{
+			Model model, Category category, HttpSession session){
 		//로그인 유무에 따른 로직 구현
-		String loginId = loginMember ==null ? "" : loginMember.getLoginId();
+		String loginId = loginMember == null ? "" : loginMember.getLoginId();
 
-		List<RecommendDto> recommendList =  recommendService.getRecommendList(loginId, category);
-		model.addAttribute("recommendList",recommendList);
+		try {
+			List<RecommendDto> recommendList =  recommendService.getRecommendList(loginId, category);
+			model.addAttribute("recommendList",recommendList);
 
-		List<Category> list = categoryMapper.getDistinctCategory();
-		model.addAttribute("categoryList",list);
-		model.addAttribute("subCid",category.getSubCid());
-		model.addAttribute("hostName",hostName);
+			List<Category> list = categoryMapper.getDistinctCategory();
+			model.addAttribute("categoryList",list);
+			model.addAttribute("subCid",category.getSubCid());
+			model.addAttribute("hostName",hostName);
 
-		if(loginMember==null){
-			model.addAttribute("loginHistoryMsg","로그인하시면 봤던 책정보는 보이지 않습니다.");
+			if(loginMember==null){
+				model.addAttribute("loginHistoryMsg","로그인하시면 봤던 책정보는 보이지 않습니다.");
+			}
+		} catch (Exception e) {
+			log.error("[/] ERROR : {}", e);
+			throw new RuntimeException("서버내부 오류발생");
 		}
 
 		return "recommend/index";
@@ -73,11 +79,4 @@ public class RecommendController {
 
         return list;
 	}
-
-	@RequestMapping(value="/search.do")
-	public @ResponseBody Object search(HttpServletRequest request,ApiParam apiParam, Model model) throws Exception{
-		return recommendService.getSearchBookList(request, apiParam);
-	}
-
-
 }

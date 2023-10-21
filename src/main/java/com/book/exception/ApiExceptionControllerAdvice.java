@@ -1,6 +1,5 @@
 package com.book.exception;
 
-import com.book.recommend.RecommendController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 //basePackages = "com.book.recommend"
 @Slf4j
 @RestControllerAdvice
-public class ExceptionControllerAdvice {
+public class ApiExceptionControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<ErrorResult> exHandler(UserException e){
         log.error("UserException Error : {}", e);

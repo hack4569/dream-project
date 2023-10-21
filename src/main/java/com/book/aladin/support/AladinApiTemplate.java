@@ -34,9 +34,9 @@ public class AladinApiTemplate<T> {
             //ResponseEntity<T> response = rt.exchange(requestEntity,new ParameterizedTypeReference<AladinMaster>(){});
             result = response.getBody();
         } catch (Exception e){
-            String errorMsg = "알라딘 api 에러 발생";
+            String errorMsg = "get error {}";
             log.error(errorMsg, e);
-            throw new AladinException(errorMsg, e);
+            throw new AladinException("알라딘 api연동중 에러가 발생하였습니다.", e);
         }
         return result;
     }
