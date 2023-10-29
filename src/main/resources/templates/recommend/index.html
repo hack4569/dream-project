@@ -12,14 +12,14 @@
                  src="/img/icon_heart--off.png"/>
         </a>
         <button type="button" class="book-category-button global-header__page-title">자기계발서</button>
-        <ul class="book-category-list" role="menu">
-            <li class="book-category-item">
-                <a href="#" class="book-category-option" id="book-category-option-1">에세이</a>
-            </li>
-            <li class="book-category-item">
-                <a href="#" class="book-category-option" id="book-category-option-2">소설</a>
-            </li>
-        </ul>
+<!--        <ul class="book-category-list" role="menu">-->
+<!--            <li class="book-category-item">-->
+<!--                <a href="#" class="book-category-option" id="book-category-option-1">에세이</a>-->
+<!--            </li>-->
+<!--            <li class="book-category-item">-->
+<!--                <a href="#" class="book-category-option" id="book-category-option-2">소설</a>-->
+<!--            </li>-->
+<!--        </ul>-->
         <a href="#" class="icon-button global-header__show-menu-button">
             <span class="icon-hamburger icon-button__icon"></span>
         </a>
@@ -47,25 +47,29 @@
                             예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
                         </p>
                         <input type="hidden" name="itemId" th:value="${item.itemId}">
+                        <input type="hidden" name="categoryName" th:value="${item.categoryName}">
                     </section>
                 </div>
                 <section class="summary-about">
-                    <img class="summary-about__cover" th:src="${item.cover}"/>
-                    <p class="summary-about__name" th:text="${item.title}"></p>
+                    <a th:href="@{${item.link}}" target="_blank"><img class="summary-about__cover" th:src="${item.cover}"/></a>
+                    <a th:href="@{${item.link}}" target="_blank" style="width: 100%">
+                        <p class="summary-about__name" th:text="${item.title}"></p>
+                        <p class="summary-about__name" th:text="${item.author}"></p>
+                    </a>
                 </section>
 
-                <nav class="summary-nav">
-                    <ul class="summary-nav-list">
-                        <li class="summary-nav-item">
-                            <a href="#" class="circle-button circle-button--to-info">
-                                <img class="summary-nav-link__icon" src="img/icon_info.png"/>
-                            </a>
-                        </li>
-                        <li class="summary-nav-item">
-                            <a href="#" class="circle-button circle-button--back summary-nav-item__show-button"> </a>
-                        </li>
-                    </ul>
-                </nav>
+<!--                <nav class="summary-nav">-->
+<!--                    <ul class="summary-nav-list">-->
+<!--                        <li class="summary-nav-item">-->
+<!--                            <a href="#" class="circle-button circle-button&#45;&#45;to-info">-->
+<!--                                <img class="summary-nav-link__icon" src="img/icon_info.png"/>-->
+<!--                            </a>-->
+<!--                        </li>-->
+<!--                        <li class="summary-nav-item">-->
+<!--                            <a href="#" class="circle-button circle-button&#45;&#45;back summary-nav-item__show-button"> </a>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+<!--                </nav>-->
             </li>
         </ul>
     </main>

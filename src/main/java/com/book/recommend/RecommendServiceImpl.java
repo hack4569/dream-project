@@ -136,7 +136,16 @@ public class RecommendServiceImpl implements RecommendService {
             //필터3 : history에 없는 데이터
             List<History> histories = historyRepository.findHistoryByLoginId(bookFilterDto.getLoginId());
             for (History history : histories) {
-                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB -> !(LocalDate.now().isEqual(history.getCreated().toLocalDate())) && (bB.getItemId() != history.getItemId())).collect(Collectors.toList());
+                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB ->
+                    {
+                        return
+                        (
+                            bB.getItemId() == history.getItemId()
+                            &&
+                            LocalDate.now().isEqual(history.getCreated().toLocalDate())
+                        )
+                        || bB.getItemId() != history.getItemId();
+                    }).collect(Collectors.toList());
             }
             aladinBooks.addAll(aladinBestSellerBooks);
 
@@ -226,6 +235,8 @@ public class RecommendServiceImpl implements RecommendService {
                     .link(book.getLink())
                     .cover(book.getCover())
                     .recommendCommentList(recommendCommentList)
+                    .author(book.getAuthor())
+                    .categoryName(book.getCategoryName())
                     .build();
             slideRecommendList.add(recommendDto);
         }

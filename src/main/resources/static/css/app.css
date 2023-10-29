@@ -65,7 +65,7 @@
     font-weight: 700;
     font-size: 1.05rem;
 }
-
+/*
 .book-category-button {
     appearance: none;
 }
@@ -85,7 +85,7 @@
     top: 2px;
     transform: translateY(2px) rotate(135deg);
 }
-
+*/
 .book-category-list {
     position: absolute;
     top: 100%;
@@ -481,7 +481,6 @@
     padding: 0 32px;
     width: 100%;
     align-items: center;
-    pointer-events: none;
 }
 .summary-about__cover {
     width: 74px;

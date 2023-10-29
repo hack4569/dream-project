@@ -139,7 +139,7 @@ let historyItemIds = [];
 
                 activeSlide.classList.add('summary-content-section--active');
 
-                const itemId = document.querySelector(".swiper-slide-active")?.parentElement?.querySelector("input[name=itemId]")?.value;
+                const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
                 if (itemId && !historyItemIds.includes(itemId)) {
                     $.post("/api/recommend/history/" + itemId, (response) => {
                         console.log(response, 'save history');
@@ -201,7 +201,8 @@ class BookSummarySwiper {
             });
 
             currentBookSummary.classList.add('book-summary--active');
-            //트리거
+            const categoryName = document.querySelector(".book-summary--active input[name=categoryName]").value;
+            document.querySelector(".global-header__page-title").textContent = categoryName;
 
             const swiper = currentBookSummary.swiper;
             const activeIndex = swiper.activeIndex;
