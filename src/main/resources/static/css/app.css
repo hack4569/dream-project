@@ -398,12 +398,12 @@
 .book-summary--active .summary-content-section {
     opacity: 1;
 }
-.summary-content-section--introduction {
+.summary-content-section--description {
     /*padding: 70px 32px 0;*/
     padding: 40px 32px 0;
     font-size: 1.7rem;
 }
-.summary-content-section--quote {
+.summary-content-section--phrase {
     padding-top: 52px;
 }
 .summary-content-section--active > * {
@@ -468,7 +468,7 @@
     font-size: 0.75rem;
     font-weight: 300;
 }
-.summary-content-section--quote .summary-content-section__content {
+.summary-content-section--phrase .summary-content-section__content {
     margin-top: 16px;
     font-size: 1.65rem;
     line-height: 1.5;
@@ -1351,22 +1351,22 @@
 
 
 @media (max-height: 818px) {
-    .summary-content-section--introduction .summary-content-section__content {
+    .summary-content-section--description .summary-content-section__content {
         font-size: 1.7rem;
     }
 
 }
 @media (max-height: 740px) {
-    .summary-content-section--introduction {
+    .summary-content-section--description {
         padding-top: 48px;
     }
-    .summary-content-section--introduction .summary-content-section__content {
+    .summary-content-section--description .summary-content-section__content {
         font-size: 1.5rem;
     }
-    .summary-content-section--quote {
+    .summary-content-section--phrase {
         padding-top: 38px;
     }
-    .summary-content-section--quote .summary-content-section__content {
+    .summary-content-section--phrase .summary-content-section__content {
         font-size: 1.5rem;
     }
     .summary-content-section--review {
@@ -1394,16 +1394,16 @@
     }
 }
 @media (max-height: 670px) {
-    .summary-content-section--introduction {
+    .summary-content-section--description {
         padding-top: 28px;
     }
-    .summary-content-section--introduction .summary-content-section__content {
+    .summary-content-section--description .summary-content-section__content {
         font-size: 1.45rem;
     }
-    .summary-content-section--quote {
+    .summary-content-section--phrase {
         padding-top: 26px;
     }
-    .summary-content-section--quote .summary-content-section__content {
+    .summary-content-section--phrase .summary-content-section__content {
         font-size: 1.45rem;
     }
     .summary-content-section--review {

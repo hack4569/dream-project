@@ -29,17 +29,21 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request){
+    public String login(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request) {
 
+        if (bindingResult.hasErrors()) {
+            return "user/login";
+        }
         Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
-        if(loginMember == null){
-            bindingResult.reject("loginFail","아이디 또는 비밀번호가 맞지 않습니다.");
+        if (loginMember == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return "user/login";
         }
 
         //createSession(loginMember, response);
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+        session.setMaxInactiveInterval(1800);
         return "redirect:/";
     }
 
@@ -64,10 +68,10 @@ public class LoginController {
 //	}
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request){
+    public String logout(HttpServletRequest request) {
         //기존에 세션이 있으면 가져오고, 없으면 생성하지 않음.
         HttpSession session = request.getSession(false);
-        if(session != null){
+        if (session != null) {
             session.invalidate();
         }
         return "redirect:/";

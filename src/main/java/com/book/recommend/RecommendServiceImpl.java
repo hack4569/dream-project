@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,7 +136,7 @@ public class RecommendServiceImpl implements RecommendService {
             //필터3 : history에 없는 데이터
             List<History> histories = historyRepository.findHistoryByLoginId(bookFilterDto.getLoginId());
             for (History history : histories) {
-                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB -> bB.getItemId() != history.getItemId()).collect(Collectors.toList());
+                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB -> !(LocalDate.now().isEqual(history.getCreated().toLocalDate())) && (bB.getItemId() != history.getItemId())).collect(Collectors.toList());
             }
             aladinBooks.addAll(aladinBestSellerBooks);
 
@@ -370,15 +371,15 @@ public class RecommendServiceImpl implements RecommendService {
         return recommendRepository.save(recommend);
     }
 
-    @Override
-    public History saveHistory(History history) {
-        List<History> histories = historyRepository.findHistoryByLoginId(history.getLoginId());
-        histories = histories.stream().filter(j -> j.getItemId() == history.getItemId()).collect(Collectors.toList());
-        if (histories.size() > 0) {
-            return new History();
-        }
-        return historyRepository.save(history);
-    }
+//    @Override
+//    public History saveHistory(History history) {
+//        List<History> histories = historyRepository.findHistoryByLoginId(history.getLoginId());
+//        histories = histories.stream().filter(j -> j.getItemId() == history.getItemId()).collect(Collectors.toList());
+//        if (histories.size() > 0) {
+//            return new History();
+//        }
+//        return historyRepository.save(history);
+//    }
 
     public static Map<String, Object> getMapFromJSONObject(JSONObject obj) {
         if (obj == null) {
