@@ -3,6 +3,9 @@ body {
     overscroll-behavior: none;
     -webkit-overflow-scrolling: auto;
 }
+a {
+    text-decoration: none;
+}
 .device {
     display: flex;
     margin: 0;

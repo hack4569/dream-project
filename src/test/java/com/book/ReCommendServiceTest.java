@@ -1,22 +1,23 @@
 package com.book;
 
+import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.Phrase;
-import com.book.book.BookFilterDto;
 import com.book.common.ApiParam;
-import com.book.model.Category;
 import com.book.recommend.RecommendCommentDto;
 import com.book.recommend.RecommendDto;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.thymeleaf.util.ObjectUtils;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -26,10 +27,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
 public class ReCommendServiceTest {
 
     String aladinHost = "http://www.aladin.co.kr";
+
+    @Autowired
+    AladinConstants aladinConstants;
 
     @Test
     public void recommendServiceTest2(){
@@ -154,10 +159,5 @@ public class ReCommendServiceTest {
         cal.set(year, month, date);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
         return dateFormatter.format(cal.getTime());
-    }
-
-    @Test
-    public void 별피라미드(){
-
     }
 }

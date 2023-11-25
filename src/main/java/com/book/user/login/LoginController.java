@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.FlashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,7 +26,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login(LoginForm loginForm) {
-        return "/user/login";
+        return "user/login";
     }
 
     @PostMapping("/login")
@@ -37,6 +38,7 @@ public class LoginController {
         Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
         if (loginMember == null) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+
             return "user/login";
         }
 
