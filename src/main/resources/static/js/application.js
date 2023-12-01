@@ -45,55 +45,6 @@
     // 서버에서 받은 데이터를 바탕으로, book-summary들을 복사-붙여넣기합니다.
     const bookSummaries = doc.querySelector('.book-summaries');
 
-    // 코드가 total--load-json에서만 작동되도록 하는 코드로, book-summaries에 book-summaries--load-json 클래스가 있을때만 작동합니다.
-    // if(!bookSummaries || !bookSummaries.classList.contains('book-summaries--load-json')) {
-    //     return;
-    // }
-    //
-    // const bookSummarySource = doc.querySelector('.book-summary');
-    //
-    //
-    // const fieldMap = {
-    //     phrase: 'phrase',
-    //     description: 'description',
-    //     review: 'review',
-    // }
-    //
-    // const itemCount = response.length;
-    // for (let i = 1; i < itemCount; i++) {
-    //     let source = bookSummarySource.cloneNode(true);
-    //     bookSummaries.append(source);
-    // }
-
-    // const bookSummaryItems = doc.querySelectorAll('.book-summary');
-    //
-    // response.forEach((item, index) => {
-    //     const title = item.title;
-    //     const thumbnail = item.cover;
-    //     const color = colors[index];
-    //     const summaryContent = item.recommendCommentList;
-    //     const source = bookSummaryItems[index];
-    //     const about = source.querySelector('.summary-about');
-    //
-    //     const bookNameElement = about.querySelector('.summary-about__name');
-    //     const bookCoverElement = about.querySelector('.summary-about__cover');
-    //
-    //     bookNameElement.textContent = title;
-    //     // bookCoverElement.src = '/assets/' + thumbnail;
-    //     bookCoverElement.src = 'img/' + thumbnail;
-    //
-    //     summaryContent.forEach(section => {
-    //         const fieldType = section.type;
-    //         const fieldName = fieldMap[fieldType];
-    //         const content = section.content;
-    //         const contentElement = source.querySelector('.summary-content-section--' + fieldName + ' .summary-content-section__content');
-    //         contentElement.textContent = content;
-    //     })
-    //
-    //     source.classList.add('book-summary--' + color);
-    //     bookSummaries.append(source);
-    // })
-
     const fieldMap = {
         phrase: 'phrase',
         description: 'description',
@@ -184,22 +135,29 @@ class BookSummarySwiper {
         return this.bookSummaryElements[0].offsetWidth;
     }
 
+    // 좌우스크롤을 구현합니다.
     activateBookSummaryWhenScroll() {
-        // 좌우스크롤을 구현합니다.
+        console.log('left right slide action');
         const scrollLeft = this.scrollLeft;
         const bookSummaryElements = this.bookSummaryElements;
         const summaryWidth = this.bookSummaryWidth;
+        console.dir(bookSummaryElements, 'bookSummaryElements');
+        console.log(summaryWidth, 'summaryWidth');
+        console.log(scrollLeft, 'scrollLeft');
 
         if (scrollLeft % summaryWidth == 0) {
             const currentIndex = Math.floor(scrollLeft / summaryWidth);
+            console.log(currentIndex, 'currentIndex');
             const currentBookSummary = bookSummaryElements[currentIndex];
-
+            console.log(currentBookSummary.classList, 'currentBookSummary.classList');
             if (currentBookSummary.classList.contains('book-summary--active')) {
+                console.log('contain book-summary--active');
                 return;
             }
 
             //전체 삭제
             bookSummaryElements.forEach((item)=>{
+                console.log(item.classList, '삭제 item.classList');
                item.classList.remove('book-summary--active'); 
             });
 
