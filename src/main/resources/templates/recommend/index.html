@@ -78,21 +78,32 @@
     <nav class="global-nav">
         <div class="global-nav__container">
             <nav class="global-nav__account-nav">
-                <a href="#" class="button global-nav__account-nav-button">로그인</a>
+                <th:block th:if="${session.loginMember eq null}">
+                    <a href="/user/login" class="button global-nav__account-nav-button">로그인</a>
+                </th:block>
+                <th:block th:unless="${session.loginMember eq null}">
+                    <a href="/user/logout" class="button global-nav__account-nav-button">로그아웃</a>
+                </th:block>
             </nav>
             <ul class="global-nav-list">
                 <li class="global-nav-item">
-                    <a href="#" class="global-nav-link">
+                    <a href="/user/login" class="global-nav-link">
                         <img class="global-nav-link__icon" src="img/icon_user.svg"/>
-                        <span class="global-nav-link__name">마이페이지</span>
+                        <span class="global-nav-link__name">로그인</span>
                     </a>
                 </li>
-                <li class="global-nav-item">
-                    <a href="#" class="global-nav-link">
-                        <img class="global-nav-link__icon" src="img/icon_book.svg"/>
-                        <span class="global-nav-link__name">책추천</span>
-                    </a>
-                </li>
+<!--                <li class="global-nav-item">-->
+<!--                    <a href="#" class="global-nav-link">-->
+<!--                        <img class="global-nav-link__icon" src="img/icon_user.svg"/>-->
+<!--                        <span class="global-nav-link__name">마이페이지</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="global-nav-item">-->
+<!--                    <a href="#" class="global-nav-link">-->
+<!--                        <img class="global-nav-link__icon" src="img/icon_book.svg"/>-->
+<!--                        <span class="global-nav-link__name">책추천</span>-->
+<!--                    </a>-->
+<!--                </li>-->
             </ul>
         </div>
     </nav>

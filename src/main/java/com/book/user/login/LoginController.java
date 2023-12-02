@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Controller
@@ -24,13 +27,15 @@ public class LoginController {
     public String login(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                         LoginForm loginForm) {
         if (loginMember != null ) {
-            return "/";
+            return "redirect:/";
         }
         return "user/login";
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request) {
+    public String login(@Valid @ModelAttribute LoginForm form,
+                        BindingResult bindingResult,
+                        HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             return "user/login";
@@ -41,33 +46,18 @@ public class LoginController {
 
             return "user/login";
         }
-
-        //createSession(loginMember, response);
         HttpSession session = request.getSession();
+        /*
+        Map<String, Object> sessionStore = new ConcurrentHashMap<>();
+        String sesseionId = UUID.randomUUID().toString();
+        sessionStore.put(sesseionId, loginMember);
+        Cookie mySessionCookie = new Cookie(SessionConst.LOGIN_MEMBER, sesseionId);
+         */
+
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
         session.setMaxInactiveInterval(1800);
         return "redirect:/";
     }
-
-    //페이지 진입시 로그인 여부 확인
-//	@GetMapping("/")
-//	public String login(@SessionAttribute(name=SessionConst.LOGIN_MEMBER, required = false) Member member, Model model){
-
-//		HttpSession session = request.getSession(false);
-//		if(session == null){
-//			return "home";
-//		}
-//		Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
-//      @SessionAttribute(name=SessionConst.LOGIN_MEMBER, required = false)Member member
-//      가 위 구문 대체가능함. 세션을 생성하지 않음
-
-//		if(loginMember == null){
-//			return "home";
-//		}
-//		model.addAttribute("member",loginMember);
-//		return "loginHome";
-//	}
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request) {

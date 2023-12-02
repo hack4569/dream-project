@@ -43,6 +43,16 @@ public class RecommendController {
     public String index(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
             Model model, Category category, HttpSession session) {
+
+        //@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember
+        /*
+            HttpSession session1 = request.getSession(false);
+            if (session == null) {
+                return "home";
+            }
+            Member loginMember = (Member)session1.getAttribute(SessionConst.LOGIN_MEMBER);
+         */
+
         //로그인 유무에 따른 로직 구현
         String loginId = loginMember == null ? "" : loginMember.getLoginId();
 

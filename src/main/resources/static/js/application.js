@@ -96,7 +96,6 @@ let historyItemIds = [];
                 const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
                 if (itemId && !historyItemIds.includes(itemId)) {
                     $.post("/api/recommend/history/" + itemId, (response) => {
-                        console.log(response, 'save history');
                         historyItemIds.push(itemId);
                     });
                 }
@@ -145,7 +144,7 @@ class BookSummarySwiper {
         console.log(summaryWidth, 'summaryWidth');
         console.log(scrollLeft, 'scrollLeft');
 
-        if (scrollLeft % summaryWidth == 0) {
+        if ((scrollLeft.toFixed(0) % summaryWidth.toFixed(0)) == 0) {
             const currentIndex = Math.floor(scrollLeft / summaryWidth);
             console.log(currentIndex, 'currentIndex');
             const currentBookSummary = bookSummaryElements[currentIndex];
