@@ -38,5 +38,10 @@ public class AladinBook {
     //프리미엄
     private String fullDescription;
     private String fullDescription2;
+    private List<Review> reviewList;
+    private String mdRecommend;
+    private String Toc;
     private SubInfo subInfo;
+
+
 }

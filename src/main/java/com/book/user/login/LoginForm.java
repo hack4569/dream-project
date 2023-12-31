@@ -11,4 +11,6 @@ public class LoginForm {
 
     @NotEmpty
     private String password;
+
+    private boolean autoLogin;
 }

@@ -13,8 +13,12 @@ public class RecommendCommentDto {
     private long commentId;
     private String type;
     private String content;//fulldescription, phrase
-
+    private String originContent;
     public String getContent() {
         return StringEscapeUtils.unescapeHtml(content);
+    }
+
+    public String getOriginContent() {
+        return StringEscapeUtils.unescapeHtml(originContent);
     }
 }

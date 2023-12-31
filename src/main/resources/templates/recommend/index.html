@@ -2,9 +2,9 @@
 <html th:replace="~{layout/default :: layout( ~{::main})}">
 
 <body class="device">
-<main class="app">
+<main th:class="${loginMember == null} ? 'app app--dimmed' : 'app'">
     <input type="hidden" name="hostName" th:value="${hostName}">
-    <header class="global-header">
+    <header class="global-header" id="mainHeader">
         <!--
         <a href="#" class="icon-button icon-button--on global-header__favorite-button">
             <img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on"
@@ -26,7 +26,7 @@
             <span class="icon-hamburger icon-button__icon"></span>
         </a>
     </header>
-    <main class="app-main">
+    <main class="app-main" id="mainApp">
         <ul class="book-summaries"> <!--book-summaries--load-json-->
             <li th:each="item : ${recommendList}" class="book-summary"><!--book-summary--violet book-summary--active-->
                 <div class="summary-content">
@@ -48,6 +48,7 @@
                             있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
                             예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
                         </p>
+<!--                        <button id="detailBtn" class="detailBtn">더보기</button>-->
                         <input type="hidden" name="itemId" th:value="${item.itemId}">
                         <input type="hidden" name="categoryName" th:value="${item.categoryName}">
                     </section>
@@ -107,6 +108,32 @@
             </ul>
         </div>
     </nav>
+
+    <dialog th:if="${loginMember == null}" class="guide-dialog" id="guide-login" open>
+        <a href="javascript:void(0)" class="close-button guide-dialog__close-button"></a>
+<!--        <img class="guide-dialog__icon" src="img/icon_hi.svg" />-->
+<!--        <h3 class="guide-dialog__title">안녕하세요!</h3>-->
+        <p class="guide-dialog__content">로그인 하시면 내일부터 봤던 책정보는 보이지 않습니다.</p>
+    </dialog>
+
+    <main class="app" id="detailApp" style="display: none">
+        <section class="book-detail book-detail--violet">
+            <a href="#" class="close-button book-detail__close-button"></a>
+            <main class="book-detail__container">
+                <img class="book-detail__thumbnail" src="img/book_grow-old-slowly.png" />
+                <h1 class="book-detail__title">당신도 느리게 나이 들 수 있습니다.</h1>
+                <p class="book-detail__author">김수정 지음</p>
+                <p class="book-detail__content">
+                    저는 죽기살기로 3년만이라는 책을 읽고 저의 삶을 다시 되돌아 보는 시간을 가졌습니다.
+                    저는 열심히 살지 않았고, 불평, 불만만 많은 사람이라는 것을 깨닫게 되었습니다.
+                    이 책 속에 저자는 마흔이 넘은 나이에 대기업을 그만두고 한번도 해보지 않은 벤츠판매를 시작하는데 누구보다 열정적으로 일을 합니다.
+                    고객과 대화를 하며 고객의 모든 말들을 기억하기 위해 메모하고 엑셀에 저장해두고 다음 고객을 만났을때 지난번에 했던 대화들을 기억해둡니다.
+                    이러한 저자의 노력들을 생각하면서 제 자신을 많이 반성하게 되는 계기를 가졌습니다.
+                </p>
+                <a href="#" class="button button--black book-detail__info-button">책정보로 이동 ></a>
+            </main>
+        </section>
+    </main>
 </main>
 </body>
 </html>

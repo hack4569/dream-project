@@ -93,12 +93,8 @@ let historyItemIds = [];
 
                 activeSlide.classList.add('summary-content-section--active');
 
-                const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
-                if (itemId && !historyItemIds.includes(itemId)) {
-                    $.post("/api/recommend/history/" + itemId, (response) => {
-                        historyItemIds.push(itemId);
-                    });
-                }
+                saveHistory();
+
                 setTimeout(() => {
                     activeSlide.classList.remove('summary-content-section--active');
                 }, 1500)
@@ -175,10 +171,13 @@ class BookSummarySwiper {
                 activeSlide.classList.remove('summary-content-section--active');
             }, 1500)
 
+            //책정보 저장
+            saveHistory();
         }
     }
 }
 
+//책추천 스와이퍼 함수 호출
 ((doc) => {
     const bookSummaries = doc.querySelector('.book-summaries');
     bookSummaries.addEventListener('scroll', (e) => {
@@ -187,4 +186,45 @@ class BookSummarySwiper {
     });
 
 })(document);
+
+//공통함수
+((doc) => {
+    //모달 닫기
+    const modalClose = document.querySelector(".guide-dialog__close-button");
+    modalClose.addEventListener("click", (e)=>{
+        //모달 창 닫기
+        e.currentTarget.parentElement.style.display = "none";
+
+        //배경색 복원
+        document.querySelector('.app').classList.remove("app--dimmed");
+    });
+
+})(document);
+
+//공통함수 전역으로 사용
+function saveHistory() {
+    const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
+    if (itemId && !historyItemIds.includes(itemId)) {
+        $.post("/api/recommend/history/" + itemId, (response) => {
+            historyItemIds.push(itemId);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 여기에 코드를 넣어서 DOM 로드 이후에 실행되도록 함
+    const detailBtn = document.querySelector(".detailBtn");
+    const detailApp = document.getElementById("detailApp");
+    const mainApp = document.getElementById("mainApp");
+    const mainHeader = document.getElementById("mainHeader");
+
+    detailBtn.addEventListener("click", (e) => {
+        console.log("sdf");
+        detailApp.style.display = "block";
+        mainApp.style.display = "none";
+        mainHeader.style.display = "none";
+    });
+});
+
+
 

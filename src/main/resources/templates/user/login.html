@@ -21,9 +21,15 @@
 <!--                    <input type="password" name="opinion" id="opinion" value="" placeholder="내용을 입력해주세요" class="text-field__input" />-->
 <!--&lt;!&ndash;                    <p class="text-field__error">비밀번호가 일치하지 않습니다.</p>&ndash;&gt;-->
 <!--                </div>-->
+                <div style="margin-top: 14px">
+                    <label for="autoLogin">
+                        <input type="checkbox" name="autoLogin" id="autoLogin" value="true">
+                        자동로그인
+                    </label>
+                </div>
                 <div class="form-action sign-in-form__action">
                     <button type="submit" class="button button--form button--black">로그인</button>
-<!--                    <a href="#" class="button button&#45;&#45;form button&#45;&#45;gray">취소</a>-->
+                    <a href="/user/join" class="button button--form">회원가입</a>
                 </div>
             </form>
         </main>

@@ -181,27 +181,8 @@ public class RecommendServiceImpl implements RecommendService {
             AladinMaster aladinMaster = response.getBody();
             String fullDescription = aladinMaster.getItem().get(0).getFullDescription();
             recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, maxLength);
-//			String filteredFullDescription = BookRecommendUtil.filterStr(fullDescription);
-//			if(!StringUtils.hasText(filteredFullDescription)){
-//				continue;
-//			}
-//			String[] descriptionArr = filteredFullDescription.split("\\.");
 
             AladinBook book = aladinMaster.getItem().get(0);
-
-
-            //글자가 많을 경우 2개 또는 ... 처리
-//			String content = "";
-//			int maxLength = 2;
-//			int descriptionArrLen = descriptionArr.length < maxLength ? descriptionArr.length : maxLength;
-//			for(int j=0; j<descriptionArrLen; j++){
-//				content += descriptionArr[j];
-//			}
-//			RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
-//					.type("description")
-//					.content(content).build();
-//
-//			recommendCommentList.add(recommendCommentDescription);
 
             Phrase phrase;
             int phraseLen = aladinMaster.getItem().get(0).getSubInfo().getPhraseList().size();
@@ -221,7 +202,9 @@ public class RecommendServiceImpl implements RecommendService {
                 }
                 RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
                         .type("phrase")
-                        .content(phraseContent).build();
+                        .content(phraseContent)
+                        .originContent(filteredPhrase)
+                        .build();
 
                 recommendCommentList.add(recommendCommentPhrase);
 
@@ -271,7 +254,9 @@ public class RecommendServiceImpl implements RecommendService {
 
                 RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
                         .type("description")
-                        .content(content).build();
+                        .content(content)
+                        .originContent(fullDescription)
+                        .build();
 
                 recommendCommentList.add(recommendCommentDescription);
             }

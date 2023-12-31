@@ -23,9 +23,9 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath loginId = createString("loginId");
 
-    public final StringPath name = createString("name");
-
     public final StringPath password = createString("password");
+
+    public final StringPath sessionId = createString("sessionId");
 
     public QMember(String variable) {
         super(Member.class, forVariable(variable));

@@ -20,7 +20,6 @@ public class Member {
     @NotEmpty
     private String loginId;
     @NotEmpty
-    private String name;
-    @NotEmpty
     private String password;
+    private String sessionId;
 }

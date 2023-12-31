@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member,Long>, QuerydslPredicateExecutor<Member> {
     Optional<Member> findMemberByLoginId(String loginId);
+    Optional<Member> findMemberBySessionId(String sessionId);
 //	private static Map<Long, Member> store = new HashMap<>();
 //	private static long sequence = 0L;
 //

@@ -64,7 +64,7 @@ public class RecommendController {
             model.addAttribute("categoryList", list);
             model.addAttribute("subCid", category.getSubCid());
             model.addAttribute("hostName", hostName);
-
+            model.addAttribute("loginMember", loginMember);
             if (loginMember == null) {
                 model.addAttribute("loginHistoryMsg", "로그인하시면 봤던 책정보는 보이지 않습니다.");
             }
