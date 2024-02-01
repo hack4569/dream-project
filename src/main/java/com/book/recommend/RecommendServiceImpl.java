@@ -65,14 +65,14 @@ public class RecommendServiceImpl implements RecommendService {
     private AladinConstants aladinConstants;
 
     @Override
-    public List<RecommendDto> getRecommendList(String loginId, Category category) {
+    public List<RecommendDto> getRecommendList(long memberId, Category category) {
 
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
 
         //category, loginId 세팅
         BookFilterDto bookFilterDto = BookFilterDto.builder()
-                .loginId(loginId)
+                .memberId(memberId)
                 .category(category)
                 .build();
 
@@ -134,7 +134,7 @@ public class RecommendServiceImpl implements RecommendService {
             aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> Integer.parseInt(today) > Integer.parseInt(this.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
 
             //필터3 : history에 없는 데이터
-            List<History> histories = historyRepository.findHistoryByLoginId(bookFilterDto.getLoginId());
+            List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
             for (History history : histories) {
                 aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB ->
                     {

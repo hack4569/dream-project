@@ -13,6 +13,6 @@ import java.util.Optional;
 public class BookFilterDto {
     private int startIdx = 1;
     private int maxResults = 100;
-    private String loginId;
+    private long memberId;
     private Category category;
 }

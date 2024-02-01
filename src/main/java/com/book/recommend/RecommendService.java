@@ -19,7 +19,7 @@ public interface RecommendService {
 	//public int saveRecommend(RecommendVO recommendVO);
 	public Recommend saveRecommend(Recommend recommend);
 	//public History saveHistory(History history);
-	public List<RecommendDto> getRecommendList(String user_id, Category category);
+	public List<RecommendDto> getRecommendList(long memberId, Category category);
 	public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam);
 	public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto);
 }

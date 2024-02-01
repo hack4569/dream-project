@@ -190,14 +190,14 @@ class BookSummarySwiper {
 //공통함수
 ((doc) => {
     //모달 닫기
-    const modalClose = document.querySelector(".guide-dialog__close-button");
-    modalClose.addEventListener("click", (e)=>{
-        //모달 창 닫기
-        e.currentTarget.parentElement.style.display = "none";
-
-        //배경색 복원
-        document.querySelector('.app').classList.remove("app--dimmed");
-    });
+    // const modalClose = document.querySelector(".guide-dialog__close-button");
+    // modalClose.addEventListener("click", (e)=>{
+    //     //모달 창 닫기
+    //     e.currentTarget.parentElement.style.display = "none";
+    //
+    //     //배경색 복원
+    //     document.querySelector('.app').classList.remove("app--dimmed");
+    // });
 
 })(document);
 
@@ -211,20 +211,20 @@ function saveHistory() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 여기에 코드를 넣어서 DOM 로드 이후에 실행되도록 함
-    const detailBtn = document.querySelector(".detailBtn");
-    const detailApp = document.getElementById("detailApp");
-    const mainApp = document.getElementById("mainApp");
-    const mainHeader = document.getElementById("mainHeader");
-
-    detailBtn.addEventListener("click", (e) => {
-        console.log("sdf");
-        detailApp.style.display = "block";
-        mainApp.style.display = "none";
-        mainHeader.style.display = "none";
-    });
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     // 여기에 코드를 넣어서 DOM 로드 이후에 실행되도록 함
+//     const detailBtn = document.querySelector(".detailBtn");
+//     const detailApp = document.getElementById("detailApp");
+//     const mainApp = document.getElementById("mainApp");
+//     const mainHeader = document.getElementById("mainHeader");
+//
+//     detailBtn.addEventListener("click", (e) => {
+//         console.log("sdf");
+//         detailApp.style.display = "block";
+//         mainApp.style.display = "none";
+//         mainHeader.style.display = "none";
+//     });
+// });
 
 
 

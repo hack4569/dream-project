@@ -54,10 +54,10 @@ public class RecommendController {
          */
 
         //로그인 유무에 따른 로직 구현
-        String loginId = loginMember == null ? "" : loginMember.getLoginId();
+        long memberId = loginMember == null ? 0 : loginMember.getId();
 
         try {
-            List<RecommendDto> recommendList = recommendService.getRecommendList(loginId, category);
+            List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, category);
             model.addAttribute("recommendList", recommendList);
 
             List<Category> list = categoryMapper.getDistinctCategory();
@@ -83,9 +83,9 @@ public class RecommendController {
 
 
         //로그인 유무에 따른 로직 구현
-        String loginId = loginMember == null ? "" : loginMember.getLoginId();
+        long memberId = loginMember == null ? 0 : loginMember.getId();
 
-        List<RecommendDto> list = recommendService.getRecommendList(loginId, category);
+        List<RecommendDto> list = recommendService.getRecommendList(memberId, category);
 
         return list;
     }

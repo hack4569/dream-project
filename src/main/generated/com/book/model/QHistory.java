@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QHistory extends EntityPathBase<History> {
 
     private static final long serialVersionUID = 2093706743L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QHistory history = new QHistory("history");
 
@@ -37,7 +40,7 @@ public class QHistory extends EntityPathBase<History> {
 
     public final NumberPath<Long> itemId = createNumber("itemId", Long.class);
 
-    public final StringPath loginId = createString("loginId");
+    public final QMember member;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
@@ -52,15 +55,24 @@ public class QHistory extends EntityPathBase<History> {
     public final StringPath updatedDateTime = _super.updatedDateTime;
 
     public QHistory(String variable) {
-        super(History.class, forVariable(variable));
+        this(History.class, forVariable(variable), INITS);
     }
 
     public QHistory(Path<? extends History> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QHistory(PathMetadata metadata) {
-        super(History.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QHistory(PathMetadata metadata, PathInits inits) {
+        this(History.class, metadata, inits);
+    }
+
+    public QHistory(Class<? extends History> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
     }
 
 }

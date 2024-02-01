@@ -1,9 +1,12 @@
 package com.book.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="MEMBER")
@@ -15,6 +18,7 @@ import javax.validation.constraints.NotEmpty;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="member_id")
     private Long id;
 
     @NotEmpty
@@ -22,4 +26,8 @@ public class Member {
     @NotEmpty
     private String password;
     private String sessionId;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member")
+    private List<History> histories = new ArrayList<>();
 }
