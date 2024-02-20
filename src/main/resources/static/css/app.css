@@ -11,6 +11,9 @@
 .app * {
     box-sizing: border-box;
 }
+.off {
+    display: none;
+}
 .app--dimmed::after {
     content: "";
     position: absolute;
@@ -490,7 +493,7 @@
 }
 .summary-about__name {
     margin-left: 18px;
-    width: 90%;
+    width: 69%;
     word-break: keep-all;
     line-height: 1.5;
     color: #fff;

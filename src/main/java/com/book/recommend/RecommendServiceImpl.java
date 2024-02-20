@@ -3,6 +3,7 @@ package com.book.recommend;
 import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
+import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
 import com.book.aladin.exception.AladinException;
 import com.book.aladin.support.AladinApiTemplate;
@@ -15,6 +16,7 @@ import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Recommend;
 import com.book.model.mapper.CategoryMapper;
+import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.exception.RecommendExcption;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -173,89 +176,103 @@ public class RecommendServiceImpl implements RecommendService {
             int maxLength = 2;
             ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
 
-            URI url = UriComponentsBuilder.fromHttpUrl(aladinConstants.url(AladinConstants.ITEM_LOOKUP)).queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
+            URI url = UriComponentsBuilder.fromHttpUrl(aladinConstants.url(AladinConstants.ITEM_LOOKUP))
+                    .queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
             RequestEntity requestEntity1 = new RequestEntity(HttpMethod.GET, url);
 
             ResponseEntity<AladinMaster> response = rt.exchange(requestEntity1, new ParameterizedTypeReference<AladinMaster>() {
             });
-            AladinMaster aladinMaster = response.getBody();
-            String fullDescription = aladinMaster.getItem().get(0).getFullDescription();
-            recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, maxLength);
-
-            AladinBook book = aladinMaster.getItem().get(0);
-
-            Phrase phrase;
-            int phraseLen = aladinMaster.getItem().get(0).getSubInfo().getPhraseList().size();
-            //j==0일 경우 이미지 확률이 높음
-            for (int j = 1; j < phraseLen; j++) {
-
-                phrase = aladinMaster.getItem().get(0).getSubInfo().getPhraseList().get(j);
-                String filteredPhrase = BookRecommendUtil.filterStr(phrase.getPhrase());
-                if (!StringUtils.hasText(filteredPhrase)) {
-                    continue;
-                }
-                String[] phraseArr = filteredPhrase.split("\\.");
-                String phraseContent = "";
-                int phraseArrLen = phraseArr.length < maxLength ? phraseArr.length : maxLength;
-                for (int k = 0; k < phraseArrLen; k++) {
-                    phraseContent += phraseArr[k];
-                }
-                RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
-                        .type("phrase")
-                        .content(phraseContent)
-                        .originContent(filteredPhrase)
-                        .build();
-
-                recommendCommentList.add(recommendCommentPhrase);
-
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new AladinException("api 통신중 에러가 발생하였습니다.");
             }
+            AladinMaster aladinMaster = response.getBody();
 
-            if (recommendCommentList.size() == 0) continue;
+            if (!ObjectUtils.isEmpty(aladinMaster.getItem())) {
+                AladinBook book = aladinMaster.getItem().get(0);
 
-            RecommendDto recommendDto = RecommendDto.builder()
-                    .itemId(book.getItemId())
-                    .title(book.getTitle())
-                    .link(book.getLink())
-                    .cover(book.getCover())
-                    .recommendCommentList(recommendCommentList)
-                    .author(book.getAuthor())
-                    .categoryName(book.getCategoryName())
-                    .build();
-            slideRecommendList.add(recommendDto);
+                //책소개
+                String fullDescription = StringUtils.hasText(book.getFullDescription()) ? book.getFullDescription() : book.getFullDescription2();
+                if (StringUtils.hasText(fullDescription)) {
+                    recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, "description");
+                }
+
+                //책속에서 : 책 문장
+                Phrase phrase;
+                if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {
+                    int phraseLen = book.getSubInfo().getPhraseList().size();
+                    //j==0일 경우 이미지 확률이 높음
+                    for (int j = 1; j < phraseLen; j++) {
+
+                        phrase = book.getSubInfo().getPhraseList().get(j);
+                        String filteredPhrase = BookRecommendUtil.filterStr(phrase.getPhrase());
+                        if (!StringUtils.hasText(filteredPhrase)) {
+                            continue;
+                        }
+                        String[] phraseArr = filteredPhrase.split("\\.");
+                        String phraseContent = "";
+                        int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide ,ㅎㅎ하ㅕㅍv;
+                        for (int k = 0; k < phraseArrLen; k++) {
+                            phraseContent += phraseArr[k];
+                        }
+                        RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
+                                .type("phrase")
+                                .content(phraseContent)
+                                .originContent(filteredPhrase)
+                                .build();
+
+                        recommendCommentList.add(recommendCommentPhrase);
+
+                    }
+
+                    if (recommendCommentList.size() == 0) continue;
+                }
+                List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
+                if (!ObjectUtils.isEmpty(mdRecommendList)) {
+                    for (MdRecommend mdRecommend : mdRecommendList) {
+                        recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
+                    }
+                }
+
+                RecommendDto recommendDto = RecommendDto.builder()
+                        .itemId(book.getItemId())
+                        .title(book.getTitle())
+                        .link(book.getLink())
+                        .cover(book.getCover())
+                        .recommendCommentList(recommendCommentList)
+                        .author(book.getAuthor())
+                        .categoryName(book.getCategoryName())
+                        .build();
+                slideRecommendList.add(recommendDto);
+            }
         }
     }
 
     //설명 첫번재 문단은 삭제
-    private List<RecommendCommentDto> filterDescription(String fullDescription, List<RecommendCommentDto> recommendCommentList, int maxLength) {
-        String br = "";
-        if (fullDescription.contains("<BR>")) {
-            br = "<BR>";
-        }
-        if (fullDescription.contains("<br>") || fullDescription.contains("<br />")) {
-            br = "<br>";
-        }
-        if (StringUtils.hasText(br)) {
-            String[] brArr = fullDescription.split(br);
-            int brArrLen = brArr.length < maxLength ? brArr.length : maxLength;
-            IntHolder intHolder = new IntHolder(0);
-            for (int i = 1; i < brArrLen + 1; i++) {
-                String descriptionParagraph = descriptionParagraphFunc(brArr, intHolder);
-                if (!StringUtils.hasText(descriptionParagraph)) {
-                    continue;
-                }
-                String filteredDescriptionParagraph = BookRecommendUtil.filterStr(descriptionParagraph);
-                String[] descriptionArr = filteredDescriptionParagraph.split("\\.");
-                //글자가 많을 경우 2개 또는 ... 처리
-                String content = "";
-                int descriptionArrLen = descriptionArr.length < maxLength ? descriptionArr.length : maxLength;
-                for (int j = 0; j < descriptionArrLen; j++) {
-                    content += descriptionArr[j];
-                }
+    private List<RecommendCommentDto> filterDescription(String description, List<RecommendCommentDto> recommendCommentList, String type) {
 
+        String originParagraph = description.replaceAll("(?i)<br>", "");
+        String descriptionParagraph = descriptionParagraphFunc(originParagraph);
+
+        String filteredDescriptionParagraph = BookRecommendUtil.filterStr(descriptionParagraph);
+        String[] descriptionArr = filteredDescriptionParagraph.split("\\.");
+        //글자가 많을 경우 2개 또는 ... 처리
+        int slide = 0;
+        int introduceSlide = descriptionArr.length >= 5 && filteredDescriptionParagraph.length() > RcmdConst.strMaxCount * 2 ? RcmdConst.introduceSlide : 1;
+
+        for (int i = 0; i < introduceSlide; i++) {
+            String content = "";
+            for (int j = 0; content.length() < RcmdConst.strMaxCount; j++) {
+                if (descriptionArr.length < slide ) {
+                    break;
+                }
+                content += descriptionArr[slide];
+                slide++;
+            }
+            if (StringUtils.hasText(content)) {
                 RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
-                        .type("description")
+                        .type(type)
                         .content(content)
-                        .originContent(fullDescription)
+                        .originContent(description)
                         .build();
 
                 recommendCommentList.add(recommendCommentDescription);
@@ -265,16 +282,36 @@ public class RecommendServiceImpl implements RecommendService {
         return recommendCommentList;
     }
 
-    private String descriptionParagraphFunc(String[] brArr, IntHolder intHolder) {
-        intHolder.value += 1;
-        if (brArr.length <= intHolder.value) {
-            return "";
-        } else {
-            if (brArr[intHolder.value].length() < 5) {
-                descriptionParagraphFunc(brArr, intHolder);
+    private String descriptionParagraphFunc(String originParagraph) {
+        if ( originParagraph.length() > RcmdConst.strMaxCount ) return originParagraph;
+        if ( originParagraph.length() < RcmdConst.strMinCount ) return "";
+        return originParagraph;
+//        if ( paragraph.length() > RcmdConst.strMaxCount) {
+//            if (paragraph.length() < RcmdConst.strMinCount){
+//                return "";
+//            } else {
+//                return paragraph;
+//            }
+//        } else {
+//            paragraph += brArr[intHolder.value];
+//            if (brArr[intHolder.value].length() < RcmdConst.strMinCount || this.periodCount(brArr[intHolder.value]) < 2) {
+//                descriptionParagraphFunc(brArr, intHolder, paragraph);
+//            }
+//            return paragraph;
+//        }
+    }
+
+    private int periodCount(String paragraph) {
+        int count = 0;
+        for(char str : paragraph.toCharArray()) {
+            if (count >= 2) {
+                break;
             }
-            return brArr[intHolder.value];
+            if (str == '.') {
+                count ++;
+            }
         }
+        return count;
     }
 
     private String getCustomDate(String yyyymmdd) {

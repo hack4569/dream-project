@@ -17,3 +17,4 @@ public class AladinConstants {
         return aladinHost + path;
     }
 }
+

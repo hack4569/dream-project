@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubInfo {
-
+    //책속에서 - 책 속 문장
     private List<Phrase> phraseList;
+    //편집장 책추천
+    private List<MdRecommend> mdRecommendList;
 }

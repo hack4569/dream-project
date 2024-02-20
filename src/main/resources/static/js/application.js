@@ -190,14 +190,14 @@ class BookSummarySwiper {
 //공통함수
 ((doc) => {
     //모달 닫기
-    // const modalClose = document.querySelector(".guide-dialog__close-button");
-    // modalClose.addEventListener("click", (e)=>{
-    //     //모달 창 닫기
-    //     e.currentTarget.parentElement.style.display = "none";
-    //
-    //     //배경색 복원
-    //     document.querySelector('.app').classList.remove("app--dimmed");
-    // });
+    const modalClose = document.querySelector(".guide-dialog__close-button");
+    modalClose.addEventListener("click", (e)=>{
+        //모달 창 닫기
+        e.currentTarget.parentElement.style.display = "none";
+
+        //배경색 복원
+        document.querySelector('.app').classList.remove("app--dimmed");
+    });
 
 })(document);
 

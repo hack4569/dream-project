@@ -1,5 +1,6 @@
 package com.book.user.login;
 
+import com.book.common.utils.ScriptUtils;
 import com.book.model.Member;
 import com.book.session.SessionConst;
 import com.book.user.login.member.MemberAddForm;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +44,7 @@ public class LoginController {
     public String login(@Valid @ModelAttribute LoginForm form,
                         BindingResult bindingResult,
                         HttpServletRequest request,
-                        HttpServletResponse response) {
+                        HttpServletResponse response) throws Exception{
 
         if (bindingResult.hasErrors()) {
             return "user/login";
@@ -50,17 +52,10 @@ public class LoginController {
         Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
         if (loginMember == null) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
-
+            ScriptUtils.alert(response,"아이디 또는 비밀번호가 맞지 않습니다.");
             return "user/login";
         }
         HttpSession session = request.getSession();
-        /*
-        Map<String, Object> sessionStore = new ConcurrentHashMap<>();
-        String sesseionId = UUID.randomUUID().toString();
-        sessionStore.put(sesseionId, loginMember);
-        Cookie mySessionCookie = new Cookie(SessionConst.LOGIN_MEMBER, sesseionId);
-         */
-
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
         session.setMaxInactiveInterval(1800);
         if (form.isAutoLogin()) {
@@ -86,14 +81,16 @@ public class LoginController {
     }
 
     @PostMapping("/join")
-    public String joinAction(@Validated @ModelAttribute("form") MemberAddForm form, BindingResult bindingResult) {
+    public String joinAction(@Validated @ModelAttribute("form") MemberAddForm form, BindingResult bindingResult, HttpServletResponse response) {
         try {
             if (!bindingResult.hasErrors()) {
                 Member member = memberRepository.findMemberByLoginId(form.getLoginId()).orElse(null);
                 if ( member != null) {
+                    //ScriptUtils.alert(response, form.getLoginId() + " 아이디는 이미 존재합니다.");
                     bindingResult.reject("joinedMember");
                 }
                 if (!form.getPassword().equals(form.getPasswordCheck())) {
+                    //ScriptUtils.alert(response, "비밀번호가 일치하지 않습니다.");
                     bindingResult.reject("passwordNotEquals");
                 }
             }
@@ -105,12 +102,13 @@ public class LoginController {
             Member member = Member.builder().loginId(form.getLoginId()).password(form.getPassword()).build();
 
             loginService.saveMember(member);
+            ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/user/login");
         } catch (Exception e) {
             log.error("joinAction error = {}", e.getMessage(), e);
             return "user/join";
         }
 
-        return "redirect:login";
+        return "redirect:/user/login";
     }
 
     @GetMapping("/logout")
