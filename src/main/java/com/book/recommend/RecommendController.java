@@ -1,24 +1,17 @@
 package com.book.recommend;
 
-import com.book.book.CategoryRepository;
-import com.book.common.ApiParam;
 import com.book.exception.UserException;
 import com.book.history.service.HistoryService;
 import com.book.model.Category;
 import com.book.model.Member;
-import com.book.model.mapper.CategoryMapper;
-import com.book.recommend.exception.RecommendExcption;
 import com.book.session.SessionConst;
-import com.book.user.login.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -29,7 +22,7 @@ import java.util.List;
 public class RecommendController {
     private final RecommendService recommendService;
     private final HistoryService historyService;
-    private final CategoryMapper categoryMapper;
+    //private final CategoryMapper categoryMapper;
 
     @Value("${bookRecommend.host}")
     private String hostName;
@@ -54,8 +47,8 @@ public class RecommendController {
         List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, category);
         model.addAttribute("recommendList", recommendList);
 
-        List<Category> list = categoryMapper.getDistinctCategory();
-        model.addAttribute("categoryList", list);
+//        List<Category> list = categoryMapper.getDistinctCategory();
+//        model.addAttribute("categoryList", list);
         model.addAttribute("subCid", category.getSubCid());
         model.addAttribute("hostName", hostName);
         model.addAttribute("loginMember", loginMember);
