@@ -19,6 +19,7 @@ import com.book.model.mapper.CategoryMapper;
 import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.exception.RecommendExcption;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -49,23 +50,20 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service("recommendService")
+@RequiredArgsConstructor
 public class RecommendServiceImpl implements RecommendService {
     @Value("${aladin.host}")
     String aladinHost;
     @Value("${aladin.accept-category}")
     String aladinAcceptCategory;
 
-    @Autowired
-    private RecommendRepository recommendRepository;
+    private final RecommendRepository recommendRepository;
 
-    @Autowired
-    private HistoryRepository historyRepository;
+    private final HistoryRepository historyRepository;
 
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private final CategoryMapper categoryMapper;
 
-    @Autowired
-    private AladinConstants aladinConstants;
+    private final AladinConstants aladinConstants;
 
     @Override
     public List<RecommendDto> getRecommendList(long memberId, Category category) {
@@ -286,33 +284,9 @@ public class RecommendServiceImpl implements RecommendService {
         if ( originParagraph.length() > RcmdConst.strMaxCount ) return originParagraph;
         if ( originParagraph.length() < RcmdConst.strMinCount ) return "";
         return originParagraph;
-//        if ( paragraph.length() > RcmdConst.strMaxCount) {
-//            if (paragraph.length() < RcmdConst.strMinCount){
-//                return "";
-//            } else {
-//                return paragraph;
-//            }
-//        } else {
-//            paragraph += brArr[intHolder.value];
-//            if (brArr[intHolder.value].length() < RcmdConst.strMinCount || this.periodCount(brArr[intHolder.value]) < 2) {
-//                descriptionParagraphFunc(brArr, intHolder, paragraph);
-//            }
-//            return paragraph;
-//        }
     }
 
-    private int periodCount(String paragraph) {
-        int count = 0;
-        for(char str : paragraph.toCharArray()) {
-            if (count >= 2) {
-                break;
-            }
-            if (str == '.') {
-                count ++;
-            }
-        }
-        return count;
-    }
+
 
     private String getCustomDate(String yyyymmdd) {
         int year = Integer.parseInt(yyyymmdd.substring(0, 4));
@@ -323,112 +297,5 @@ public class RecommendServiceImpl implements RecommendService {
         cal.set(year, month, date);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
         return dateFormatter.format(cal.getTime());
-    }
-
-    @Override
-    public List<RecommendVO> recommendList2(String userId) {
-        String uri = aladinHost + "/ttb/api/ItemList.aspx";
-        RestTemplate rt = new RestTemplate();
-        ApiParam apiParam = ApiParam.builder().querytype("BestSeller").build();
-        URI url = UriComponentsBuilder.fromHttpUrl(uri)
-                .queryParams(apiParam.getApiParamMap())
-                .encode().build().toUri();
-        RequestEntity requestEntity = new RequestEntity(HttpMethod.GET, url);
-        ResponseEntity<AladinMaster> response = rt.exchange(requestEntity, new ParameterizedTypeReference<AladinMaster>() {
-        });
-
-        AladinMaster aladinMaster = response.getBody();
-
-        List<String> aladinAcceptCategoryList = Arrays.asList(aladinAcceptCategory.split(","));
-
-        List<AladinBook> aladinBestSellerBooks = aladinMaster.getItem();
-
-        aladinBestSellerBooks.stream().filter(i -> aladinAcceptCategoryList.contains(i.getCategoryId()));
-
-        System.out.println(aladinBestSellerBooks);
-        return null;
-    }
-
-    @Override
-    public Object getSearchBookList(HttpServletRequest request, ApiParam apiParam) {
-        String query = request.getParameter("query");
-        String itemId = request.getParameter("itemId");
-        String queryType = "Title";
-
-        String uri = aladinHost + "/ttb/api/ItemSearch.aspx";
-        RestTemplate rt = new RestTemplate();
-        //rt.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
-        URI url = UriComponentsBuilder.fromHttpUrl(uri)
-                .queryParams(apiParam.getApiParamMap())
-                .encode().build().toUri();
-        RequestEntity requestEntity = new RequestEntity(HttpMethod.GET, url);
-        ResponseEntity response = rt.exchange(requestEntity, new ParameterizedTypeReference<>() {
-        });
-        if (!ApiCommonUtil.isConnected(response)) {
-            return null;
-        }
-
-        return response.getBody();
-    }
-
-    @Override
-    public Map<String, Object> selectDetail(int itemId) {
-        String uri = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbhack45691028002&itemIdType=itemId&ItemId=" + itemId + "&output=js&Version=20131101&OptResult=reviewList";
-        Map<String, Object> map = new HashMap<>();
-        try {
-            URL url = new URL(uri);
-            URLConnection conn = url.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            String line = br.readLine();
-
-            JSONParser parser = new JSONParser();
-            JSONObject ja = null;
-
-            ja = (JSONObject) parser.parse(line);
-            map = getMapFromJSONObject(ja);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-//    @Override
-//    public int saveRecommend(RecommendVO recommendVO) {
-//        return recommendDAO.saveRecommend(recommendVO);
-//    }
-
-    @Override
-    public Recommend saveRecommend(Recommend recommend) {
-        return recommendRepository.save(recommend);
-    }
-
-//    @Override
-//    public History saveHistory(History history) {
-//        List<History> histories = historyRepository.findHistoryByLoginId(history.getLoginId());
-//        histories = histories.stream().filter(j -> j.getItemId() == history.getItemId()).collect(Collectors.toList());
-//        if (histories.size() > 0) {
-//            return new History();
-//        }
-//        return historyRepository.save(history);
-//    }
-
-    public static Map<String, Object> getMapFromJSONObject(JSONObject obj) {
-        if (obj == null) {
-            throw new IllegalArgumentException(String.format("BAD REQUEST obj %s", obj));
-        }
-        try {
-            return new ObjectMapper().readValue(obj.toJSONString(), Map.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Map changeToRbMap(Map map) {
-        ArrayList list = (ArrayList) map.get("item");
-        Map sMap = (HashMap<String, Object>) list.get(0);
-        map.putAll(sMap);
-        return map;
     }
 }

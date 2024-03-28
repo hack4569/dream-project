@@ -205,8 +205,10 @@ class BookSummarySwiper {
 function saveHistory() {
     const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
     if (itemId && !historyItemIds.includes(itemId)) {
-        $.post("/api/recommend/history/" + itemId, (response) => {
+        $.post("/recommend/history/" + itemId, (response) => {
             historyItemIds.push(itemId);
+        }).fail(function(error) {
+            console.log(error,  "saveHistory : error" + error.responseJSON.message);
         });
     }
 }
