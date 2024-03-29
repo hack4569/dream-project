@@ -59,6 +59,10 @@ public class RecommendController {
         return "recommend/index";
     }
 
+    @GetMapping(value = "/introduce")
+    public String index(Model model) {
+        return "recommend/introduce";
+    }
     @PostMapping(value = "/history/{bookId}")
     public void saveHistory(
             @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
