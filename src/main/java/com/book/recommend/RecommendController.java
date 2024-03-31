@@ -5,6 +5,7 @@ import com.book.history.service.HistoryService;
 import com.book.model.Category;
 import com.book.model.Member;
 import com.book.session.SessionConst;
+import com.book.user.login.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +30,8 @@ public class RecommendController {
 
     @GetMapping(value = "/")
     public String index(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
-            Model model, Category category, HttpSession session) {
-
-        //@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember
-        /*
-            HttpSession session1 = request.getSession(false);
-            if (session == null) {
-                return "home";
-            }
-            Member loginMember = (Member)session1.getAttribute(SessionConst.LOGIN_MEMBER);
-         */
+            @Login Member loginMember,
+            Model model, Category category) {
 
         //로그인 유무에 따른 로직 구현
         long memberId = loginMember == null ? 0 : loginMember.getId();
@@ -65,7 +57,7 @@ public class RecommendController {
     }
     @PostMapping(value = "/history/{bookId}")
     public void saveHistory(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+            @Login Member loginMember,
             @PathVariable("bookId") long bookId) {
 
         long memberId = loginMember == null ? 0 : loginMember.getId();
