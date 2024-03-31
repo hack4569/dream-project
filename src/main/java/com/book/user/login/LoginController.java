@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = {"/user"})
+@RequestMapping(value = {"/users"})
 public class LoginController {
     private final LoginService loginService;
     private final MemberRepository memberRepository;
@@ -34,9 +34,7 @@ public class LoginController {
     @GetMapping("/login")
     public String login(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                         LoginForm loginForm) {
-        if (loginMember != null ) {
-            return "redirect:/";
-        }
+
         return "user/login";
     }
 
@@ -73,9 +71,6 @@ public class LoginController {
     @GetMapping("/join")
     public String join(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember
         , @ModelAttribute("form") MemberAddForm form) {
-        if (loginMember != null ) {
-            return "redirect:/";
-        }
 
         return "user/join";
     }
@@ -102,13 +97,13 @@ public class LoginController {
             Member member = Member.builder().loginId(form.getLoginId()).password(form.getPassword()).build();
 
             loginService.saveMember(member);
-            ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/user/login");
+            ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/users/login");
         } catch (Exception e) {
             log.error("joinAction error = {}", e.getMessage(), e);
             return "user/join";
         }
 
-        return "redirect:/user/login";
+        return "redirect:/users/login";
     }
 
     @GetMapping("/logout")

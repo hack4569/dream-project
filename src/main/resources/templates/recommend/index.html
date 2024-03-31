@@ -80,10 +80,10 @@
         <div class="global-nav__container">
             <nav class="global-nav__account-nav">
                 <th:block th:if="${session.loginMember eq null}">
-                    <a href="/user/login" class="button global-nav__account-nav-button">로그인</a>
+                    <a href="/users/login" class="button global-nav__account-nav-button">로그인</a>
                 </th:block>
                 <th:block th:unless="${session.loginMember eq null}">
-                    <a href="/user/logout" class="button global-nav__account-nav-button">로그아웃</a>
+                    <a href="/users/logout" class="button global-nav__account-nav-button">로그아웃</a>
                 </th:block>
             </nav>
             <ul class="global-nav-list">
