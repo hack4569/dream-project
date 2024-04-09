@@ -16,19 +16,12 @@ import com.book.recommend.constants.RcmdConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -160,16 +153,8 @@ public class RecommendService {
             int maxLength = 2;
             ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
 
-            URI url = UriComponentsBuilder.fromHttpUrl(aladinConstants.url(AladinConstants.ITEM_LOOKUP))
-                    .queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
-            RequestEntity requestEntity1 = new RequestEntity(HttpMethod.GET, url);
-
-            ResponseEntity<AladinMaster> response = rt.exchange(requestEntity1, new ParameterizedTypeReference<AladinMaster>() {
-            });
-            if (response.getStatusCode() != HttpStatus.OK) {
-                throw new AladinException("api 통신중 에러가 발생하였습니다.");
-            }
-            AladinMaster aladinMaster = response.getBody();
+            AladinApiTemplate<AladinMaster> aladinApiTemplate = new AladinApiTemplate<>(AladinMaster.class);
+            AladinMaster aladinMaster = aladinApiTemplate.get(aladinConstants.url(AladinConstants.ITEM_LOOKUP), apiParam1);
 
             if (!ObjectUtils.isEmpty(aladinMaster.getItem())) {
                 AladinBook book = aladinMaster.getItem().get(0);
