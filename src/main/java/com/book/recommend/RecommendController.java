@@ -4,16 +4,17 @@ import com.book.exception.UserException;
 import com.book.history.service.HistoryService;
 import com.book.model.Category;
 import com.book.model.Member;
-import com.book.session.SessionConst;
 import com.book.user.login.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +24,6 @@ import java.util.List;
 public class RecommendController {
     private final RecommendService recommendService;
     private final HistoryService historyService;
-    //private final CategoryMapper categoryMapper;
 
     @Value("${bookRecommend.host}")
     private String hostName;
@@ -39,8 +39,6 @@ public class RecommendController {
         List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, category);
         model.addAttribute("recommendList", recommendList);
 
-//        List<Category> list = categoryMapper.getDistinctCategory();
-//        model.addAttribute("categoryList", list);
         model.addAttribute("subCid", category.getSubCid());
         model.addAttribute("hostName", hostName);
         model.addAttribute("loginMember", loginMember);
