@@ -80,7 +80,7 @@ let historyItemIds = [];
         wrapperClass: 'summary-content',
         slideClass: 'summary-content-section',
         slidesPerView: 1,
-        loop: true,
+        loop: false,
         on: {
             slideChangeTransitionStart: (swiper) => {
                 // book-summary는 좌우로 스와이프하여 출현하기 전에는 투명상태지만,
@@ -132,28 +132,28 @@ class BookSummarySwiper {
 
     // 좌우스크롤을 구현합니다.
     activateBookSummaryWhenScroll() {
-        console.log('left right slide action');
+        //console.log('left right slide action');
         const scrollLeft = this.scrollLeft;
         const bookSummaryElements = this.bookSummaryElements;
         const summaryWidth = this.bookSummaryWidth;
-        console.dir(bookSummaryElements, 'bookSummaryElements');
-        console.log(summaryWidth, 'summaryWidth');
-        console.log(scrollLeft, 'scrollLeft');
+        //console.dir(bookSummaryElements, 'bookSummaryElements');
+        //console.log(summaryWidth, 'summaryWidth');
+        //console.log(scrollLeft, 'scrollLeft');
 
         if ((scrollLeft.toFixed(0) % summaryWidth.toFixed(0)) == 0) {
             const currentIndex = Math.floor(scrollLeft / summaryWidth);
-            console.log(currentIndex, 'currentIndex');
+            //console.log(currentIndex, 'currentIndex');
             const currentBookSummary = bookSummaryElements[currentIndex];
-            console.log(currentBookSummary.classList, 'currentBookSummary.classList');
+            //console.log(currentBookSummary.classList, 'currentBookSummary.classList');
             if (currentBookSummary.classList.contains('book-summary--active')) {
-                console.log('contain book-summary--active');
+                //console.log('contain book-summary--active');
                 return;
             }
 
             //전체 삭제
             bookSummaryElements.forEach((item)=>{
-                console.log(item.classList, '삭제 item.classList');
-               item.classList.remove('book-summary--active'); 
+                //console.log(item.classList, '삭제 item.classList');
+               item.classList.remove('book-summary--active');
             });
 
             currentBookSummary.classList.add('book-summary--active');
@@ -213,20 +213,7 @@ function saveHistory() {
     }
 }
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     // 여기에 코드를 넣어서 DOM 로드 이후에 실행되도록 함
-//     const detailBtn = document.querySelector(".detailBtn");
-//     const detailApp = document.getElementById("detailApp");
-//     const mainApp = document.getElementById("mainApp");
-//     const mainHeader = document.getElementById("mainHeader");
-//
-//     detailBtn.addEventListener("click", (e) => {
-//         console.log("sdf");
-//         detailApp.style.display = "block";
-//         mainApp.style.display = "none";
-//         mainHeader.style.display = "none";
-//     });
-// });
+
 
 
 

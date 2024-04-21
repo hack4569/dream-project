@@ -6,15 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class LoginService {
     private final MemberRepository memberRepository;
 
-    public Member login(String loginId, String password){
-        return memberRepository.findMemberByLoginId(loginId).filter(m->m.getPassword().equals(password)).orElse(null);
+    public Member login(String loginId){
+        return memberRepository.findMemberByLoginId(loginId).orElse(null);
     }
 
     @Transactional

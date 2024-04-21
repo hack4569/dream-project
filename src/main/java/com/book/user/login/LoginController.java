@@ -2,6 +2,7 @@ package com.book.user.login;
 
 import com.book.common.utils.ScriptUtils;
 import com.book.model.Member;
+import com.book.password.PasswordManager;
 import com.book.session.SessionConst;
 import com.book.user.login.member.MemberAddForm;
 import com.book.user.login.member.MemberRepository;
@@ -47,8 +48,8 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             return "user/login";
         }
-        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
-        if (loginMember == null) {
+        Member loginMember = loginService.login(form.getLoginId());
+        if (!PasswordManager.checkPassword(form.getPassword(), loginMember.getPassword())) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             ScriptUtils.alert(response,"아이디 또는 비밀번호가 맞지 않습니다.");
             return "user/login";
@@ -93,8 +94,8 @@ public class LoginController {
             if (bindingResult.hasErrors()) {
                 return "user/join";
             }
-
-            Member member = Member.builder().loginId(form.getLoginId()).password(form.getPassword()).build();
+            String hashedPassword = PasswordManager.hashPassword(form.getPassword());
+            Member member = Member.builder().loginId(form.getLoginId()).password(hashedPassword).build();
 
             loginService.saveMember(member);
             ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/users/login");
