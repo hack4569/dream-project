@@ -2,8 +2,8 @@ package com.book.history.service;
 
 import com.book.model.History;
 import com.book.model.Member;
-import com.book.recommend.HistoryRepository;
-import com.book.user.login.member.MemberRepository;
+import com.book.history.repository.HistoryRepository;
+import com.book.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.book.user.login.argumentresolver;
+package com.book.user.argumentresolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
-package com.book.user.login;
+package com.book.user.service;
 
 import com.book.model.Member;
-import com.book.user.login.member.MemberRepository;
+import com.book.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

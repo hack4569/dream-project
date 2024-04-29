@@ -5,8 +5,8 @@ import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.Phrase;
 import com.book.common.ApiParam;
-import com.book.recommend.RecommendCommentDto;
-import com.book.recommend.RecommendDto;
+import com.book.recommend.dto.RecommendCommentDto;
+import com.book.recommend.dto.RecommendDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +37,18 @@ public class ReCommendServiceTest {
     AladinConstants aladinConstants;
 
     @Test
-    public void recommendServiceTest2(){
+    public void recommendServiceTest2() {
 
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         RestTemplate rt = new RestTemplate();
         List<AladinBook> aladinBestSellerBooks = new ArrayList<>();
-        aladinBestSellerBooks = this.bestSellerListTest(aladinBestSellerBooks,1,100);
+        aladinBestSellerBooks = this.bestSellerListTest(aladinBestSellerBooks, 1, 100);
 
         //봤던 책 제외
         //1년이 안된 책 제외
 
         //상품 조회
-        for(int i=0; i<aladinBestSellerBooks.size(); i++) {
+        for (int i = 0; i < aladinBestSellerBooks.size(); i++) {
             String uri1 = aladinHost + "/ttb/api/ItemLookUp.aspx";
             ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
             URI url1 = UriComponentsBuilder.fromHttpUrl(uri1).queryParams(apiParam1.getApiParamMap()).encode().build().toUri();
@@ -66,17 +66,16 @@ public class ReCommendServiceTest {
 //            RecommendCommentDto recommendCommentDto = new RecommendCommentDto();
 
 
-
             //글자가 많을 경우 2개 또는 ... 처리
             String content = "";
-            for(int j=0; j<descriptionArr.length; j++){
+            for (int j = 0; j < descriptionArr.length; j++) {
                 content += descriptionArr[j];
             }
             //recommendCommentDto.setType("dscription");
             //recommendCommentDto.setContent(content);
             RecommendCommentDto recommendCommentDto = RecommendCommentDto.builder()
                     .type("description")
-                            .content(content).build();
+                    .content(content).build();
 
             recommendCommentList.add(recommendCommentDto);
 
@@ -87,7 +86,7 @@ public class ReCommendServiceTest {
                 phrase = aladinMaster1.getItem().get(0).getSubInfo().getPhraseList().get(j);
                 String[] phraseArr = phrase.getPhrase().split("\\.");
                 String phraseContent = "";
-                for(int k=0; k<phraseArr.length; k++){
+                for (int k = 0; k < phraseArr.length; k++) {
                     phraseContent += phraseArr[k];
                 }
                 RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
@@ -105,10 +104,10 @@ public class ReCommendServiceTest {
 
             slideRecommendList.add(recommendDto);
         }
-        System.out.println(slideRecommendList+"slideRecommendList");
+        System.out.println(slideRecommendList + "slideRecommendList");
     }
 
-    private List<AladinBook> bestSellerListTest(List<AladinBook> aladinBooks, int startIdx, int maxResults){
+    private List<AladinBook> bestSellerListTest(List<AladinBook> aladinBooks, int startIdx, int maxResults) {
         String userId = "admin";
         String uri = aladinHost + "/ttb/api/ItemList.aspx";
 
@@ -119,7 +118,8 @@ public class ReCommendServiceTest {
                 .queryParams(apiParam.getApiParamMap())
                 .encode().build().toUri();
         RequestEntity requestEntity = new RequestEntity(HttpMethod.GET, url);
-        ResponseEntity<AladinMaster> response = rt.exchange(requestEntity,new ParameterizedTypeReference<AladinMaster>(){});
+        ResponseEntity<AladinMaster> response = rt.exchange(requestEntity, new ParameterizedTypeReference<AladinMaster>() {
+        });
         System.out.println(response.getBody() + "response");
         AladinMaster aladinMaster = response.getBody();
         System.out.println(aladinMaster);
@@ -129,7 +129,7 @@ public class ReCommendServiceTest {
         List<AladinBook> aladinBestSellerBooks = aladinMaster.getItem();
 
         //필터1 : 허용 카테고리만
-        aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i-> aladinAcceptCategoryList.contains(Integer.toString(i.getCategoryId()))).collect(Collectors.toList());
+        aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> aladinAcceptCategoryList.contains(Integer.toString(i.getCategoryId()))).collect(Collectors.toList());
 
         //필터2 : 1년도 안된 책 out
         //오늘 날짜
@@ -137,23 +137,23 @@ public class ReCommendServiceTest {
         cal.add(Calendar.YEAR, -1);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
         String today = dateFormatter.format(cal.getTime());
-        aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i-> Integer.parseInt(today) > Integer.parseInt(this.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
+        aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> Integer.parseInt(today) > Integer.parseInt(this.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
 
         aladinBooks.addAll(aladinBestSellerBooks);
 
-        if(startIdx >= 20){
+        if (startIdx >= 20) {
             return aladinBooks;
         }
-        if(aladinBooks.size()<5){
-            this.bestSellerListTest(aladinBooks,++startIdx, maxResults);
+        if (aladinBooks.size() < 5) {
+            this.bestSellerListTest(aladinBooks, ++startIdx, maxResults);
         }
         return aladinBooks;
     }
 
     private String getCustomDate(String yyyymmdd) {
-        int year  = Integer.parseInt(yyyymmdd.substring(0, 4));
+        int year = Integer.parseInt(yyyymmdd.substring(0, 4));
         int month = Integer.parseInt(yyyymmdd.substring(5, 7));
-        int date  = Integer.parseInt(yyyymmdd.substring(8, 10));
+        int date = Integer.parseInt(yyyymmdd.substring(8, 10));
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, date);

@@ -1,5 +1,6 @@
-package com.book.recommend;
+package com.book.recommend.dto;
 
+import com.book.recommend.dto.RecommendCommentDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;

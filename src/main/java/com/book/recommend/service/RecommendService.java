@@ -1,4 +1,4 @@
-package com.book.recommend;
+package com.book.recommend.service;
 
 import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
@@ -12,6 +12,9 @@ import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
 import com.book.model.Category;
 import com.book.model.History;
+import com.book.history.repository.HistoryRepository;
+import com.book.recommend.dto.RecommendCommentDto;
+import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.constants.RcmdConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

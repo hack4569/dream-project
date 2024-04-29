@@ -1,4 +1,4 @@
-package com.book.recommend;
+package com.book.history.repository;
 
 import com.book.model.History;
 import org.springframework.data.jpa.repository.JpaRepository;

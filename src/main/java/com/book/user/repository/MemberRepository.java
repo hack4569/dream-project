@@ -1,4 +1,4 @@
-package com.book.user.login.member;
+package com.book.user.repository;
 
 
 import com.book.model.Member;

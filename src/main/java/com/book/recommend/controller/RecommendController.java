@@ -1,10 +1,12 @@
-package com.book.recommend;
+package com.book.recommend.controller;
 
 import com.book.exception.UserException;
 import com.book.history.service.HistoryService;
 import com.book.model.Category;
 import com.book.model.Member;
-import com.book.user.login.argumentresolver.Login;
+import com.book.recommend.dto.RecommendDto;
+import com.book.recommend.service.RecommendService;
+import com.book.user.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

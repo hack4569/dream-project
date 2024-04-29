@@ -1,4 +1,4 @@
-package com.book.recommend;
+package com.book.recommend.dto;
 
 import lombok.Builder;
 import lombok.Getter;

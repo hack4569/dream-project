@@ -1,11 +1,13 @@
-package com.book.user.login;
+package com.book.user.controller;
 
 import com.book.common.utils.ScriptUtils;
 import com.book.model.Member;
 import com.book.password.PasswordManager;
 import com.book.session.SessionConst;
-import com.book.user.login.member.MemberAddForm;
-import com.book.user.login.member.MemberRepository;
+import com.book.user.dto.LoginForm;
+import com.book.user.service.LoginService;
+import com.book.user.dto.MemberAddForm;
+import com.book.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -19,10 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Controller
@@ -127,4 +125,5 @@ public class LoginController {
         }
         return "redirect:/";
     }
+
 }

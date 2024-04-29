@@ -1,10 +1,8 @@
 package com.book.interceptor;
 
 import com.book.session.SessionConst;
-import com.book.user.login.member.MemberRepository;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

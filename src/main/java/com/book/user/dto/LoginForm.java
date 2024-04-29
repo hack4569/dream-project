@@ -1,4 +1,4 @@
-package com.book.user.login;
+package com.book.user.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.book.user.login.argumentresolver;
+package com.book.user.argumentresolver;
 
 import com.book.model.Member;
 import com.book.session.SessionConst;
