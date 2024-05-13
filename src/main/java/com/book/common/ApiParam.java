@@ -53,24 +53,4 @@ public class ApiParam{
         }
         return map;
     }
-
-    public String getApiParam(){
-        String result = "";
-        try {
-            StringBuilder sb = new StringBuilder();
-            Object obj = this;
-            for (Field field : this.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                if(field.get(obj)!=null){
-                    sb.append(field.getName() + "=" + field.get(obj).toString() + "&");
-                }
-            }
-            result = sb.toString();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }

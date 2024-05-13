@@ -6,18 +6,18 @@ import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
 import com.book.aladin.exception.AladinException;
+import com.book.aladin.service.AladinService;
 import com.book.aladin.support.AladinApiTemplate;
 import com.book.book.BookFilterDto;
-import com.book.category.repository.CategoryRepository;
 import com.book.category.service.CategoryService;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
+import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
 import com.book.model.History;
-import com.book.history.repository.HistoryRepository;
+import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
-import com.book.recommend.constants.RcmdConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,8 +41,8 @@ public class RecommendService {
 
     private final HistoryRepository historyRepository;
     private final AladinConstants aladinConstants;
-    private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
+    private final AladinService aladinService;
 
     @Transactional
     public List<RecommendDto> getRecommendList(long memberId, Category category) {
@@ -80,8 +80,8 @@ public class RecommendService {
     public List<AladinBook> customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
 
         try {
-            List<AladinBook> aladinBestSellerBooks = this.bestSellerList(bookFilterDto);
-
+            //List<AladinBook> aladinBestSellerBooks = this.bestSellerList(bookFilterDto);
+            List<AladinBook> aladinBestSellerBooks = aladinService.bestSellerList(bookFilterDto);
             String subCid = ObjectUtils.isEmpty(bookFilterDto.getCategory()) ? "" : bookFilterDto.getCategory().getSubCid();
 
             HashSet<Integer> cids = new HashSet<>();
@@ -220,17 +220,18 @@ public class RecommendService {
 
         String filteredDescriptionParagraph = BookRecommendUtil.filterStr(descriptionParagraph);
         String[] descriptionArr = filteredDescriptionParagraph.split("\\.");
+        List<String> descriptionList = Arrays.asList(descriptionArr);
         //글자가 많을 경우 2개 또는 ... 처리
         int slide = 0;
-        int introduceSlide = descriptionArr.length >= 5 && filteredDescriptionParagraph.length() > RcmdConst.strMaxCount * 2 ? RcmdConst.introduceSlide : 1;
+        int introduceSlide = descriptionList.size() >= 5 && filteredDescriptionParagraph.length() > RcmdConst.strMaxCount * 2 ? RcmdConst.introduceSlide : 1;
 
         for (int i = 0; i < introduceSlide; i++) {
             String content = "";
             for (int j = 0; content.length() < RcmdConst.strMaxCount; j++) {
-                if (descriptionArr.length < slide ) {
+                if (descriptionList.size() <= slide ) {
                     break;
                 }
-                content += descriptionArr[slide];
+                content += descriptionList.get(slide);
                 slide++;
             }
             if (StringUtils.hasText(content)) {

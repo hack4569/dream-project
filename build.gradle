@@ -52,8 +52,10 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
+	implementation "org.springframework.boot:spring-boot-starter-webflux" // 여러분의 스프링 부트 버전에 맞게 조정
  	runtimeOnly 'com.h2database:h2'
 }
+
 querydsl {
 	library = "com.querydsl:querydsl-apt"
 	querydslSourcesDir = 'src/main/generated'
