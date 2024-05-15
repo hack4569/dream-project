@@ -2,55 +2,62 @@ package com.book.aladin.service;
 
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
-import com.book.book.BookFilterDto;
 import com.book.common.ApiParam;
+import com.book.recommend.dto.BookFilterDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class AladinService {
-    @Value("${aladin.host}")
-    public String aladinHost;
+
     public static final String ITEM_LOOKUP = "/ttb/api/ItemLookUp.aspx";
-
     public static final String ITEM_LIST = "/ttb/api/ItemList.aspx";
+    public static final String QUERY_TYPE = "BestSeller";
 
-    private WebClient aladinApi;
+    private final WebClient aladinApi;
 
-    public AladinService() {
-        aladinApi = WebClient.create(aladinHost);
-    }
-
-    public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto) {
-        aladinApi = WebClient.create(aladinHost);
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("querytype", "BestSeller");
-//        map.put("start", bookFilterDto.getStartIdx());
-//        map.put("maxResults", bookFilterDto.getMaxResults());
+    /**
+     * 상품 목록
+     * @param bookFilterDto
+     * @return
+     */
+    public Optional<List<AladinBook>> bestSellerList(BookFilterDto bookFilterDto) {
         ApiParam apiParam = ApiParam.builder()
-                .querytype("BestSeller")
+                .querytype(QUERY_TYPE)
                 .start(bookFilterDto.getStartIdx())
                 .maxResults(bookFilterDto.getMaxResults()).build();
+        return Optional.ofNullable(this.getApi(ITEM_LIST, apiParam).getItem());
+    }
 
+    /**
+     * 상품 상세 조회
+     * @param apiParam
+     * @return
+     */
+    public Optional<List<AladinBook>> getAladinDetail(ApiParam apiParam) {
+        return Optional.ofNullable(this.getApi(ITEM_LOOKUP, apiParam).getItem());
+        //this.getApi(ITEM_LOOKUP, apiParam).orElseThrow(()-> new AladinException("상품 상세 조회 중 에러가 발생하였습니다."));
+    }
+
+    private AladinMaster getApi(String path, ApiParam apiParam) {
         ResponseEntity<AladinMaster> response = aladinApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(ITEM_LIST)
+                        .path(path)
                         .queryParams(apiParam.getApiParamMap())
                         .build()
                 )
                 .retrieve()
                 .toEntity(AladinMaster.class)
                 .block();
-        AladinMaster aladinMaster = response.getBody();
-        return aladinMaster.getItem();
+        return response.getBody();
     }
 }

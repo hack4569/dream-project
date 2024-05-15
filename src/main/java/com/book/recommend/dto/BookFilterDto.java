@@ -1,9 +1,7 @@
-package com.book.book;
+package com.book.recommend.dto;
 
 import com.book.model.Category;
 import lombok.*;
-
-import java.util.Optional;
 
 @Getter
 @Setter

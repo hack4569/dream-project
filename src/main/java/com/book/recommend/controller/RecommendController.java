@@ -1,8 +1,8 @@
 package com.book.recommend.controller;
 
+import com.book.category.dto.CategoryDto;
 import com.book.exception.UserException;
 import com.book.history.service.HistoryService;
-import com.book.model.Category;
 import com.book.model.Member;
 import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.service.RecommendService;
@@ -33,15 +33,16 @@ public class RecommendController {
     @GetMapping(value = "/")
     public String index(
             @Login Member loginMember,
-            Model model, Category category) {
+            Model model, CategoryDto categoryDto) {
 
         //로그인 유무에 따른 로직 구현
         long memberId = loginMember == null ? 0 : loginMember.getId();
 
-        List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, category);
-        model.addAttribute("recommendList", recommendList);
+        List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, categoryDto);
 
-        model.addAttribute("subCid", category.getSubCid());
+
+        model.addAttribute("recommendList", recommendList);
+        model.addAttribute("subCid", categoryDto.getSubCid());
         model.addAttribute("hostName", hostName);
         model.addAttribute("loginMember", loginMember);
         if (loginMember == null) {

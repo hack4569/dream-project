@@ -2,13 +2,11 @@ package com.book.recommend.service;
 
 import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
-import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
 import com.book.aladin.exception.AladinException;
 import com.book.aladin.service.AladinService;
-import com.book.aladin.support.AladinApiTemplate;
-import com.book.book.BookFilterDto;
+import com.book.category.dto.CategoryDto;
 import com.book.category.service.CategoryService;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
@@ -16,10 +14,12 @@ import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
 import com.book.model.History;
 import com.book.recommend.constants.RcmdConst;
+import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,20 +43,22 @@ public class RecommendService {
     private final AladinConstants aladinConstants;
     private final CategoryService categoryService;
     private final AladinService aladinService;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public List<RecommendDto> getRecommendList(long memberId, Category category) {
+    public List<RecommendDto> getRecommendList(long memberId, CategoryDto categoryDto) {
 
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
-
+        Category category = modelMapper.map(categoryDto, Category.class);
         //category, loginId 세팅
         BookFilterDto bookFilterDto = BookFilterDto.builder()
                 .memberId(memberId)
                 .category(category)
                 .build();
 
-        customFilteredBooks = this.customFilteredList(customFilteredBooks, bookFilterDto);
+
+        this.customFilteredList(customFilteredBooks, bookFilterDto);
 
         //책소개
         this.introduceBook(slideRecommendList, customFilteredBooks);
@@ -64,24 +66,12 @@ public class RecommendService {
         return slideRecommendList;
     }
 
-    public List<AladinBook> bestSellerList(BookFilterDto bookFilterDto) {
-
-        ApiParam apiParam = ApiParam.builder()
-                .querytype("BestSeller")
-                .start(bookFilterDto.getStartIdx())
-                .maxResults(bookFilterDto.getMaxResults()).build();
-        AladinApiTemplate<AladinMaster> aladinApiTemplate = new AladinApiTemplate<>(AladinMaster.class);
-        AladinMaster aladinMaster = aladinApiTemplate.get(aladinConstants.url(AladinConstants.ITEM_LIST), apiParam);
-
-        List<AladinBook> aladinBestSellerBooks = aladinMaster.getItem();
-        return aladinBestSellerBooks;
-    }
-
-    public List<AladinBook> customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
+    public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
 
         try {
-            //List<AladinBook> aladinBestSellerBooks = this.bestSellerList(bookFilterDto);
-            List<AladinBook> aladinBestSellerBooks = aladinService.bestSellerList(bookFilterDto);
+
+            List<AladinBook> aladinBestSellerBooks = aladinService.bestSellerList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+
             String subCid = ObjectUtils.isEmpty(bookFilterDto.getCategory()) ? "" : bookFilterDto.getCategory().getSubCid();
 
             HashSet<Integer> cids = new HashSet<>();
@@ -126,7 +116,7 @@ public class RecommendService {
 
             int startIdx = bookFilterDto.getStartIdx();
             if (startIdx >= 20) {
-                return aladinBooks;
+                return;
             }
 
             if (aladinBooks.size() < 5) {
@@ -139,7 +129,6 @@ public class RecommendService {
             log.error("customFilteredList Error: {}", e);
             throw new AladinException(e.getMessage(), e);
         }
-        return aladinBooks;
     }
 
     public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {
@@ -149,66 +138,64 @@ public class RecommendService {
             int maxLength = 2;
             ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
 
-            AladinApiTemplate<AladinMaster> aladinApiTemplate = new AladinApiTemplate<>(AladinMaster.class);
-            AladinMaster aladinMaster = aladinApiTemplate.get(aladinConstants.url(AladinConstants.ITEM_LOOKUP), apiParam1);
+            List<AladinBook> aladinBooks = aladinService.getAladinDetail(apiParam1).orElseThrow(() -> new AladinException("상품 조회중 에러가 발생하였습니다."));
 
-            if (!ObjectUtils.isEmpty(aladinMaster.getItem())) {
-                AladinBook book = aladinMaster.getItem().get(0);
+            AladinBook book = aladinBooks.get(0);
 
-                //책소개
-                String fullDescription = StringUtils.hasText(book.getFullDescription()) ? book.getFullDescription() : book.getFullDescription2();
-                if (StringUtils.hasText(fullDescription)) {
-                    recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, "description");
-                }
-
-                //책속에서 : 책 문장
-                Phrase phrase;
-                if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {
-                    int phraseLen = book.getSubInfo().getPhraseList().size();
-                    //j==0일 경우 이미지 확률이 높음
-                    for (int j = 1; j < phraseLen; j++) {
-
-                        phrase = book.getSubInfo().getPhraseList().get(j);
-                        String filteredPhrase = BookRecommendUtil.filterStr(phrase.getPhrase());
-                        if (!StringUtils.hasText(filteredPhrase)) {
-                            continue;
-                        }
-                        String[] phraseArr = filteredPhrase.split("\\.");
-                        String phraseContent = "";
-                        int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide ,ㅎㅎ하ㅕㅍv;
-                        for (int k = 0; k < phraseArrLen; k++) {
-                            phraseContent += phraseArr[k];
-                        }
-                        RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
-                                .type("phrase")
-                                .content(phraseContent)
-                                .originContent(filteredPhrase)
-                                .build();
-
-                        recommendCommentList.add(recommendCommentPhrase);
-
-                    }
-
-                    if (recommendCommentList.size() == 0) continue;
-                }
-                List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
-                if (!ObjectUtils.isEmpty(mdRecommendList)) {
-                    for (MdRecommend mdRecommend : mdRecommendList) {
-                        recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
-                    }
-                }
-
-                RecommendDto recommendDto = RecommendDto.builder()
-                        .itemId(book.getItemId())
-                        .title(book.getTitle())
-                        .link(book.getLink())
-                        .cover(book.getCover())
-                        .recommendCommentList(recommendCommentList)
-                        .author(book.getAuthor())
-                        .categoryName(book.getCategoryName())
-                        .build();
-                slideRecommendList.add(recommendDto);
+            //책소개
+            String fullDescription = StringUtils.hasText(book.getFullDescription()) ? book.getFullDescription() : book.getFullDescription2();
+            if (StringUtils.hasText(fullDescription)) {
+                recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, "description");
             }
+
+            //책속에서 : 책 문장
+            Phrase phrase;
+            if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {
+                int phraseLen = book.getSubInfo().getPhraseList().size();
+                //j==0일 경우 이미지 확률이 높음
+                for (int j = 1; j < phraseLen; j++) {
+
+                    phrase = book.getSubInfo().getPhraseList().get(j);
+                    String filteredPhrase = BookRecommendUtil.filterStr(phrase.getPhrase());
+                    if (!StringUtils.hasText(filteredPhrase)) {
+                        continue;
+                    }
+                    String[] phraseArr = filteredPhrase.split("\\.");
+                    String phraseContent = "";
+                    int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide ,ㅎㅎ하ㅕㅍv;
+                    for (int k = 0; k < phraseArrLen; k++) {
+                        phraseContent += phraseArr[k];
+                    }
+                    RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
+                            .type("phrase")
+                            .content(phraseContent)
+                            .originContent(filteredPhrase)
+                            .build();
+
+                    recommendCommentList.add(recommendCommentPhrase);
+
+                }
+
+                if (recommendCommentList.size() == 0) continue;
+            }
+            List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
+            if (!ObjectUtils.isEmpty(mdRecommendList)) {
+                for (MdRecommend mdRecommend : mdRecommendList) {
+                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
+                }
+            }
+
+            RecommendDto recommendDto = RecommendDto.builder()
+                    .itemId(book.getItemId())
+                    .title(book.getTitle())
+                    .link(book.getLink())
+                    .cover(book.getCover())
+                    .recommendCommentList(recommendCommentList)
+                    .author(book.getAuthor())
+                    .categoryName(book.getCategoryName())
+                    .build();
+            slideRecommendList.add(recommendDto);
+
         }
     }
 

@@ -57,7 +57,7 @@
         book.classList.add('book-summary--' + color);
     });
 
-    books[0].classList.add('book-summary--active');
+    books[0]?.classList.add('book-summary--active');
 
     const categoryName = document.querySelector(".book-summary--active input[name=categoryName]").value;
     document.querySelector(".global-header__page-title").textContent = categoryName;
