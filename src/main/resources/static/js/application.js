@@ -59,7 +59,7 @@
 
     books[0]?.classList.add('book-summary--active');
 
-    const categoryName = document.querySelector(".book-summary--active input[name=categoryName]").value;
+    const categoryName = document.querySelector(".book-summary--active input[name=categoryName]")?.value;
     document.querySelector(".global-header__page-title").textContent = categoryName;
 
     const openModalButtons = doc.querySelectorAll('.summary-nav-item__show-button');
@@ -157,7 +157,7 @@ class BookSummarySwiper {
             });
 
             currentBookSummary.classList.add('book-summary--active');
-            const categoryName = document.querySelector(".book-summary--active input[name=categoryName]").value;
+            const categoryName = document.querySelector(".book-summary--active input[name=categoryName]")?.value;
             document.querySelector(".global-header__page-title").textContent = categoryName;
 
             const swiper = currentBookSummary.swiper;

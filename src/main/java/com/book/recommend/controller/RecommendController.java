@@ -27,9 +27,6 @@ public class RecommendController {
     private final RecommendService recommendService;
     private final HistoryService historyService;
 
-    @Value("${bookRecommend.host}")
-    private String hostName;
-
     @GetMapping(value = "/")
     public String index(
             @Login Member loginMember,
@@ -40,10 +37,8 @@ public class RecommendController {
 
         List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, categoryDto);
 
-
         model.addAttribute("recommendList", recommendList);
         model.addAttribute("subCid", categoryDto.getSubCid());
-        model.addAttribute("hostName", hostName);
         model.addAttribute("loginMember", loginMember);
         if (loginMember == null) {
             model.addAttribute("loginHistoryMsg", "로그인하시면 봤던 책정보는 보이지 않습니다.");
