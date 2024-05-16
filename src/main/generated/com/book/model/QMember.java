@@ -28,6 +28,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath password = createString("password");
 
+    public final EnumPath<com.book.policy.QueryType> queryType = createEnum("queryType", com.book.policy.QueryType.class);
+
     public final StringPath sessionId = createString("sessionId");
 
     public QMember(String variable) {

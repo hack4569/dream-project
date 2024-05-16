@@ -1,5 +1,6 @@
 package com.book.model;
 
+import com.book.policy.QueryType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -23,9 +24,15 @@ public class Member {
 
     @NotEmpty
     private String loginId;
+
     @NotEmpty
     private String password;
+
     private String sessionId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private QueryType queryType;
 
     @JsonIgnore
     @OneToMany(mappedBy = "member")
