@@ -1,6 +1,5 @@
 package com.book.recommend.service;
 
-import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
@@ -13,6 +12,7 @@ import com.book.common.BookRecommendUtil;
 import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
 import com.book.model.History;
+import com.book.policy.ListOptionPolicy;
 import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
@@ -40,7 +40,6 @@ public class RecommendService {
     String aladinHost;
 
     private final HistoryRepository historyRepository;
-    private final AladinConstants aladinConstants;
     private final CategoryService categoryService;
     private final AladinService aladinService;
     private final ModelMapper modelMapper = new ModelMapper();
