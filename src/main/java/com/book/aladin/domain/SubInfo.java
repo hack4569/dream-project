@@ -16,4 +16,5 @@ public class SubInfo {
     private List<Phrase> phraseList;
     //편집장 책추천
     private List<MdRecommend> mdRecommendList;
+    private String toc;
 }

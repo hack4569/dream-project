@@ -34,7 +34,7 @@ public class ApiParam{
     private String version = "20131101";
     private String query;
     @Builder.Default
-    private String optResult = "ebookList,usedList,reviewList,fulldescription,fulldescription2,phraseList,mdrecommend";
+    private String optResult = "ebookList,usedList,reviewList,fulldescription,fulldescription2,phraseList,mdrecommend,toc";
 
     public MultiValueMap<String, String> getApiParamMap(){
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();

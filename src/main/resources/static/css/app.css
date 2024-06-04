@@ -457,6 +457,9 @@
     height: 440px;
     overflow: hidden;
 }
+.summary-content-section__content.toc {
+    font-size: 1.3rem;
+}
 .summary-content-section__avatar {
     display: flex;
     margin-top: 24px;

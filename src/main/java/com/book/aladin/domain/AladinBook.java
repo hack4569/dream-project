@@ -39,7 +39,7 @@ public class AladinBook {
     private String fullDescription;
     private String fullDescription2;
     private List<Review> reviewList;
-    private String Toc;
+    private String toc;
     private SubInfo subInfo;
 
 

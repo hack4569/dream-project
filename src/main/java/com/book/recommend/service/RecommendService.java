@@ -177,6 +177,18 @@ public class RecommendService {
 
                 if (recommendCommentList.size() == 0) continue;
             }
+
+            // 목차
+            String toc = book.getSubInfo().getToc();
+            if (toc != null) {
+                toc = toc.replaceAll("<(/)?([pP]*)(\\s[pP]*=[^>]*)?(\\s)*(/)?>", "");
+                RecommendCommentDto recommendToc = RecommendCommentDto.builder()
+                                .type("toc")
+                                        .content(toc)
+                                                .build();
+                recommendCommentList.add(recommendToc);
+            }
+
             List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
             if (!ObjectUtils.isEmpty(mdRecommendList)) {
                 for (MdRecommend mdRecommend : mdRecommendList) {

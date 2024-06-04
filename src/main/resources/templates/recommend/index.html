@@ -35,6 +35,9 @@
                             <th:block th:case="'description'">
                                 <h1 class="summary-content-section__title">introduction</h1>
                             </th:block>
+                            <th:block th:case="'toc'">
+                                <h1 class="summary-content-section__title">index</h1>
+                            </th:block>
                             <th:block th:case="'phrase'">
                                 <svg class="summary-content-section__icon" width="23" height="22" viewBox="0 0 23 22" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0.0121953 22H9.47776V11.738H5.15065C5.15065 8.08307 6.23242 5.90415 9.61298 4.63898V0C4.00126 0.843448 -0.258249 5.76358 0.0121953 11.8083V22ZM13.3992 22H22.8648V11.738H18.5377C18.5377 8.08307 19.6194 5.90415 23 4.63898V0C17.3207 0.843448 13.1288 5.90415 13.3992 11.8083V22Z"/>
@@ -42,7 +45,7 @@
                             </th:block>
                             <th:block th:case="*"></th:block>
                         </th:block>
-                        <p class="summary-content-section__content" th:text="${comment.content}">
+                        <p class="summary-content-section__content" th:classappend="${comment.type eq 'toc' ? 'toc' : ''}" th:utext="${comment.content}">
                             특정 질환이 없는데도 아프지 않은 곳이 없고 매일 피곤하며 치매가 생긴 것 같다면 가속노화를 의심해야한다. 노화의 예외가 없지만 같은 나이라도 노화의 속도는 다를 수
                             있다. 왜그럴까? 이 책에 그 답이 실려 있다.노화의
                             예외가 없지만 같은 나이라도 노화의 속도는 다를 수 있다. 왜그럴까?
