@@ -38,14 +38,14 @@ import java.util.stream.Collectors;
 public class RecommendService {
     @Value("${aladin.host}")
     String aladinHost;
-
+    private final int SHOW_BOOKS_COUNT = 4;
     private final HistoryRepository historyRepository;
     private final CategoryService categoryService;
     private final AladinService aladinService;
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public List<RecommendDto> getRecommendList(long memberId, CategoryDto categoryDto) {
+    public List<RecommendDto> getRecommendList(long memberId, CategoryDto categoryDto, int slideN) {
 
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
@@ -54,8 +54,9 @@ public class RecommendService {
         BookFilterDto bookFilterDto = BookFilterDto.builder()
                 .memberId(memberId)
                 .category(category)
+                .startN(slideN)
                 .build();
-
+        bookFilterDto.setStartIdx(1);
 
         this.customFilteredList(customFilteredBooks, bookFilterDto);
 
@@ -113,13 +114,8 @@ public class RecommendService {
             }
             aladinBooks.addAll(aladinBestSellerBooks);
 
-            int startIdx = bookFilterDto.getStartIdx();
-            if (startIdx >= 20) {
-                return;
-            }
-
-            if (aladinBooks.size() < 5) {
-                bookFilterDto.setStartIdx(++startIdx);
+            if (aladinBooks.size() < SHOW_BOOKS_COUNT) {
+                bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
                 this.customFilteredList(aladinBooks, bookFilterDto);
             }
         } catch (AladinException ae) {

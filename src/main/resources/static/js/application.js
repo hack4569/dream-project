@@ -53,6 +53,8 @@
     const colors = ['blue-yellow', 'orange-red', 'blue-green', 'blue', 'violet', 'pitch'];
     const books = document.querySelectorAll(".book-summary");
     books.forEach((book, index)=>{
+        index ++;
+        index = index % colors.length;
         const color = colors[index];
         book.classList.add('book-summary--' + color);
     });

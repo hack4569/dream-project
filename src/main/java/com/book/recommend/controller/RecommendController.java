@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Controller
@@ -35,8 +37,29 @@ public class RecommendController {
         //로그인 유무에 따른 로직 구현
         long memberId = loginMember == null ? 0 : loginMember.getId();
 
-        List<RecommendDto> recommendList = recommendService.getRecommendList(memberId, categoryDto);
+        long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
+        List<RecommendDto> recommendList = new ArrayList<>();
+        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 1));
+        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 2));
+        CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 3));
+        CompletableFuture<List<RecommendDto>> recommendList4 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 4));
+        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 0));
+        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3, recommendList4, recommendList5);
+        allRecommendList.thenRun(() -> {
+            try {
+                recommendList.addAll(recommendList1.get());
+                recommendList.addAll(recommendList2.get());
+                recommendList.addAll(recommendList3.get());
+                recommendList.addAll(recommendList4.get());
+                recommendList.addAll(recommendList5.get());
+            } catch (Exception e) {
+                log.error("error : {}", e);
+            }
+        }).join();
 
+        long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+        long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
+        System.out.println("시간차이(m) : "+secDiffTime);
         model.addAttribute("recommendList", recommendList);
         model.addAttribute("subCid", categoryDto.getSubCid());
         model.addAttribute("loginMember", loginMember);
