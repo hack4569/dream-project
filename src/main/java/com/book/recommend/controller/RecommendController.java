@@ -37,7 +37,6 @@ public class RecommendController {
         //로그인 유무에 따른 로직 구현
         long memberId = loginMember == null ? 0 : loginMember.getId();
 
-        long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
         List<RecommendDto> recommendList = new ArrayList<>();
         CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 1));
         CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 2));
@@ -57,9 +56,6 @@ public class RecommendController {
             }
         }).join();
 
-        long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
-        System.out.println("시간차이(m) : "+secDiffTime);
         model.addAttribute("recommendList", recommendList);
         model.addAttribute("subCid", categoryDto.getSubCid());
         model.addAttribute("loginMember", loginMember);

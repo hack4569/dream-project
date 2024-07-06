@@ -3,6 +3,7 @@ package com.book.user.controller;
 import com.book.common.utils.ScriptUtils;
 import com.book.model.Member;
 import com.book.password.PasswordManager;
+import com.book.policy.QueryType;
 import com.book.session.SessionConst;
 import com.book.user.dto.LoginForm;
 import com.book.user.service.LoginService;

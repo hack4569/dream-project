@@ -11,8 +11,7 @@ import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
 import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
-import com.book.model.History;
-import com.book.policy.ListOptionPolicy;
+import com.book.recommend.bookfilter.BookFilter;
 import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
@@ -28,9 +27,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -42,6 +42,7 @@ public class RecommendService {
     private final HistoryRepository historyRepository;
     private final CategoryService categoryService;
     private final AladinService aladinService;
+    private final BookFilter bookFilter;
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
@@ -58,72 +59,12 @@ public class RecommendService {
                 .build();
         bookFilterDto.setStartIdx(1);
 
-        this.customFilteredList(customFilteredBooks, bookFilterDto);
+        bookFilter.customFilteredList(customFilteredBooks, bookFilterDto);
 
         //책소개
         this.introduceBook(slideRecommendList, customFilteredBooks);
 
         return slideRecommendList;
-    }
-
-    public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
-
-        try {
-
-            List<AladinBook> aladinBestSellerBooks = aladinService.bestSellerList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
-
-            String subCid = ObjectUtils.isEmpty(bookFilterDto.getCategory()) ? "" : bookFilterDto.getCategory().getSubCid();
-
-            HashSet<Integer> cids = new HashSet<>();
-            //사용자가 희망하는 카테고리가 있을 경우
-            if (StringUtils.hasText(subCid)) {
-//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
-//                for (Category categoryMap : list) {
-//                    String cid = Integer.toString(categoryMap.getCid());
-//                    aladinAcceptCategoryList.add(cid);
-//                }
-            } else {
-                cids = categoryService.findCategories();
-            }
-
-            //필터1 : 허용 카테고리만
-            HashSet<Integer> finalCids = cids;
-            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> finalCids.contains(i.getCategoryId())).collect(Collectors.toList());
-
-            //필터2 : 1년도 안된 책 out
-            //오늘 날짜
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.YEAR, -1);
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
-            String today = dateFormatter.format(cal.getTime());
-            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> Integer.parseInt(today) > Integer.parseInt(this.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
-
-            //필터3 : history에 없는 데이터
-            List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
-            for (History history : histories) {
-                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB ->
-                    {
-                        return
-                        (
-                            bB.getItemId() == history.getItemId()
-                            &&
-                            LocalDate.now().isEqual(history.getCreated().toLocalDate())
-                        )
-                        || bB.getItemId() != history.getItemId();
-                    }).collect(Collectors.toList());
-            }
-            aladinBooks.addAll(aladinBestSellerBooks);
-
-            if (aladinBooks.size() < SHOW_BOOKS_COUNT) {
-                bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
-                this.customFilteredList(aladinBooks, bookFilterDto);
-            }
-        } catch (AladinException ae) {
-            throw ae;
-        } catch (Exception e) {
-            log.error("customFilteredList Error: {}", e);
-            throw new AladinException(e.getMessage(), e);
-        }
     }
 
     public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {
@@ -157,7 +98,7 @@ public class RecommendService {
                     }
                     String[] phraseArr = filteredPhrase.split("\\.");
                     String phraseContent = "";
-                    int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide ,ㅎㅎ하ㅕㅍv;
+                    int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide;
                     for (int k = 0; k < phraseArrLen; k++) {
                         phraseContent += phraseArr[k];
                     }

@@ -1,7 +1,12 @@
 package com.book.recommend.dto;
 
 import com.book.model.Category;
+import com.book.model.History;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -14,6 +19,9 @@ public class BookFilterDto {
     private int maxResults = 100;
     private long memberId;
     private Category category;
+    private Optional<HashSet<Integer>> finalCids;
+    private Optional<String> anchorDate;
+    private Optional<List<History>> histories;
 
     public void setStartIdx(int startIdx) {
         if (this.startN == startIdx % 5) {
