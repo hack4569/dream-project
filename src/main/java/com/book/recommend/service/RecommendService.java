@@ -1,5 +1,6 @@
 package com.book.recommend.service;
 
+import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
@@ -9,17 +10,20 @@ import com.book.category.dto.CategoryDto;
 import com.book.category.service.CategoryService;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
+import com.book.common.utils.LocalDateUtils;
 import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
-import com.book.recommend.bookfilter.BookFilter;
+import com.book.model.History;
+import com.book.model.Member;
 import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
+import com.book.recommend.exception.RecommendExcption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -27,39 +31,37 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecommendService {
-    @Value("${aladin.host}")
-    String aladinHost;
-    private final int SHOW_BOOKS_COUNT = 4;
     private final HistoryRepository historyRepository;
     private final CategoryService categoryService;
     private final AladinService aladinService;
-    private final BookFilter bookFilter;
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public List<RecommendDto> getRecommendList(long memberId, CategoryDto categoryDto, int slideN) {
+    public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, int slideN) {
 
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
         Category category = modelMapper.map(categoryDto, Category.class);
+        if (category == null) {
+            throw new RecommendExcption("카테고리가 없습니다.");
+        }
         //category, loginId 세팅
         BookFilterDto bookFilterDto = BookFilterDto.builder()
-                .memberId(memberId)
+                .memberId(loginMember.getId())
                 .category(category)
                 .startN(slideN)
+                .queryType(Optional.ofNullable(loginMember.getQueryType()).orElse(AladinConstants.queryType))
                 .build();
-        bookFilterDto.setStartIdx(1);
 
-        bookFilter.customFilteredList(customFilteredBooks, bookFilterDto);
+        this.customFilteredList(customFilteredBooks, bookFilterDto);
 
         //책소개
         this.introduceBook(slideRecommendList, customFilteredBooks);
@@ -189,16 +191,70 @@ public class RecommendService {
         return originParagraph;
     }
 
+    public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
+    {
+        try {
+            String subCid = Optional.ofNullable(bookFilterDto.getCategory().getSubCid()).orElse("");
 
+            HashSet<Integer> cids = new HashSet<>();
+            //사용자가 희망하는 카테고리가 있을 경우
+            if (StringUtils.hasText(subCid)) {
+//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
+//                for (Category categoryMap : list) {
+//                    String cid = Integer.toString(categoryMap.getCid());
+//                    aladinAcceptCategoryList.add(cid);
+//                }
+            } else {
+                cids = categoryService.findCategories();
+            }
 
-    private String getCustomDate(String yyyymmdd) {
-        int year = Integer.parseInt(yyyymmdd.substring(0, 4));
-        int month = Integer.parseInt(yyyymmdd.substring(5, 7));
-        int date = Integer.parseInt(yyyymmdd.substring(8, 10));
+            List<AladinBook> aladinBestSellerBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, date);
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
-        return dateFormatter.format(cal.getTime());
+            //TODO : 추천 필터는 팩토리 메소드 패턴으로 구현
+
+            //오늘 날짜
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.YEAR, -1);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+            String today = dateFormatter.format(cal.getTime());
+
+            List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
+
+            bookFilterDto.setFinalCids(Optional.ofNullable(cids));
+            bookFilterDto.setAnchorDate(Optional.ofNullable(today));
+            bookFilterDto.setHistories(Optional.ofNullable(histories));
+
+            //필터1 : 허용 카테고리만
+            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> bookFilterDto.getFinalCids().orElse(new HashSet<>()).contains(i.getCategoryId())).collect(Collectors.toList());
+
+            //필터2 : 1년도 안된 책 out
+            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> Integer.parseInt(bookFilterDto.getAnchorDate().orElse("0") ) > Integer.parseInt(LocalDateUtils.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
+
+            //필터3 : history에 없는 데이터
+            for (History history : bookFilterDto.getHistories().orElseGet(() -> new ArrayList<>())) {
+                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB ->
+                {
+                    return
+                            (
+                                    bB.getItemId() == history.getItemId()
+                                            &&
+                                            LocalDate.now().isEqual(history.getCreated().toLocalDate())
+                            )
+                                    || bB.getItemId() != history.getItemId();
+                }).collect(Collectors.toList());
+            }
+
+            aladinBooks.addAll(aladinBestSellerBooks);
+
+            if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
+                bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
+                this.customFilteredList(aladinBooks, bookFilterDto);
+            }
+        } catch (AladinException ae) {
+            throw ae;
+        } catch (Exception e) {
+            log.error("customFilteredList Error: {}", e);
+            throw new AladinException(e.getMessage(), e);
+        }
     }
 }

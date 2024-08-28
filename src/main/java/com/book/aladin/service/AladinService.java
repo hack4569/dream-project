@@ -29,9 +29,9 @@ public class AladinService {
      * @param bookFilterDto
      * @return
      */
-    public Optional<List<AladinBook>> bestSellerList(BookFilterDto bookFilterDto) {
+    public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
         ApiParam apiParam = ApiParam.builder()
-                .querytype(QUERY_TYPE)
+                .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
                 .maxResults(bookFilterDto.getMaxResults()).build();
         return Optional.ofNullable(this.getApi(ITEM_LIST, apiParam).getItem());

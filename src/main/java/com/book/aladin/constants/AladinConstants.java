@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class AladinConstants {
     @Value("${aladin.host}")
     public String aladinHost;
+    public static final String queryType = "BestSeller";
     public static final String ITEM_LOOKUP = "/ttb/api/ItemLookUp.aspx";
 
     public static final String ITEM_LIST = "/ttb/api/ItemList.aspx";

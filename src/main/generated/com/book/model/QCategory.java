@@ -23,10 +23,6 @@ public class QCategory extends EntityPathBase<Category> {
 
     public final StringPath depth1 = createString("depth1");
 
-    public final StringPath mall = createString("mall");
-
-    public final StringPath name = createString("name");
-
     public final StringPath subCid = createString("subCid");
 
     public QCategory(String variable) {

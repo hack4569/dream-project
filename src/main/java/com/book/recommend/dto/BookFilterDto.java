@@ -18,6 +18,7 @@ public class BookFilterDto {
     private int startN = 1;
     private int maxResults = 100;
     private long memberId;
+    private String queryType;
     private Category category;
     private Optional<HashSet<Integer>> finalCids;
     private Optional<String> anchorDate;

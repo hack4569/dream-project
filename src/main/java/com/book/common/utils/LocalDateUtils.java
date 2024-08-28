@@ -1,10 +1,12 @@
 package com.book.common.utils;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class LocalDateUtils {
@@ -96,4 +98,14 @@ public class LocalDateUtils {
         return getLocalDateTime(date, Const.DATETIME_FORMAT);
     }
 
+    public static String getCustomDate(String yyyymmdd) {
+        int year = Integer.parseInt(yyyymmdd.substring(0, 4));
+        int month = Integer.parseInt(yyyymmdd.substring(5, 7));
+        int date = Integer.parseInt(yyyymmdd.substring(8, 10));
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, date);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+        return dateFormatter.format(cal.getTime());
+    }
 }

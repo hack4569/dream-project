@@ -34,15 +34,12 @@ public class RecommendController {
             @Login Member loginMember,
             Model model, CategoryDto categoryDto) {
 
-        //로그인 유무에 따른 로직 구현
-        long memberId = loginMember == null ? 0 : loginMember.getId();
-
         List<RecommendDto> recommendList = new ArrayList<>();
-        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 1));
-        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 2));
-        CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 3));
-        CompletableFuture<List<RecommendDto>> recommendList4 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 4));
-        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(memberId, categoryDto, 0));
+        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 1));
+        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 2));
+        CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 3));
+        CompletableFuture<List<RecommendDto>> recommendList4 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 4));
+        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 0));
         CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3, recommendList4, recommendList5);
         allRecommendList.thenRun(() -> {
             try {

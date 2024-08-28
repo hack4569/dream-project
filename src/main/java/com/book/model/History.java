@@ -21,6 +21,8 @@ public class History extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Column(name = "item_id")
     private long itemId;
 
     public void setMember(Member member) {

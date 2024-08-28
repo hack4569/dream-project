@@ -28,11 +28,13 @@ public class Member {
     @NotEmpty
     private String password;
 
+    @Column(name = "member_type")
+    private String memberType;
     private String sessionId;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private QueryType queryType;
+    private String queryType;
 
     @JsonIgnore
     @OneToMany(mappedBy = "member")
