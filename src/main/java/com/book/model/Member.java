@@ -20,7 +20,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
-    private Long id;
+    private long id;
 
     @NotEmpty
     private String loginId;
@@ -32,9 +32,11 @@ public class Member {
     private String memberType;
     private String sessionId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, name = "query_type")
     private String queryType;
+
+    @Column(length = 20, name = "filter_type")
+    private String fiterType;
 
     @JsonIgnore
     @OneToMany(mappedBy = "member")

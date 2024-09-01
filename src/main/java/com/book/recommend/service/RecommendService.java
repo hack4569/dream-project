@@ -19,10 +19,13 @@ import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
+import com.book.recommend.enumeration.BookFilter;
 import com.book.recommend.exception.RecommendExcption;
+import com.book.recommend.factory.FilterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +62,7 @@ public class RecommendService {
                 .category(category)
                 .startN(slideN)
                 .queryType(Optional.ofNullable(loginMember.getQueryType()).orElse(AladinConstants.queryType))
+                .filterType(Optional.ofNullable(loginMember.getFiterType()).orElse(BookFilter.Default.getName()))
                 .build();
 
         this.customFilteredList(customFilteredBooks, bookFilterDto);
@@ -208,7 +212,7 @@ public class RecommendService {
                 cids = categoryService.findCategories();
             }
 
-            List<AladinBook> aladinBestSellerBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+            List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
             //TODO : 추천 필터는 팩토리 메소드 패턴으로 구현
 
@@ -224,27 +228,10 @@ public class RecommendService {
             bookFilterDto.setAnchorDate(Optional.ofNullable(today));
             bookFilterDto.setHistories(Optional.ofNullable(histories));
 
-            //필터1 : 허용 카테고리만
-            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> bookFilterDto.getFinalCids().orElse(new HashSet<>()).contains(i.getCategoryId())).collect(Collectors.toList());
 
-            //필터2 : 1년도 안된 책 out
-            aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(i -> Integer.parseInt(bookFilterDto.getAnchorDate().orElse("0") ) > Integer.parseInt(LocalDateUtils.getCustomDate(i.getPubDate()))).collect(Collectors.toList());
-
-            //필터3 : history에 없는 데이터
-            for (History history : bookFilterDto.getHistories().orElseGet(() -> new ArrayList<>())) {
-                aladinBestSellerBooks = aladinBestSellerBooks.stream().filter(bB ->
-                {
-                    return
-                            (
-                                    bB.getItemId() == history.getItemId()
-                                            &&
-                                            LocalDate.now().isEqual(history.getCreated().toLocalDate())
-                            )
-                                    || bB.getItemId() != history.getItemId();
-                }).collect(Collectors.toList());
-            }
-
-            aladinBooks.addAll(aladinBestSellerBooks);
+            FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
+            aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
+            aladinBooks.addAll(aladinFilteredBooks);
 
             if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
                 bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);

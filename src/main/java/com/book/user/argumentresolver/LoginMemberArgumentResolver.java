@@ -33,7 +33,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpSession session = request.getSession(false);
 
         if (session == null) {
-            return null;
+            return new Member();
         }
 
         return session.getAttribute(SessionConst.LOGIN_MEMBER);

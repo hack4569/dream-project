@@ -20,6 +20,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
+    public final StringPath fiterType = createString("fiterType");
+
     public final ListPath<History, QHistory> histories = this.<History, QHistory>createList("histories", History.class, QHistory.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -30,7 +32,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath password = createString("password");
 
-    public final EnumPath<com.book.policy.QueryType> queryType = createEnum("queryType", com.book.policy.QueryType.class);
+    public final StringPath queryType = createString("queryType");
 
     public final StringPath sessionId = createString("sessionId");
 
