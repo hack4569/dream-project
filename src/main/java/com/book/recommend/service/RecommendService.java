@@ -214,8 +214,6 @@ public class RecommendService {
 
             List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
-            //TODO : 추천 필터는 팩토리 메소드 패턴으로 구현
-
             //오늘 날짜
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.YEAR, -1);

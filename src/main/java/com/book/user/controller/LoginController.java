@@ -48,7 +48,7 @@ public class LoginController {
             return "user/login";
         }
         Member loginMember = loginService.login(form.getLoginId());
-        if (!PasswordManager.checkPassword(form.getPassword(), loginMember.getPassword())) {
+        if (loginMember == null || !PasswordManager.checkPassword(form.getPassword(), loginMember.getPassword())) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             ScriptUtils.alert(response,"아이디 또는 비밀번호가 맞지 않습니다.");
             return "user/login";
