@@ -23,9 +23,11 @@ public class HistoryService {
         List<History> historyList = historyRepository.findHistoriesByMemberIdAndItemId(loginMember.getId(), bookId);
         Member member = memberRepository.getById(loginMember.getId());
         if (historyList.isEmpty()) {
-            History history = History.createHistory(bookId, member);
-            historyRepository.save(history);
-            //log.debug("save history sucess itemId: "+bookId+"loginId: "+loginMember.getId());
+            if (member.getId() != 0) {
+                History history = History.createHistory(bookId, member);
+                historyRepository.save(history);
+                //log.debug("save history sucess itemId: "+bookId+"loginId: "+loginMember.getId());
+            }
         }
     }
 }

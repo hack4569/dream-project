@@ -76,7 +76,7 @@ public class RecommendController {
 
         if (memberId == 0 || bookId == 0) {
             log.debug("memberId = {}", memberId);
-            throw new UserException("로그인 아이디 또는 책id가 없습니다.");
+            //throw new UserException("로그인 아이디 또는 책id가 없습니다.");
         }
 
         historyService.saveHistory(loginMember, bookId);

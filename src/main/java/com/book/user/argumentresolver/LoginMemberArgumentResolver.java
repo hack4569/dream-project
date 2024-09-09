@@ -30,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         log.info("resolveArgument 실행");
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(true);
         Object loginMember = session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (session == null || loginMember == null) {
             return new Member();
