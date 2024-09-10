@@ -449,10 +449,10 @@
 }
 .summary-content-section__content {
     margin: 28px 0 0;
-    line-height: 1.38;
+    line-height: 1.8;
     font-family: 'Noto Serif KR';
     font-weight: 300;
-    font-size: 1.8rem;
+    font-size: 16px;
     letter-spacing: -1px;
     height: 440px;
     overflow: hidden;
