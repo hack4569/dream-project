@@ -448,13 +448,12 @@
     fill: #E96FB8;
 }
 .summary-content-section__content {
-    margin: 28px 0 0;
-    line-height: 1.8;
+    line-height: 1.6;
     font-family: 'Noto Serif KR';
     font-weight: 300;
     font-size: 16px;
     letter-spacing: -1px;
-    height: 440px;
+    height: 331px;
     overflow: hidden;
 }
 .summary-content-section__content.toc {
@@ -1366,7 +1365,7 @@
 
 @media (max-height: 818px) {
     .summary-content-section--description .summary-content-section__content {
-        font-size: 1.7rem;
+        font-size: 16px;
     }
 
 }
@@ -1375,7 +1374,7 @@
         padding-top: 48px;
     }
     .summary-content-section--description .summary-content-section__content {
-        font-size: 1.5rem;
+        font-size: 16px;
     }
     .summary-content-section--phrase {
         padding-top: 38px;
@@ -1412,7 +1411,7 @@
         padding-top: 28px;
     }
     .summary-content-section--description .summary-content-section__content {
-        font-size: 1.45rem;
+        font-size: 16px;
     }
     .summary-content-section--phrase {
         padding-top: 26px;
