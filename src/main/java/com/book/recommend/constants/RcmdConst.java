@@ -7,7 +7,7 @@ public class RcmdConst {
     public static final int strMaxCount = 150;
 
     public static final int introduceSlide = 2;
-    public static final int paragraphSlide = 2;
+    public static final int paragraphSlide = 3;
 
     public static final int SHOW_BOOKS_COUNT = 4;
 }

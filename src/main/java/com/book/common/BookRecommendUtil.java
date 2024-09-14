@@ -7,7 +7,7 @@ public class BookRecommendUtil {
         String filteredContent = "";
 
         if(StringUtils.hasText(originStr)){
-            filteredContent =originStr.replaceAll("<[^>]*>","");
+            //filteredContent =originStr.replaceAll("<[^>]*>","");
             //모든 태그제거
             filteredContent =originStr.replaceAll("<[^>]*>","");
 

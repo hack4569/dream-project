@@ -207,10 +207,17 @@ class BookSummarySwiper {
 function saveHistory() {
     const itemId = document.querySelector(".book-summary--active input[name=itemId]")?.value;
     if (itemId && !historyItemIds.includes(itemId)) {
-        $.post("/recommend/history/" + itemId, (response) => {
-            historyItemIds.push(itemId);
-        }).fail(function(error) {
-            console.log(error,  "saveHistory : error" + error.responseJSON.message);
+        $.ajax({
+            url: "/recommend/history",
+            type: "POST",
+            contentType: "application/json",  // JSON 형식으로 데이터 전송
+            data: JSON.stringify(parseInt(itemId)),     // itemId를 JSON 형식으로 직렬화
+            success: (response) => {
+                historyItemIds.push(itemId);
+            },
+            error: (error) => {
+                console.log(error, "saveHistory : error" + error.responseJSON.message);
+            }
         });
     }
 }

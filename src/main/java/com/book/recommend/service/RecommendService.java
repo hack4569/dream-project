@@ -103,14 +103,16 @@ public class RecommendService {
                         continue;
                     }
                     String[] phraseArr = filteredPhrase.split("\\.");
-                    String phraseContent = "";
+                    StringBuilder phraseContent = new StringBuilder();
                     int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide;
                     for (int k = 0; k < phraseArrLen; k++) {
-                        phraseContent += phraseArr[k];
+                        phraseContent.append(phraseArr[k])
+                                        .append(". ");
                     }
+                    String phraseContentValue = phraseContent.toString();
                     RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
                             .type("phrase")
-                            .content(phraseContent)
+                            .content(phraseContentValue)
                             .originContent(filteredPhrase)
                             .build();
 
@@ -121,9 +123,17 @@ public class RecommendService {
                 if (recommendCommentList.size() == 0) continue;
             }
 
+            //편집자 추천
+            List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
+            if (!ObjectUtils.isEmpty(mdRecommendList)) {
+                for (MdRecommend mdRecommend : mdRecommendList) {
+                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
+                }
+            }
+
             // 목차
             String toc = book.getSubInfo().getToc();
-            if (toc != null) {
+            if (StringUtils.hasText(toc)) {
                 toc = toc.replaceAll("<(/)?([pP]*)(\\s[pP]*=[^>]*)?(\\s)*(/)?>", "");
                 RecommendCommentDto recommendToc = RecommendCommentDto.builder()
                                 .type("toc")
@@ -132,12 +142,6 @@ public class RecommendService {
                 recommendCommentList.add(recommendToc);
             }
 
-            List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
-            if (!ObjectUtils.isEmpty(mdRecommendList)) {
-                for (MdRecommend mdRecommend : mdRecommendList) {
-                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
-                }
-            }
 
             RecommendDto recommendDto = RecommendDto.builder()
                     .itemId(book.getItemId())
@@ -153,32 +157,35 @@ public class RecommendService {
         }
     }
 
-    //설명 첫번재 문단은 삭제
+
     private List<RecommendCommentDto> filterDescription(String description, List<RecommendCommentDto> recommendCommentList, String type) {
+        //설명 첫번재 문단은 삭제
+        String descriptionParagraph = descriptionParagraphFunc(description);
 
-        String originParagraph = description.replaceAll("(?i)<br>", "");
-        String descriptionParagraph = descriptionParagraphFunc(originParagraph);
-
+        //모든 태그 제거
         String filteredDescriptionParagraph = BookRecommendUtil.filterStr(descriptionParagraph);
         String[] descriptionArr = filteredDescriptionParagraph.split("\\.");
         List<String> descriptionList = Arrays.asList(descriptionArr);
         //글자가 많을 경우 2개 또는 ... 처리
+        int introduceSlide = descriptionList.size() >= 3 && filteredDescriptionParagraph.length() > RcmdConst.strMaxCount * 2 ? RcmdConst.introduceSlide : 1;
         int slide = 0;
-        int introduceSlide = descriptionList.size() >= 5 && filteredDescriptionParagraph.length() > RcmdConst.strMaxCount * 2 ? RcmdConst.introduceSlide : 1;
-
         for (int i = 0; i < introduceSlide; i++) {
-            String content = "";
+            StringBuilder content = new StringBuilder();
             for (int j = 0; content.length() < RcmdConst.strMaxCount; j++) {
                 if (descriptionList.size() <= slide ) {
                     break;
                 }
-                content += descriptionList.get(slide);
+                //int startIdx = descriptionList.size() >= 3 ? slide + 1 : slide;
+
+                content.append(descriptionList.get(slide))
+                        .append(". ");
                 slide++;
             }
+            String contentValue = content.toString();
             if (StringUtils.hasText(content)) {
                 RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
                         .type(type)
-                        .content(content)
+                        .content(contentValue)
                         .originContent(description)
                         .build();
 
@@ -190,8 +197,21 @@ public class RecommendService {
     }
 
     private String descriptionParagraphFunc(String originParagraph) {
-        if ( originParagraph.length() > RcmdConst.strMaxCount ) return originParagraph;
-        if ( originParagraph.length() < RcmdConst.strMinCount ) return "";
+
+        if (StringUtils.hasText(originParagraph)) {
+            if (originParagraph.toLowerCase().contains("<br>")) {
+                List<String> paragraphList = Arrays.stream(originParagraph.toLowerCase().split("<br>"))
+                        .filter(p -> StringUtils.hasText(p) && p.length() > 10)
+                        .collect(Collectors.toList());
+                //paragraphList.stream().collect(Collectors.joining(".")).toString();
+                if (originParagraph.length() < 100 & paragraphList.size() < 4) {
+                    return originParagraph;
+                }else {
+                    paragraphList.remove(0);
+                    return paragraphList.stream().collect(Collectors.joining("<BR>")).toString();
+                }
+            }
+        }
         return originParagraph;
     }
 

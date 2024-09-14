@@ -477,7 +477,7 @@
 }
 .summary-content-section--phrase .summary-content-section__content {
     margin-top: 16px;
-    font-size: 1.65rem;
+    font-size: 24px;
     line-height: 1.5;
 }
 .summary-about {
@@ -1380,7 +1380,7 @@
         padding-top: 38px;
     }
     .summary-content-section--phrase .summary-content-section__content {
-        font-size: 1.5rem;
+        font-size: 24px;
     }
     .summary-content-section--review {
         padding-top: 44px;
@@ -1417,7 +1417,7 @@
         padding-top: 26px;
     }
     .summary-content-section--phrase .summary-content-section__content {
-        font-size: 1.45rem;
+        font-size: 24px;
     }
     .summary-content-section--review {
         padding-top: 12px;

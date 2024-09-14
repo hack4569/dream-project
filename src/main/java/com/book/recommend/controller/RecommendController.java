@@ -10,12 +10,11 @@ import com.book.user.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,7 @@ public class RecommendController {
                 recommendList.addAll(recommendList4.get());
                 recommendList.addAll(recommendList5.get());
             } catch (Exception e) {
-                log.error("error : {}", e);
+                log.error("error : {}", e.getMessage(), e);
             }
         }).join();
 
@@ -67,18 +66,20 @@ public class RecommendController {
     public String index(Model model) {
         return "recommend/introduce";
     }
-    @PostMapping(value = "/history/{bookId}")
-    public void saveHistory(
-            @Login Member loginMember,
-            @PathVariable("bookId") long bookId) {
 
-        long memberId = loginMember == null ? 0 : loginMember.getId();
+    @PostMapping(value = "/history")
+    public ResponseEntity<String> saveHistory(
+            @Login Member loginMember,
+            @RequestBody Integer bookId) {
+
+        long memberId = loginMember.getId();
 
         if (memberId == 0 || bookId == 0) {
             log.debug("memberId = {}", memberId);
             //throw new UserException("로그인 아이디 또는 책id가 없습니다.");
+        } else {
+            historyService.saveHistory(loginMember, bookId);
         }
-
-        historyService.saveHistory(loginMember, bookId);
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
