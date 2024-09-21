@@ -33,7 +33,19 @@
                 </div>
             </form>
         </main>
+            <script>
+                // 현재 페이지 URL에서 쿼리스트링을 가져옵니다.
+                const queryString = window.location.search;
 
+                // URLSearchParams 객체를 생성합니다.
+                const urlParams = new URLSearchParams(queryString);
+
+                // 특정 파라미터 값을 가져옵니다.
+                const paramValue = urlParams.get('msg'); // 'paramName'은 쿼리스트링의 키
+                if (paramValue) {
+                    alert(successMsg[paramValue]);
+                }
+            </script>
     </main>
     </body>
 </html>

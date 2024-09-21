@@ -90,6 +90,14 @@ public class RecommendService {
                 recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, "description");
             }
 
+            //편집자 추천
+            List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
+            if (!ObjectUtils.isEmpty(mdRecommendList)) {
+                for (MdRecommend mdRecommend : mdRecommendList) {
+                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
+                }
+            }
+
             //책속에서 : 책 문장
             Phrase phrase;
             if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {
@@ -121,14 +129,6 @@ public class RecommendService {
                 }
 
                 if (recommendCommentList.size() == 0) continue;
-            }
-
-            //편집자 추천
-            List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
-            if (!ObjectUtils.isEmpty(mdRecommendList)) {
-                for (MdRecommend mdRecommend : mdRecommendList) {
-                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
-                }
             }
 
             // 목차

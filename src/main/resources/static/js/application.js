@@ -38,6 +38,70 @@
             recommendationModal.classList.remove('recommendation-modal--show');
         });
     }
+
+    const popupInfo1 = document.getElementById('popupInfo1');
+    const popupInfo2 = document.getElementById('popupInfo2');
+    const dontShowPopupToday = 'dontShowPopupToday';
+    const dontShowPopupForever = 'dontShowPopupForever';
+    const closeDayChkBox = document.querySelector(".closeDay");
+    const closeForeverChkBox = document.querySelector(".closeForever");
+
+    const dontShowTodayCheckbox = document.getElementById('dont-show-today');
+
+    // 오늘 하루 보지 않기 체크 확인
+    checkPopup(dontShowPopupToday);
+    // 더이상 팝업 보지 않기
+    checkPopup(dontShowPopupForever);
+
+    function checkPopup(popupTag) {
+        if (localStorage.getItem(popupTag)) {
+            let list = localStorage.getItem(popupTag);
+            let popupList = list.split(",");
+            for (let popupId of popupList) {
+                if (popupTag === dontShowPopupToday) {
+                    const storedExpireDate = localStorage.getItem("dontShowPopupTodayTime");
+                    if (checkOverDay(storedExpireDate)) {
+                        localStorage.removeItem('dontShowPopupTodayTime');
+                        localStorage.removeItem(dontShowPopupToday);// 하루가 지나면 쿠키 삭제
+                    } else {
+                        $("#" + popupId).hide();
+                    }
+                } else if (popupTag === dontShowPopupForever) {
+                    if (popupTag === dontShowPopupForever) {
+                        $("#" + popupId).hide();
+                    }
+                }
+            }
+        }
+    }
+
+    // 닫기 버튼 클릭 시 팝업 닫기
+    closeDayChkBox.addEventListener('click', function(e) {
+        e.preventDefault();
+        // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
+        if (closeDayChkBox.checked) {
+            const now = new Date();
+            const expireDate = now.setHours(23, 59, 59, 999); // 오늘 자정까지 유효
+            localStorage.setItem('dontShowPopupTodayTime', expireDate);
+            const popupId = $(this).closest("dialog").prop("id");
+            localStorage.setItem(dontShowPopupToday,popupId);
+        } else {
+            localStorage.setItem(dontShowPopupToday, "");
+        }
+    });
+
+    closeForeverChkBox.addEventListener('click', function(){
+        // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
+        if (closeForeverChkBox.checked) {
+            const popupId = $(this).closest("dialog").prop("id");
+            localStorage.setItem(dontShowPopupForever,popupId);
+        } else {
+            localStorage.setItem(dontShowPopupForever, "");
+        }
+    });
+    function checkOverDay(storedExpireDate) {
+        return storedExpireDate && new Date() > new Date(parseInt(storedExpireDate));
+    }
 })(document);
 
 //메인 슬라이드 전체적인 구조

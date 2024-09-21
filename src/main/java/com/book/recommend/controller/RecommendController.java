@@ -36,16 +36,12 @@ public class RecommendController {
         List<RecommendDto> recommendList = new ArrayList<>();
         CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 1));
         CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 2));
-        CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 3));
-        CompletableFuture<List<RecommendDto>> recommendList4 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 4));
         CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 0));
-        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3, recommendList4, recommendList5);
+        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList5);
         allRecommendList.thenRun(() -> {
             try {
                 recommendList.addAll(recommendList1.get());
                 recommendList.addAll(recommendList2.get());
-                recommendList.addAll(recommendList3.get());
-                recommendList.addAll(recommendList4.get());
                 recommendList.addAll(recommendList5.get());
             } catch (Exception e) {
                 log.error("error : {}", e.getMessage(), e);
@@ -76,6 +72,7 @@ public class RecommendController {
 
         if (memberId == 0 || bookId == 0) {
             log.debug("memberId = {}", memberId);
+            return new ResponseEntity<>("fail", HttpStatus.OK);
             //throw new UserException("로그인 아이디 또는 책id가 없습니다.");
         } else {
             historyService.saveHistory(loginMember, bookId);

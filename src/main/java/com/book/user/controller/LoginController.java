@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j
 @Controller
@@ -97,13 +99,13 @@ public class LoginController {
             Member member = Member.builder().loginId(form.getLoginId()).password(hashedPassword).build();
 
             loginService.saveMember(member);
-            ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/users/login");
+            //response.sendRedirect("/users/login");
+            //ScriptUtils.alertAndRedirect(response, "회원가입이 완료되었습니다. 좋은 책 찾길 바랍니다^^", "/users/login");
         } catch (Exception e) {
             log.error("joinAction error = {}", e.getMessage(), e);
             return "user/join";
         }
-
-        return "redirect:/users/login";
+        return "redirect:/users/login?msg=joinSuccessMsg";
     }
 
     @GetMapping("/logout")

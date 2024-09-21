@@ -17,11 +17,9 @@ public class ScriptUtils {
         out.flush();
     }
 
-    public static void alertAndRedirect(HttpServletResponse response, String msg, String nextPage) throws IOException {
+    public static void rdirect(HttpServletResponse response, String msg, String nextPage) throws IOException {
         init(response);
-        PrintWriter out = response.getWriter();
-        out.println("<script>alert('"+msg+"'); location.href='"+nextPage+"';</script> ");
-        out.flush();
+        response.sendRedirect(nextPage);
     }
 
     public static void alertAndBack(HttpServletResponse response, String msg) throws IOException {
