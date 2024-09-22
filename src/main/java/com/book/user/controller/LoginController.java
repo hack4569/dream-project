@@ -113,7 +113,6 @@ public class LoginController {
         //기존에 세션이 있으면 가져오고, 없으면 생성하지 않음.
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate();
             Cookie loginCookie = WebUtils.getCookie(request, SessionConst.LOGIN_MEMBER);
             if (loginCookie != null) {
                 loginCookie.setPath("/");
@@ -123,6 +122,7 @@ public class LoginController {
                 if (member != null) {
                     member.setSessionId(null);
                     memberRepository.save(member);
+                    session.invalidate();
                 }
             }
         }

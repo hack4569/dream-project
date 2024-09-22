@@ -30,6 +30,7 @@ public class Member {
 
     @Column(name = "member_type")
     private String memberType;
+    @Column(name="session_id")
     private String sessionId;
 
     @Column(length = 20, name = "query_type")

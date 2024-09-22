@@ -75,30 +75,35 @@
         }
     }
 
-    // 닫기 버튼 클릭 시 팝업 닫기
-    closeDayChkBox.addEventListener('click', function(e) {
-        e.preventDefault();
-        // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
-        if (closeDayChkBox.checked) {
-            const now = new Date();
-            const expireDate = now.setHours(23, 59, 59, 999); // 오늘 자정까지 유효
-            localStorage.setItem('dontShowPopupTodayTime', expireDate);
-            const popupId = $(this).closest("dialog").prop("id");
-            localStorage.setItem(dontShowPopupToday,popupId);
-        } else {
-            localStorage.setItem(dontShowPopupToday, "");
-        }
-    });
+    if (closeDayChkBox) {
+        // 닫기 버튼 클릭 시 팝업 닫기
+        closeDayChkBox.addEventListener('click', function(e) {
+            e.preventDefault();
+            // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
+            if (closeDayChkBox.checked) {
+                const now = new Date();
+                const expireDate = now.setHours(23, 59, 59, 999); // 오늘 자정까지 유효
+                localStorage.setItem('dontShowPopupTodayTime', expireDate);
+                const popupId = $(this).closest("dialog").prop("id");
+                localStorage.setItem(dontShowPopupToday,popupId);
+            } else {
+                localStorage.setItem(dontShowPopupToday, "");
+            }
+        });
+    }
 
-    closeForeverChkBox.addEventListener('click', function(){
-        // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
-        if (closeForeverChkBox.checked) {
-            const popupId = $(this).closest("dialog").prop("id");
-            localStorage.setItem(dontShowPopupForever,popupId);
-        } else {
-            localStorage.setItem(dontShowPopupForever, "");
-        }
-    });
+    if (closeForeverChkBox) {
+        closeForeverChkBox.addEventListener('click', function(){
+            // '오늘 하루 보지 않기'가 체크되었을 경우 Local Storage에 기록
+            if (closeForeverChkBox.checked) {
+                const popupId = $(this).closest("dialog").prop("id");
+                localStorage.setItem(dontShowPopupForever,popupId);
+            } else {
+                localStorage.setItem(dontShowPopupForever, "");
+            }
+        });
+    }
+
     function checkOverDay(storedExpireDate) {
         return storedExpireDate && new Date() > new Date(parseInt(storedExpireDate));
     }
