@@ -65,6 +65,34 @@ public class RecommendService {
                 .filterType(Optional.ofNullable(loginMember.getFiterType()).orElse(BookFilter.Default.getName()))
                 .build();
 
+
+        String subCid = Optional.ofNullable(bookFilterDto.getCategory().getSubCid()).orElse("");
+
+        HashSet<Integer> cids = new HashSet<>();
+        //사용자가 희망하는 카테고리가 있을 경우
+        if (StringUtils.hasText(subCid)) {
+//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
+//                for (Category categoryMap : list) {
+//                    String cid = Integer.toString(categoryMap.getCid());
+//                    aladinAcceptCategoryList.add(cid);
+//                }
+        } else {
+            cids = categoryService.findCategories();
+        }
+
+        //오늘 날짜
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+        String today = dateFormatter.format(cal.getTime());
+
+        List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
+
+        bookFilterDto.setFinalCids(Optional.ofNullable(cids));
+        bookFilterDto.setAnchorDate(Optional.ofNullable(today));
+        bookFilterDto.setHistories(Optional.ofNullable(histories));
+
+
         this.customFilteredList(customFilteredBooks, bookFilterDto);
 
         //책소개
@@ -218,34 +246,8 @@ public class RecommendService {
     public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
         try {
-            String subCid = Optional.ofNullable(bookFilterDto.getCategory().getSubCid()).orElse("");
-
-            HashSet<Integer> cids = new HashSet<>();
-            //사용자가 희망하는 카테고리가 있을 경우
-            if (StringUtils.hasText(subCid)) {
-//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
-//                for (Category categoryMap : list) {
-//                    String cid = Integer.toString(categoryMap.getCid());
-//                    aladinAcceptCategoryList.add(cid);
-//                }
-            } else {
-                cids = categoryService.findCategories();
-            }
 
             List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
-
-            //오늘 날짜
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.YEAR, -1);
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
-            String today = dateFormatter.format(cal.getTime());
-
-            List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
-
-            bookFilterDto.setFinalCids(Optional.ofNullable(cids));
-            bookFilterDto.setAnchorDate(Optional.ofNullable(today));
-            bookFilterDto.setHistories(Optional.ofNullable(histories));
-
 
             FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
             aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
