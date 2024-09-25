@@ -99,7 +99,6 @@ public class RecommendService {
         this.introduceBook(slideRecommendList, customFilteredBooks);
 
         return slideRecommendList;
-
     }
 
     public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {
