@@ -245,23 +245,15 @@ public class RecommendService {
 
     public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
-        try {
+        List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
-            List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+        FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
+        aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
+        aladinBooks.addAll(aladinFilteredBooks);
 
-            FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
-            aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
-            aladinBooks.addAll(aladinFilteredBooks);
-
-            if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
-                bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
-                this.customFilteredList(aladinBooks, bookFilterDto);
-            }
-        } catch (AladinException ae) {
-            throw ae;
-        } catch (Exception e) {
-            log.error("customFilteredList Error: {}", e);
-            throw new AladinException(e.getMessage(), e);
+        if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
+            bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
+            this.customFilteredList(aladinBooks, bookFilterDto);
         }
     }
 }
