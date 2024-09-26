@@ -34,7 +34,7 @@ public class AladinService {
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
                 .maxResults(bookFilterDto.getMaxResults()).build();
-        log.info("test");
+        log.info("test1");
         return Optional.ofNullable(this.getApi(ITEM_LIST, apiParam).getItem());
     }
 
