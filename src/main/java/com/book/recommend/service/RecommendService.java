@@ -49,7 +49,7 @@ public class RecommendService {
 
     @Transactional
     public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, int slideN) {
-
+        log.info("getRecommendList 호출");
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
         Category category = modelMapper.map(categoryDto, Category.class);
@@ -245,12 +245,13 @@ public class RecommendService {
 
     public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
+        log.info("customFilteredList 호출");
         List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
         aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
         aladinBooks.addAll(aladinFilteredBooks);
-
+        log.info(aladinBooks.size() + "알라딘 책 개수," + bookFilterDto.getStartIdx() + "startIdx");
         if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
             bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
             this.customFilteredList(aladinBooks, bookFilterDto);
