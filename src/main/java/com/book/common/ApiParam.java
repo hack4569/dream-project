@@ -1,6 +1,7 @@
 package com.book.common;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
+@Slf4j
 @Getter
 @Setter
 @AllArgsConstructor
@@ -49,7 +51,7 @@ public class ApiParam{
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error("error : {}", e.getMessage(), e);
         }
         return map;
     }
