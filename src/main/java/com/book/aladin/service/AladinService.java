@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,15 +53,17 @@ public class AladinService {
     private AladinMaster getApi(String path, ApiParam apiParam) {
         ResponseEntity<AladinMaster> response = aladinApi
                 .get()
-                .uri(uriBuilder -> uriBuilder
+                .uri(uriBuilder -> {
+                    String url = uriBuilder
                         .path(path)
                         .queryParams(apiParam.getApiParamMap())
-                        .build()
-                )
+                        .build().toString();
+                    log.info("get Api : " + url);
+                    return URI.create(url);
+                })
                 .retrieve()
                 .toEntity(AladinMaster.class)
                 .block();
-        log.info("getApi apiParam.getApiParamMap() : {}", apiParam.getApiParamMap());
         return response.getBody();
     }
 }
