@@ -60,6 +60,7 @@ public class AladinService {
                 .retrieve()
                 .toEntity(AladinMaster.class)
                 .block();
+        log.info("getApi apiParam.getApiParamMap() : {}", apiParam.getApiParamMap());
         return response.getBody();
     }
 }
