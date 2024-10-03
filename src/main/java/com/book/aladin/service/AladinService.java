@@ -31,12 +31,12 @@ public class AladinService {
      * @return
      */
     public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
+        log.info("bookList :::::::::::::::::::::::::::::" + ttbkey);
         ApiParam apiParam = ApiParam.builder()
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
                 .ttbkey(ttbkey)
                 .maxResults(bookFilterDto.getMaxResults()).build();
-        log.info("test4");
         return Optional.ofNullable(this.getApi(AladinConstants.ITEM_LIST, apiParam).getItem());
     }
 
