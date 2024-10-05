@@ -10,7 +10,6 @@ import com.book.category.dto.CategoryDto;
 import com.book.category.service.CategoryService;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
-import com.book.common.utils.LocalDateUtils;
 import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
 import com.book.model.History;
@@ -25,8 +24,7 @@ import com.book.recommend.factory.FilterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.lang.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -34,7 +32,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +43,8 @@ public class RecommendService {
     private final CategoryService categoryService;
     private final AladinService aladinService;
     private final ModelMapper modelMapper = new ModelMapper();
+    @Value("${aladin.ttbkey}")
+    private String ttbkey;
 
     @Transactional
     public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, int slideN) {
@@ -106,7 +105,9 @@ public class RecommendService {
         for (int i = 0; i < aladinBestSellerBooks.size(); i++) {
             List<RecommendCommentDto> recommendCommentList = new ArrayList<>();
             int maxLength = 2;
-            ApiParam apiParam1 = ApiParam.builder().itemId(aladinBestSellerBooks.get(i).getIsbn13()).build();
+            ApiParam apiParam1 = ApiParam.builder()
+                    .itemId(aladinBestSellerBooks.get(i).getIsbn13())
+                    .ttbkey(ttbkey).build();
 
             List<AladinBook> aladinBooks = aladinService.getAladinDetail(apiParam1).orElseThrow(() -> new AladinException("상품 조회중 에러가 발생하였습니다."));
 
