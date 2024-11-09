@@ -206,6 +206,7 @@ public class RecommendService {
                 }
                 //int startIdx = descriptionList.size() >= 3 ? slide + 1 : slide;
 
+
                 content.append(descriptionList.get(slide))
                         .append(". ");
                 slide++;
