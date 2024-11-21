@@ -249,11 +249,12 @@ public class RecommendService {
     {
         log.info("customFilteredList 호출");
         List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+        log.info("알라딘 책 개수," + aladinFilteredBooks.size());
 
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
         aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
         aladinBooks.addAll(aladinFilteredBooks);
-        log.info(aladinBooks.size() + "알라딘 책 개수," + bookFilterDto.getStartIdx() + "startIdx");
+
         if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
             bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
             this.customFilteredList(aladinBooks, bookFilterDto);
