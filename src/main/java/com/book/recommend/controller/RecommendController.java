@@ -1,11 +1,13 @@
 package com.book.recommend.controller;
 
 import com.book.category.dto.CategoryDto;
+import com.book.category.service.CategoryService;
 import com.book.history.repository.HistoryRepository;
 import com.book.history.service.HistoryService;
 import com.book.model.History;
 import com.book.model.Member;
 import com.book.recommend.dto.RecommendDto;
+import com.book.recommend.dto.RecommendParam;
 import com.book.recommend.service.RecommendService;
 import com.book.user.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +16,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -31,26 +33,56 @@ public class RecommendController {
     private final RecommendService recommendService;
     private final HistoryService historyService;
     private final HistoryRepository historyRepository;
+    private final CategoryService categoryService;
 
     @GetMapping(value = "/")
     public String index(
             @Login Member loginMember,
             Model model, CategoryDto categoryDto) {
 
-        List<History> histories = historyRepository.findHistoryByMemberId(loginMember.getId());
-
         List<RecommendDto> recommendList = new ArrayList<>();
-        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 1));
-        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 2));
-        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 0));
+        List<History> histories = historyRepository.findHistoryByMemberId(loginMember.getId());
+        String subCid = Optional.ofNullable(categoryDto.getSubCid()).orElse("");
 
+        HashSet<Integer> cids = new HashSet<>();
+        //사용자가 희망하는 카테고리가 있을 경우
+        if (StringUtils.hasText(subCid)) {
+//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
+//                for (Category categoryMap : list) {
+//                    String cid = Integer.toString(categoryMap.getCid());
+//                    aladinAcceptCategoryList.add(cid);
+//                }
+        } else {
+            cids.addAll(categoryService.findCategories());
+        }
 
-        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList5);
+        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
+                .member(loginMember)
+                .categoryDto(categoryDto)
+                .histories(histories)
+                .slideN(1)
+                .cids(cids)
+                .build()));
+        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
+                .member(loginMember)
+                .categoryDto(categoryDto)
+                .histories(histories)
+                .slideN(2)
+                .cids(cids)
+                .build()));
+        CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
+                .member(loginMember)
+                .categoryDto(categoryDto)
+                .histories(histories)
+                .slideN(3)
+                .cids(cids)
+                .build()));
+        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3);
         allRecommendList.thenRun(() -> {
             try {
                 recommendList.addAll(recommendList1.get());
                 recommendList.addAll(recommendList2.get());
-                recommendList.addAll(recommendList5.get());
+                recommendList.addAll(recommendList3.get());
             } catch (Exception e) {
                 log.error("error : {}", e.getMessage(), e);
             }

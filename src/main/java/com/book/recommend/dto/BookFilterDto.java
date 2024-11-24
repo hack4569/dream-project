@@ -26,7 +26,7 @@ public class BookFilterDto {
     private Optional<List<History>> histories;
 
     public void setStartIdx(int startIdx) {
-        if (this.startN == startIdx % 3) {
+        if (this.startN == startIdx % 4) {
             this.startIdx = startIdx;
         }else {
             setStartIdx(startIdx+1);

@@ -31,7 +31,8 @@ public class AladinService {
      * @return
      */
     public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
-        log.info("bookList :::::::::::::::::::::::::::::" + ttbkey);
+        log.debug("bookList :::::::::::::::::::::::::::::" + ttbkey);
+        log.debug("bookFilterDto.getStartIdx() : {}", bookFilterDto.getStartIdx());
         ApiParam apiParam = ApiParam.builder()
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())

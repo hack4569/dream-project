@@ -48,8 +48,14 @@ public class RecommendService {
     private String ttbkey;
 
     @Transactional
-    public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, List<History> histories, int slideN) {
+    public List<RecommendDto> getRecommendList(RecommendParam recommendParam) {
 
+        Member loginMember = recommendParam.getMember();
+        CategoryDto categoryDto = recommendParam.getCategoryDto();
+        List<History> histories = recommendParam.getHistories();
+        HashSet<Integer> cids = recommendParam.getCids();
+        int slideN = recommendParam.getSlideN();
+        log.info("getRecommendList slideN : {}", slideN);
         log.info("getRecommendList 호출");
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
@@ -61,25 +67,11 @@ public class RecommendService {
         BookFilterDto bookFilterDto = BookFilterDto.builder()
                 .memberId(loginMember.getId())
                 .category(category)
+                .startIdx(slideN)
                 .startN(slideN)
                 .queryType(Optional.ofNullable(loginMember.getQueryType()).orElse(AladinConstants.queryType))
                 .filterType(Optional.ofNullable(loginMember.getFiterType()).orElse(BookFilter.Default.getName()))
                 .build();
-
-
-        String subCid = Optional.ofNullable(bookFilterDto.getCategory().getSubCid()).orElse("");
-
-        HashSet<Integer> cids = new HashSet<>();
-        //사용자가 희망하는 카테고리가 있을 경우
-        if (StringUtils.hasText(subCid)) {
-//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
-//                for (Category categoryMap : list) {
-//                    String cid = Integer.toString(categoryMap.getCid());
-//                    aladinAcceptCategoryList.add(cid);
-//                }
-        } else {
-            cids = categoryService.findCategories();
-        }
 
         //오늘 날짜
         Calendar cal = Calendar.getInstance();
