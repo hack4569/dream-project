@@ -1,20 +1,23 @@
 package com.book.recommend.controller;
 
 import com.book.category.dto.CategoryDto;
-import com.book.exception.UserException;
+import com.book.history.repository.HistoryRepository;
 import com.book.history.service.HistoryService;
+import com.book.model.History;
 import com.book.model.Member;
 import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.service.RecommendService;
 import com.book.user.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +30,21 @@ import java.util.concurrent.CompletableFuture;
 public class RecommendController {
     private final RecommendService recommendService;
     private final HistoryService historyService;
+    private final HistoryRepository historyRepository;
 
     @GetMapping(value = "/")
     public String index(
             @Login Member loginMember,
             Model model, CategoryDto categoryDto) {
 
+        List<History> histories = historyRepository.findHistoryByMemberId(loginMember.getId());
+
         List<RecommendDto> recommendList = new ArrayList<>();
-        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 1));
-        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 2));
-        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, 0));
+        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 1));
+        CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 2));
+        CompletableFuture<List<RecommendDto>> recommendList5 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(loginMember, categoryDto, histories, 0));
+
+
         CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList5);
         allRecommendList.thenRun(() -> {
             try {

@@ -18,6 +18,7 @@ import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
+import com.book.recommend.dto.RecommendParam;
 import com.book.recommend.enumeration.BookFilter;
 import com.book.recommend.exception.RecommendExcption;
 import com.book.recommend.factory.FilterFactory;
@@ -47,7 +48,8 @@ public class RecommendService {
     private String ttbkey;
 
     @Transactional
-    public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, int slideN) {
+    public List<RecommendDto> getRecommendList(Member loginMember, CategoryDto categoryDto, List<History> histories, int slideN) {
+
         log.info("getRecommendList 호출");
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
@@ -84,8 +86,6 @@ public class RecommendService {
         cal.add(Calendar.YEAR, -1);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
         String today = dateFormatter.format(cal.getTime());
-
-        List<History> histories = historyRepository.findHistoryByMemberId(bookFilterDto.getMemberId());
 
         bookFilterDto.setFinalCids(Optional.ofNullable(cids));
         bookFilterDto.setAnchorDate(Optional.ofNullable(today));
