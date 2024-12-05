@@ -31,14 +31,13 @@ public class AladinService {
      * @return
      */
     public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
-        log.debug("bookList :::::::::::::::::::::::::::::" + ttbkey);
-        log.debug("bookFilterDto.getStartIdx() : {}", bookFilterDto.getStartIdx());
         ApiParam apiParam = ApiParam.builder()
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
                 .ttbkey(ttbkey)
                 .maxResults(bookFilterDto.getMaxResults()).build();
-        return Optional.ofNullable(this.getApi(AladinConstants.ITEM_LIST, apiParam).getItem());
+        var aladinBooks = Optional.ofNullable(this.getApi(AladinConstants.ITEM_LIST, apiParam).getItem());
+        return aladinBooks;
     }
 
     /**
@@ -54,14 +53,11 @@ public class AladinService {
     private AladinMaster getApi(String path, ApiParam apiParam) {
         ResponseEntity<AladinMaster> response = aladinApi
                 .get()
-                .uri(uriBuilder -> {
-                    String url = uriBuilder
+                .uri(uriBuilder -> uriBuilder
                         .path(path)
                         .queryParams(apiParam.getApiParamMap())
-                        .build().toString();
-                    log.info("get Api : " + url);
-                    return URI.create(url);
-                })
+                        .build()
+                )
                 .retrieve()
                 .toEntity(AladinMaster.class)
                 .block();

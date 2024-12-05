@@ -51,7 +51,7 @@ public class ApiParam{
         }
         catch (Exception e)
         {
-            log.error("error : {}", e.getMessage(), e);
+            log.error("getApiParamMap error : {}", e.getMessage(), e);
         }
         return map;
     }

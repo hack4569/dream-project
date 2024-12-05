@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class DefaultFilter implements FilterService{
     @Override
     public List<AladinBook> filter(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
+        log.info("필터 전 : {}", aladinBooks.size());
         //필터1 : 허용 카테고리만
         aladinBooks = aladinBooks.stream().filter(i -> bookFilterDto.getFinalCids().orElse(new HashSet<>()).contains(i.getCategoryId())).collect(Collectors.toList());
         log.info("필터1 : {}", aladinBooks.size());

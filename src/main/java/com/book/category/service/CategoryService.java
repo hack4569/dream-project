@@ -29,7 +29,7 @@ public class CategoryService {
         List<String> depth1s = Arrays.stream(aladinAcceptCategory.split(",")).collect(Collectors.toList());
         List<Category> categories = categoryRepository.findCategoriesByDepth1In(depth1s);
         HashSet<Integer> cids = categories.stream().map(category -> category.getCid()).collect(Collectors.toCollection(HashSet::new));
-
+        log.info("findCategories cids : {}", cids.size());
         return cids;
     }
 }
