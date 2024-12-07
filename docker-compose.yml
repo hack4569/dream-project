@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    container_name: jenkins-server
+    ports:
+      - "8088:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    restart: on-failure
+    networks:
+      - ci-cd-network  # jenkins는 ci-cd-network 네트워크에 연결
+
+  springboot-app:
+    image: bk-recommend
+    container_name: bk-recommend-container
+    ports:
+      - "8080:8080"
+    networks:
+      - ci-cd-network  # springboot-app도 같은 네트워크에 연결
+
+volumes:
+  jenkins_home:
+
+networks:
+  ci-cd-network:  # ci-cd-network라는 네트워크 정의
