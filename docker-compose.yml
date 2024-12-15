@@ -15,7 +15,7 @@ services:
       - ci-cd-network  # jenkins는 ci-cd-network 네트워크에 연결
 
   springboot-app:
-    image: bk-recommend
+    image: hack4569/bk-recommend
     container_name: bk-recommend-container
     ports:
       - "8080:8080"
