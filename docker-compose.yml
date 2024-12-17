@@ -10,7 +10,6 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock  # Docker 소켓 마운트
-      - /home/ubuntu/shared:/shared
     restart: on-failure
     networks:
       - ci-cd-network  # jenkins는 ci-cd-network 네트워크에 연결
@@ -20,11 +19,9 @@ services:
     container_name: bk-recommend-container
     ports:
       - "8080:8080"
-    volumes:
-      - /home/ubuntu/shared:/app
     networks:
       - ci-cd-network  # springboot-app도 같은 네트워크에 연결
-    command: ["java", "-jar", "/app/app.jar"]  # 공유된 JAR 파일 실행
+
 volumes:
   jenkins_home:
 
