@@ -1,3 +1,4 @@
+alert("test");
 ((doc) => {
     // 헤더에 있는 햄버거 버튼(메뉴 열기)입니다. 누르면 배경이 어두워지면서 메뉴가 열립니다.
     const showMenuButton = doc.querySelector('.global-header__show-menu-button');
