@@ -47,11 +47,6 @@ public class RecommendController {
         HashSet<Integer> cids = new HashSet<>();
         //사용자가 희망하는 카테고리가 있을 경우
         if (StringUtils.hasText(subCid)) {
-//                List<Category> list = categoryMapper.getCategoryByParam(bookFilterDto.getCategory());
-//                for (Category categoryMap : list) {
-//                    String cid = Integer.toString(categoryMap.getCid());
-//                    aladinAcceptCategoryList.add(cid);
-//                }
         } else {
             cids.addAll(categoryService.findCategories());
         }
