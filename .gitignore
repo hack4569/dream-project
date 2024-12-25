@@ -11,6 +11,9 @@
 /.idea/
 
 # 설정 파일
+*.env
+application*.properties
+application*.yml
 
 HELP.md
 .gradle
