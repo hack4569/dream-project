@@ -1,3 +1,20 @@
+# Java와 Gradle/Maven 공통
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# 디렉토리
+/target/
+/.gradle/
+/.idea/
+
+# 설정 파일
+*.env
+application*.properties
+application*.yml
+
 HELP.md
 .gradle
 build/
