@@ -2,10 +2,16 @@ plugins {
 	id 'org.springframework.boot' version '2.6.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'groovy'
 	id 'idea'
 	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'java-library'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 group = 'com.book'
 version = '0.0.1-SNAPSHOT'
@@ -20,9 +26,14 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
-
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.1"  // Spring Boot 2.6.4와 호환되는 버전
+	}
+}
 
 ext{
 	querydslSrcDir = 'src/main/generated'
@@ -48,14 +59,21 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation "commons-lang:commons-lang:2.6"
-	implementation 'mysql:mysql-connector-java'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
 	implementation "org.springframework.boot:spring-boot-starter-webflux" // 여러분의 스프링 부트 버전에 맞게 조정
 	implementation "org.modelmapper:modelmapper:2.4.4"
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
+	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
  	runtimeOnly 'com.h2database:h2'
+}
+
+test {
+	useJUnitPlatform()
+	include '**/*Test.*' // 모든 테스트 포함
 }
 
 querydsl {
@@ -77,10 +95,6 @@ idea {
 	module {
 		generatedSourceDirs += file(querydslSrcDir)
 	}
-}
-
-test {
-	useJUnitPlatform()
 }
 
 compileQuerydsl {
