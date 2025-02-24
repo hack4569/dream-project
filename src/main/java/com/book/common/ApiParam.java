@@ -51,7 +51,7 @@ public class ApiParam{
         }
         catch (Exception e)
         {
-            log.error("getApiParamMap error : {}", e.getMessage(), e);
+            log.error("AladinApiParam getApiParamMap error : {}", e.getMessage(), e);
         }
         return map;
     }

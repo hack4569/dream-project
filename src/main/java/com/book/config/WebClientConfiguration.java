@@ -10,8 +10,14 @@ public class WebClientConfiguration {
     @Value("${aladin.host}")
     public String aladinHost;
 
+    @Value("${gpt.host}")
+    public String gptHost;
+
     @Bean
     public WebClient aladinApi() {
         return WebClient.create(aladinHost);
     }
+
+    @Bean
+    public WebClient gptApi() {return WebClient.create(gptHost);}
 }

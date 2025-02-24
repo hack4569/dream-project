@@ -7,10 +7,13 @@ import com.book.aladin.domain.Phrase;
 import com.book.aladin.exception.AladinException;
 import com.book.aladin.service.AladinService;
 import com.book.category.dto.CategoryDto;
-import com.book.category.service.CategoryService;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
-import com.book.history.repository.HistoryRepository;
+import com.book.gpt.domain.GptMessage;
+import com.book.gpt.domain.GptRequest;
+import com.book.gpt.domain.GptResponse;
+import com.book.gpt.dto.GptParamDto;
+import com.book.gpt.service.GptService;
 import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Member;
@@ -40,9 +43,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RecommendService {
-    private final HistoryRepository historyRepository;
-    private final CategoryService categoryService;
     private final AladinService aladinService;
+    private final GptService gptService;
     private final ModelMapper modelMapper = new ModelMapper();
     @Value("${aladin.ttbkey}")
     private String ttbkey;
@@ -55,8 +57,6 @@ public class RecommendService {
         List<History> histories = recommendParam.getHistories();
         HashSet<Integer> cids = recommendParam.getCids();
         int slideN = recommendParam.getSlideN();
-        log.info("getRecommendList slideN : {}", slideN);
-        log.info("getRecommendList 호출");
         List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
         List<AladinBook> customFilteredBooks = new ArrayList<>();
         Category category = modelMapper.map(categoryDto, Category.class);
@@ -100,7 +100,6 @@ public class RecommendService {
             ApiParam apiParam1 = ApiParam.builder()
                     .itemId(aladinBestSellerBooks.get(i).getIsbn13())
                     .ttbkey(ttbkey).build();
-
             List<AladinBook> aladinBooks = aladinService.getAladinDetail(apiParam1).orElseThrow(() -> new AladinException("상품 조회중 에러가 발생하였습니다."));
 
             AladinBook book = aladinBooks.get(0);
@@ -119,6 +118,18 @@ public class RecommendService {
                 }
             }
 
+            //gpt 책 속 명언 추출
+            String bookName = "참을 수 없는 존재의 가벼움";
+            List list = new ArrayList();
+            GptMessage gptMessage = new GptMessage();
+            gptMessage.setRole("user");
+            gptMessage.setContent(bookName + " 책 속 명언 3개만 찾아줘");
+            list.add(gptMessage);
+
+            GptParamDto gptParamDto = GptParamDto.builder()
+                    .gptMessageList(list).build();
+            String path = "/v1/models/completions";
+            GptResponse gptResponse = gptService.getResponse(path, gptParamDto);
             //책속에서 : 책 문장
             Phrase phrase;
             if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {
@@ -239,9 +250,7 @@ public class RecommendService {
 
     public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
-        log.info("customFilteredList 호출");
         List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
-        log.info("알라딘 책 개수," + aladinFilteredBooks.size());
 
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
         aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
