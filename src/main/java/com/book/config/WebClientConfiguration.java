@@ -13,11 +13,20 @@ public class WebClientConfiguration {
     @Value("${gpt.host}")
     public String gptHost;
 
+    @Value("${gpt.api_key}")
+    private String gptApiKey;
+
     @Bean
     public WebClient aladinApi() {
         return WebClient.create(aladinHost);
     }
 
     @Bean
-    public WebClient gptApi() {return WebClient.create(gptHost);}
+    public WebClient gptApi() {
+        return WebClient.builder()
+                .baseUrl(gptHost)
+                .defaultHeader("Authorization", "Bearer " + gptApiKey)
+                .defaultHeader("Content-Type", "application/json")
+                .build();
+    }
 }

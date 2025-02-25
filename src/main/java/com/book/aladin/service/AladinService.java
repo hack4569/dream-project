@@ -5,17 +5,13 @@ import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.exception.AladinException;
 import com.book.common.ApiParam;
-import com.book.common.CommonUtil;
-import com.book.common.service.CommonApiService;
 import com.book.recommend.dto.BookFilterDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -28,9 +24,8 @@ public class AladinService {
     @Value("${aladin.ttbkey}")
     private String ttbkey;
 
-    @Qualifier("aladinApi")
     private final WebClient aladinApi;
-    private final CommonApiService commonApiService;
+
     /**
      * 상품 목록
      * @param bookFilterDto
@@ -42,8 +37,11 @@ public class AladinService {
                 .start(bookFilterDto.getStartIdx())
                 .ttbkey(ttbkey)
                 .maxResults(bookFilterDto.getMaxResults()).build();
-        MultiValueMap maps = CommonUtil.getApiParamMap(apiParam);
-        return Optional.ofNullable(commonApiService.getApi(aladinApi, AladinConstants.ITEM_LIST, maps, AladinMaster.class, "").getItem());
+        var aladinBooks = Optional.ofNullable(this.getApi(AladinConstants.ITEM_LIST, apiParam).getItem());
+        if (aladinBooks.isEmpty()) {
+            throw new AladinException("상품조회시 데이터가 없습니다.");
+        }
+        return aladinBooks;
     }
 
     /**
@@ -52,8 +50,7 @@ public class AladinService {
      * @return
      */
     public Optional<List<AladinBook>> getAladinDetail(ApiParam apiParam) {
-        MultiValueMap maps = CommonUtil.getApiParamMap(apiParam);
-        return Optional.ofNullable(commonApiService.getApi(aladinApi, AladinConstants.ITEM_LOOKUP, maps, AladinMaster.class, "").getItem());
+        return Optional.ofNullable(this.getApi(AladinConstants.ITEM_LOOKUP, apiParam).getItem());
         //this.getApi(ITEM_LOOKUP, apiParam).orElseThrow(()-> new AladinException("상품 상세 조회 중 에러가 발생하였습니다."));
     }
 

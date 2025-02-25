@@ -1,12 +1,11 @@
 package com.book.gpt.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class GptMessage {
     private String role;
     private String content;
-    private Object refusal;
 }

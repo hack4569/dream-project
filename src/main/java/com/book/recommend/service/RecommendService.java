@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -119,17 +120,14 @@ public class RecommendService {
             }
 
             //gpt 책 속 명언 추출
-            String bookName = "참을 수 없는 존재의 가벼움";
-            List list = new ArrayList();
-            GptMessage gptMessage = new GptMessage();
-            gptMessage.setRole("user");
-            gptMessage.setContent(bookName + " 책 속 명언 3개만 찾아줘");
-            list.add(gptMessage);
+            String bookName = "참을 수 없는 존재의 가벼움 책 속 명언 3개만 찾아서 json형태로 출력해줘";
 
-            GptParamDto gptParamDto = GptParamDto.builder()
-                    .gptMessageList(list).build();
-            String path = "/v1/models/completions";
-            GptResponse gptResponse = gptService.getResponse(path, gptParamDto);
+            Mono<GptResponse> gptResponse = gptService.chatGpt(bookName + " 책 속 명언 3개만 찾아줘");
+
+            gptResponse.subscribe(response -> {
+                log.info(response.toString());
+            });
+
             //책속에서 : 책 문장
             Phrase phrase;
             if (!ObjectUtils.isEmpty(book.getSubInfo().getPhraseList())) {

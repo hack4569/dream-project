@@ -23,4 +23,5 @@ public class GptRequest {
 
     private List<GptMessage> messages;
 
+
 }
