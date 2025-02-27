@@ -120,12 +120,32 @@ public class RecommendService {
             }
 
             //gpt 책 속 명언 추출
-            String bookName = "참을 수 없는 존재의 가벼움 책 속 명언 3개만 찾아서 json형태로 출력해줘";
+            String bookName = "참을 수 없는 존재의 가벼움 책 속 명언 3개만 찾아서 '{quote1 : '명언1', quote2:'명언2'}'형태로 출력해줘";
 
-            Mono<GptResponse> gptResponse = gptService.chatGpt(bookName + " 책 속 명언 3개만 찾아줘");
+            Mono<GptResponse> gptResponse = gptService.chatGpt(bookName);
 
+            List<RecommendCommentDto> finalRecommendCommentList = recommendCommentList;
             gptResponse.subscribe(response -> {
-                log.info(response.toString());
+
+                String input = response.getChoices().size() > 0 ? response.getChoices().get(0).getMessage().getContent() : "";
+
+// 문자열을 Map<String, String>으로 변환
+                input = input.replaceAll("[{}]", "");
+                String[] pairs = input.split(", (?=quote)" ); // 정규 표현식 수정하여 올바르게 분리
+
+                for (String pair : pairs) {
+                    String[] entry = pair.split(": ", 2); // 두 번째 요소부터 모든 문자열 포함
+                    if (entry.length == 2) {
+
+                        String gptQuote = entry[1].replaceAll("\"", "").trim();
+                        RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
+                                .type("quote")
+                                .content(gptQuote)
+                                .build();
+
+                        finalRecommendCommentList.add(recommendCommentPhrase);
+                    }
+                }
             });
 
             //책속에서 : 책 문장
