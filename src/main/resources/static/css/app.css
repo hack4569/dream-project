@@ -422,7 +422,7 @@
 }
 .summary-content-section__title {
     margin: 0;
-    font-size: 0.75rem;
+    font-size: 1.35rem;
     letter-spacing: 0.5px;
 }
 .book-summary--violet .summary-content-section__title {
@@ -451,13 +451,26 @@
     line-height: 1.6;
     font-family: 'Noto Serif KR';
     font-weight: 300;
-    font-size: 16px;
-    letter-spacing: -1px;
+    font-size: 1.125rem;
+    letter-spacing: 0.5px;
+    color: #333333;
     height: 331px;
     overflow: hidden;
 }
 .summary-content-section__content.toc {
     font-size: 1.3rem;
+}
+.summary-content-section__content.quote {
+    font-family: 'Playfair Display', serif; /* 감성적인 느낌 강조 */
+    font-size: clamp(20px, 5vw, 28px); /* 작은 화면 20px, 큰 화면 28px */
+    font-weight: bold; /* 강조 효과 */
+    color: #222; /* 살짝 더 진한 색으로 가독성 ↑ */
+    text-align: center; /* 중앙 정렬 */
+    line-height: 1.8; /* 폰트 크기가 커지므로 줄 간격도 증가 */
+    letter-spacing: 1px; /* 자간을 더 넓혀 여유 있는 느낌 */
+    font-style: italic; /* 명언 느낌 강조 */
+    padding: 15px; /* 여백 추가 */
+    word-break: keep-all; /* 줄바꿈 자연스럽게 */
 }
 .summary-content-section__avatar {
     display: flex;

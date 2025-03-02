@@ -120,33 +120,35 @@ public class RecommendService {
             }
 
             //gpt 책 속 명언 추출
-            String bookName = "참을 수 없는 존재의 가벼움 책 속 명언 3개만 찾아서 '{quote1 : '명언1', quote2:'명언2'}'형태로 출력해줘";
+            String bookName = book.getTitle() + " 책 속 명언 3개만 찾아서 '{quote1 : '명언1', quote2:'명언2'}'형태로 출력해줘";
 
-            Mono<GptResponse> gptResponse = gptService.chatGpt(bookName);
+            GptResponse gptResponse = gptService.chatGpt(bookName);
 
-            List<RecommendCommentDto> finalRecommendCommentList = recommendCommentList;
-            gptResponse.subscribe(response -> {
 
-                String input = response.getChoices().size() > 0 ? response.getChoices().get(0).getMessage().getContent() : "";
 
-// 문자열을 Map<String, String>으로 변환
-                input = input.replaceAll("[{}]", "");
-                String[] pairs = input.split(", (?=quote)" ); // 정규 표현식 수정하여 올바르게 분리
+            String input = gptResponse != null && gptResponse.getChoices().size() > 0 ? gptResponse.getChoices().get(0).getMessage().getContent() : "";
 
-                for (String pair : pairs) {
-                    String[] entry = pair.split(": ", 2); // 두 번째 요소부터 모든 문자열 포함
-                    if (entry.length == 2) {
+            // 문자열을 Map<String, String>으로 변환
+            input = input.replaceAll("[{}]", "");
+            String[] pairs = input.split(", (?=quote)" ); // 정규 표현식 수정하여 올바르게 분리
 
-                        String gptQuote = entry[1].replaceAll("\"", "").trim();
-                        RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
-                                .type("quote")
-                                .content(gptQuote)
-                                .build();
-
-                        finalRecommendCommentList.add(recommendCommentPhrase);
-                    }
+            StringBuilder gptQuoteSb = new StringBuilder();
+            for (String pair : pairs) {
+                String[] entry = pair.split(": ", 2); // 두 번째 요소부터 모든 문자열 포함
+                if (entry.length == 2) {
+                    String gptQuote = entry[1].replaceAll("\"", "").trim();
+                    gptQuoteSb.append(gptQuote);
+                    gptQuoteSb.append("<br>");
                 }
-            });
+            }
+            if (gptQuoteSb.length() != 0) {
+                RecommendCommentDto recommendCommentQuote = RecommendCommentDto.builder()
+                        .type("quote")
+                        .content(gptQuoteSb.toString())
+                        .build();
+
+                recommendCommentList.add(recommendCommentQuote);
+            }
 
             //책속에서 : 책 문장
             Phrase phrase;
@@ -272,7 +274,13 @@ public class RecommendService {
 
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
         aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
-        aladinBooks.addAll(aladinFilteredBooks);
+        for (int i = 0; i < aladinFilteredBooks.size(); i++) {
+            if (i < RcmdConst.SHOW_BOOKS_COUNT) {
+                aladinBooks.add(aladinFilteredBooks.get(i));
+            } else {
+                break;
+            }
+        }
 
         if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
             bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);

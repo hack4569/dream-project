@@ -34,7 +34,7 @@ public class GptService {
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환기
 
-    public Mono<GptResponse> chatGpt(String msg) {
+    public GptResponse chatGpt(String msg) {
         GptRequest request = GptRequest.builder()
                 .messages(List.of(
                         new GptMessage("user", msg)
@@ -46,10 +46,19 @@ public class GptService {
             e.printStackTrace();
         }
 
-        return gptApi.post()
+        ResponseEntity<GptResponse> response = gptApi.post()
                 .uri("/v1/chat/completions")
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(GptResponse.class);
+//                .onStatus(HttpStatus::isError, clientResponse ->
+//                        clientResponse.bodyToMono(String.class)
+//                                .flatMap(errorBody -> {
+//                                    log.error("error /v1/chat/completions" + errorBody);
+//                                    return null;
+//                                })
+//                )
+                .toEntity(GptResponse.class)
+                .block();
+        return response.getBody();
     }
 }

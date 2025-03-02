@@ -58,30 +58,31 @@ public class RecommendController {
                 .slideN(1)
                 .cids(cids)
                 .build()));
-        /**
-         * CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
-         *                 .member(loginMember)
-         *                 .categoryDto(categoryDto)
-         *                 .histories(histories)
-         *                 .slideN(2)
-         *                 .cids(cids)
-         *                 .build()));
-         *         CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
-         *                 .member(loginMember)
-         *                 .categoryDto(categoryDto)
-         *                 .histories(histories)
-         *                 .slideN(3)
-         *                 .cids(cids)
-         *                 .build()));
-         */
+
+          CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
+                          .member(loginMember)
+                          .categoryDto(categoryDto)
+                          .histories(histories)
+                          .slideN(2)
+                          .cids(cids)
+                          .build()));
+
+                  CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
+                          .member(loginMember)
+                          .categoryDto(categoryDto)
+                          .histories(histories)
+                          .slideN(3)
+                          .cids(cids)
+                          .build()));
 
 
-        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1);
+
+        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3);
         allRecommendList.thenRun(() -> {
             try {
                 recommendList.addAll(recommendList1.get());
-//                recommendList.addAll(recommendList2.get());
-//                recommendList.addAll(recommendList3.get());
+                recommendList.addAll(recommendList2.get());
+                recommendList.addAll(recommendList3.get());
             } catch (Exception e) {
                 log.error("error : {}", e.getMessage(), e);
             }
