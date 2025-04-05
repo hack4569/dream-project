@@ -50,13 +50,6 @@ public class GptService {
                 .uri("/v1/chat/completions")
                 .bodyValue(request)
                 .retrieve()
-//                .onStatus(HttpStatus::isError, clientResponse ->
-//                        clientResponse.bodyToMono(String.class)
-//                                .flatMap(errorBody -> {
-//                                    log.error("error /v1/chat/completions" + errorBody);
-//                                    return null;
-//                                })
-//                )
                 .toEntity(GptResponse.class)
                 .block();
         return response.getBody();

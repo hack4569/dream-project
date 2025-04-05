@@ -94,10 +94,8 @@ public class RecommendService {
     }
 
     public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {
-        RestTemplate rt = new RestTemplate();
         for (int i = 0; i < aladinBestSellerBooks.size(); i++) {
             List<RecommendCommentDto> recommendCommentList = new ArrayList<>();
-            int maxLength = 2;
             ApiParam apiParam1 = ApiParam.builder()
                     .itemId(aladinBestSellerBooks.get(i).getIsbn13())
                     .ttbkey(ttbkey).build();
@@ -270,21 +268,25 @@ public class RecommendService {
 
     public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
-        List<AladinBook> aladinFilteredBooks = aladinService.bookList(bookFilterDto).orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+        int nullPageCount = 0;
+        while (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
+            List<AladinBook> filteredBooks = aladinService.bookList(bookFilterDto)
+                    .orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
-        FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
-        aladinFilteredBooks = filterService.filter(aladinFilteredBooks, bookFilterDto);
-        for (int i = 0; i < aladinFilteredBooks.size(); i++) {
-            if (i < RcmdConst.SHOW_BOOKS_COUNT) {
-                aladinBooks.add(aladinFilteredBooks.get(i));
+            FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
+            List<AladinBook> result = filterService.filter(filteredBooks, bookFilterDto);
+
+            if (result != null) {
+                for (AladinBook book : result) {
+                    if (aladinBooks.size() >= RcmdConst.SHOW_BOOKS_COUNT) break;
+                    aladinBooks.add(book);
+                }
             } else {
-                break;
+                if (nullPageCount == RcmdConst.NULL_PAGE_WAIT_COUNT) break;
+                nullPageCount++;
             }
-        }
-
-        if (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
+            // 다음 페이지 인덱스로 이동
             bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
-            this.customFilteredList(aladinBooks, bookFilterDto);
         }
     }
 }

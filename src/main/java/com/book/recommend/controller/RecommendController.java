@@ -6,6 +6,7 @@ import com.book.history.repository.HistoryRepository;
 import com.book.history.service.HistoryService;
 import com.book.model.History;
 import com.book.model.Member;
+import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.dto.RecommendParam;
 import com.book.recommend.service.RecommendService;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
@@ -51,38 +55,30 @@ public class RecommendController {
             cids.addAll(categoryService.findCategories());
         }
 
-        CompletableFuture<List<RecommendDto>> recommendList1 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
-                .member(loginMember)
-                .categoryDto(categoryDto)
-                .histories(histories)
-                .slideN(1)
-                .cids(cids)
-                .build()));
+        List<CompletableFuture<List<RecommendDto>>> futures = IntStream.rangeClosed(RcmdConst.THREAD_START_IDX, RcmdConst.THREAD_END_IDX)
+                .mapToObj(n -> CompletableFuture.supplyAsync(() ->
+                        recommendService.getRecommendList(RecommendParam.builder()
+                                .member(loginMember)
+                                .categoryDto(categoryDto)
+                                .histories(histories)
+                                .slideN(n)
+                                .cids(cids)
+                                .build()))
+//                                .orTimeout(10, TimeUnit.SECONDS) // ⏱ 5초 초과하면 예외 발생
+//                                .exceptionally(ex -> {
+//                                    log.warn("RecommendList {}번 시간 초과 또는 오류: {}", n, ex.toString());
+//                                    return null; // 실패한 애는 null 반환
+//                                })
+                            )
+                .collect(Collectors.toList());
 
-          CompletableFuture<List<RecommendDto>> recommendList2 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
-                          .member(loginMember)
-                          .categoryDto(categoryDto)
-                          .histories(histories)
-                          .slideN(2)
-                          .cids(cids)
-                          .build()));
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
-                  CompletableFuture<List<RecommendDto>> recommendList3 = CompletableFuture.supplyAsync(() -> recommendService.getRecommendList(RecommendParam.builder()
-                          .member(loginMember)
-                          .categoryDto(categoryDto)
-                          .histories(histories)
-                          .slideN(3)
-                          .cids(cids)
-                          .build()));
-
-
-
-        CompletableFuture<Void> allRecommendList = CompletableFuture.allOf(recommendList1, recommendList2, recommendList3);
-        allRecommendList.thenRun(() -> {
+        allFutures.thenRun(() -> {
             try {
-                recommendList.addAll(recommendList1.get());
-                recommendList.addAll(recommendList2.get());
-                recommendList.addAll(recommendList3.get());
+                for (CompletableFuture<List<RecommendDto>> future : futures) {
+                    recommendList.addAll(future.get());
+                }
             } catch (Exception e) {
                 log.error("error : {}", e.getMessage(), e);
             }
