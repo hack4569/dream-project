@@ -2,6 +2,7 @@ package com.book.recommend.dto;
 
 import com.book.model.Category;
 import com.book.model.History;
+import com.book.recommend.constants.RcmdConst;
 import lombok.*;
 
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class BookFilterDto {
     private Optional<List<History>> histories;
 
     public void setStartIdx(int startIdx) {
-        if (this.startN == startIdx % 4) {
+        if (this.startN == startIdx % RcmdConst.THREAD_END_IDX + 1) {
             this.startIdx = startIdx;
         }else {
             setStartIdx(startIdx+1);

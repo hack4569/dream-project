@@ -4,6 +4,7 @@ import com.book.category.dto.CategoryDto;
 import com.book.category.service.CategoryService;
 import com.book.history.repository.HistoryRepository;
 import com.book.history.service.HistoryService;
+import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Member;
 import com.book.recommend.constants.RcmdConst;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,13 +48,18 @@ public class RecommendController {
         List<History> histories = historyRepository.findHistoryByMemberId(loginMember.getId());
         String subCid = Optional.ofNullable(categoryDto.getSubCid()).orElse("");
 
-        HashSet<Integer> cids = new HashSet<>();
+        List<Category> categories = categoryService.findCategories();
+        HashSet<Integer> cids = categories.stream().map(category -> category.getCid()).collect(Collectors.toCollection(HashSet::new));
+        //List<String> fullCategoryList = categories.stream().map( cate -> cate.getDepth1()).distinct().collect(Collectors.toList());
+        List<Category> fullCategoryList = categories.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Category::getDepth1))),
+                        ArrayList::new
+                ));
         //사용자가 희망하는 카테고리가 있을 경우
-        if (StringUtils.hasText(subCid)) {
-        } else {
-            cids.addAll(categoryService.findCategories());
-        }
+        if (StringUtils.hasText(categoryDto.getDepth1())) cids = categories.stream().filter(cate -> categoryDto.getDepth1().equals(cate.getDepth1())).map( c -> c.getCid()).collect(Collectors.toCollection(HashSet::new));
 
+        HashSet<Integer> finalCids = cids;
         List<CompletableFuture<List<RecommendDto>>> futures = IntStream.rangeClosed(RcmdConst.THREAD_START_IDX, RcmdConst.THREAD_END_IDX)
                 .mapToObj(n -> CompletableFuture.supplyAsync(() ->
                         recommendService.getRecommendList(RecommendParam.builder()
@@ -62,13 +67,8 @@ public class RecommendController {
                                 .categoryDto(categoryDto)
                                 .histories(histories)
                                 .slideN(n)
-                                .cids(cids)
+                                .cids(finalCids)
                                 .build()))
-//                                .orTimeout(10, TimeUnit.SECONDS) // ⏱ 5초 초과하면 예외 발생
-//                                .exceptionally(ex -> {
-//                                    log.warn("RecommendList {}번 시간 초과 또는 오류: {}", n, ex.toString());
-//                                    return null; // 실패한 애는 null 반환
-//                                })
                             )
                 .collect(Collectors.toList());
 
@@ -84,6 +84,8 @@ public class RecommendController {
             }
         }).join();
 
+        model.addAttribute("selectedCategory", categoryDto);
+        model.addAttribute("fullCategoryList", fullCategoryList);
         model.addAttribute("recommendList", recommendList);
         model.addAttribute("subCid", categoryDto.getSubCid());
         model.addAttribute("loginMember", loginMember);
