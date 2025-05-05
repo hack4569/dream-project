@@ -12,7 +12,9 @@
         <ul class="book-category-list" role="menu">
             <li th:each="item : ${fullCategoryList}"
                 th:class="'book-category-item' + (${item.getSubCid()} == ${selectedCategory.getSubCid()} ? ' on' : '')">
-                <a href="#;" class="book-category-option" th:text="${item.getDepth1()}"></a>
+                <a th:href="@{'?subCid=' + ${item.getSubCid()}}"
+                   class="book-category-option"
+                   th:text="${item.getDepth1()}"></a>
             </li>
         </ul>
         <a href="#" class="icon-button global-header__show-menu-button">

@@ -38,6 +38,7 @@ import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -58,8 +59,8 @@ public class RecommendService {
         List<History> histories = recommendParam.getHistories();
         HashSet<Integer> cids = recommendParam.getCids();
         int slideN = recommendParam.getSlideN();
-        List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
-        List<AladinBook> customFilteredBooks = new ArrayList<>();
+        List<RecommendDto> slideRecommendList = new CopyOnWriteArrayList<>(); //사용자에게 보여줄 책추천리스트
+        List<AladinBook> customFilteredBooks = new CopyOnWriteArrayList<>();
         Category category = modelMapper.map(categoryDto, Category.class);
         if (category == null) {
             throw new RecommendExcption("카테고리가 없습니다.");
@@ -266,7 +267,7 @@ public class RecommendService {
         return originParagraph;
     }
 
-    public void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
+    public synchronized void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
         int nullPageCount = 0;
         while (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {

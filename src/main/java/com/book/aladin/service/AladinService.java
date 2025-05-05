@@ -36,7 +36,7 @@ public class AladinService {
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
                 .ttbkey(ttbkey)
-                .maxResults(bookFilterDto.getMaxResults()).build();
+                .build();
         var aladinBooks = Optional.ofNullable(this.getApi(AladinConstants.ITEM_LIST, apiParam).getItem());
         if (aladinBooks.isEmpty()) {
             throw new AladinException("상품조회시 데이터가 없습니다.");

@@ -17,7 +17,7 @@ import java.util.Optional;
 public class BookFilterDto {
     private int startIdx = 1;
     private int startN = 1;
-    private int maxResults = 100;
+    private int maxResults = 10;
     private long memberId;
     private String queryType;
     private String filterType;

@@ -24,7 +24,7 @@ public class ApiParam{
     @Builder.Default
     private String itemIdType = "ISBN13";
     private int start;
-    private int maxResults;
+    private int maxResults = 10;
     private String cover;
     @Builder.Default
     private String searchTarget = "Book";

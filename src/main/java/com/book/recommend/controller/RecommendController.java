@@ -50,14 +50,9 @@ public class RecommendController {
 
         List<Category> categories = categoryService.findCategories();
         HashSet<Integer> cids = categories.stream().map(category -> category.getCid()).collect(Collectors.toCollection(HashSet::new));
-        //List<String> fullCategoryList = categories.stream().map( cate -> cate.getDepth1()).distinct().collect(Collectors.toList());
-        List<Category> fullCategoryList = categories.stream()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Category::getDepth1))),
-                        ArrayList::new
-                ));
-        //사용자가 희망하는 카테고리가 있을 경우
-        if (StringUtils.hasText(categoryDto.getDepth1())) cids = categories.stream().filter(cate -> categoryDto.getDepth1().equals(cate.getDepth1())).map( c -> c.getCid()).collect(Collectors.toCollection(HashSet::new));
+
+        //사용자가 희망하는 카테고리가 있을 경우 희망하는 카테고리로 필터링
+        if (StringUtils.hasText(subCid)) cids = categories.stream().filter(cate -> categoryDto.getSubCid().equals(cate.getSubCid())).map( c -> c.getCid()).collect(Collectors.toCollection(HashSet::new));
 
         HashSet<Integer> finalCids = cids;
         List<CompletableFuture<List<RecommendDto>>> futures = IntStream.rangeClosed(RcmdConst.THREAD_START_IDX, RcmdConst.THREAD_END_IDX)
@@ -84,8 +79,14 @@ public class RecommendController {
             }
         }).join();
 
-        model.addAttribute("selectedCategory", categoryDto);
+
+        List<Category> fullCategoryList = categories.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Category::getDepth1))),
+                        ArrayList::new
+                ));
         model.addAttribute("fullCategoryList", fullCategoryList);
+        model.addAttribute("selectedCategory", categoryDto);
         model.addAttribute("recommendList", recommendList);
         model.addAttribute("subCid", categoryDto.getSubCid());
         model.addAttribute("loginMember", loginMember);
