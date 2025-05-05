@@ -9,10 +9,7 @@ import com.book.aladin.service.AladinService;
 import com.book.category.dto.CategoryDto;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
-import com.book.gpt.domain.GptMessage;
-import com.book.gpt.domain.GptRequest;
 import com.book.gpt.domain.GptResponse;
-import com.book.gpt.dto.GptParamDto;
 import com.book.gpt.service.GptService;
 import com.book.model.Category;
 import com.book.model.History;
@@ -23,7 +20,6 @@ import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.dto.RecommendParam;
 import com.book.recommend.enumeration.BookFilter;
-import com.book.recommend.exception.RecommendExcption;
 import com.book.recommend.factory.FilterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,18 +48,26 @@ public class RecommendService {
     @Transactional
     public List<RecommendDto> getRecommendList(RecommendParam recommendParam) {
 
+        List<RecommendDto> slideRecommendList = new CopyOnWriteArrayList<>(); //사용자에게 보여줄 책추천리스트
+        List<AladinBook> customFilteredBooks = new CopyOnWriteArrayList<>();
+
+        //category, loginId 세팅
+        BookFilterDto bookFilterDto = this.createBookFilterDto(recommendParam);
+
+        this.customFilteredList(customFilteredBooks, bookFilterDto);
+        //책소개
+        this.introduceBook(slideRecommendList, customFilteredBooks);
+
+        return slideRecommendList;
+    }
+
+    private BookFilterDto createBookFilterDto(RecommendParam recommendParam) {
         Member loginMember = recommendParam.getMember();
         CategoryDto categoryDto = recommendParam.getCategoryDto();
         List<History> histories = recommendParam.getHistories();
         HashSet<Integer> cids = recommendParam.getCids();
         int slideN = recommendParam.getSlideN();
-        List<RecommendDto> slideRecommendList = new CopyOnWriteArrayList<>(); //사용자에게 보여줄 책추천리스트
-        List<AladinBook> customFilteredBooks = new CopyOnWriteArrayList<>();
         Category category = modelMapper.map(categoryDto, Category.class);
-        if (category == null) {
-            throw new RecommendExcption("카테고리가 없습니다.");
-        }
-        //category, loginId 세팅
         BookFilterDto bookFilterDto = BookFilterDto.builder()
                 .memberId(loginMember.getId())
                 .category(category)
@@ -84,14 +86,7 @@ public class RecommendService {
         bookFilterDto.setFinalCids(Optional.ofNullable(cids));
         bookFilterDto.setAnchorDate(Optional.ofNullable(today));
         bookFilterDto.setHistories(Optional.ofNullable(histories));
-
-
-        this.customFilteredList(customFilteredBooks, bookFilterDto);
-
-        //책소개
-        this.introduceBook(slideRecommendList, customFilteredBooks);
-
-        return slideRecommendList;
+        return bookFilterDto;
     }
 
     public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {

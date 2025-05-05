@@ -285,7 +285,7 @@ function saveHistory() {
                 historyItemIds.push(itemId);
             },
             error: (error) => {
-                console.log(error, "saveHistory : error" + error.responseJSON.message);
+                console.log(error, "saveHistory : error");
             }
         });
     }

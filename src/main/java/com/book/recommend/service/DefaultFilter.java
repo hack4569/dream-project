@@ -10,36 +10,41 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class DefaultFilter implements FilterService{
+public class DefaultFilter implements FilterService {
     @Override
     public List<AladinBook> filter(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto) {
-        //필터1 : 허용 카테고리만
-        //필터2 : 1년도 안된 책 out
-        aladinBooks = aladinBooks.stream()
-        .filter(
-                i -> bookFilterDto.getFinalCids().orElse(new HashSet<>()).contains(i.getCategoryId())
-        )
-        .filter(
-                i -> Integer.parseInt(bookFilterDto.getAnchorDate().orElse("0") ) > Integer.parseInt(LocalDateUtils.getCustomDate(i.getPubDate()))
-        ).collect(Collectors.toList());
+        // 허용된 카테고리만 필터링하는 Predicate
+        Predicate<AladinBook> categoryFilter = book -> 
+            bookFilterDto.getFinalCids()
+                .orElse(new HashSet<>())
+                .contains(book.getCategoryId());
 
-        //필터3 : history에 없는 데이터
-        for (History history : bookFilterDto.getHistories().orElseGet(() -> new ArrayList<>())) {
-            aladinBooks = aladinBooks.stream().filter(bB ->
-            {
-                return
-                    (
-                        bB.getItemId() == history.getItemId()
-                        &&
-                        LocalDate.now().isEqual(history.getCreated().toLocalDate())
-                    )
-                    || bB.getItemId() != history.getItemId();
-            }).collect(Collectors.toList());
-        }
-        log.info("필터3 : {}", aladinBooks.size());
+        // 1년 이내 출간된 책을 필터링하는 Predicate
+        Predicate<AladinBook> publicationDateFilter = book ->
+            Integer.parseInt(bookFilterDto.getAnchorDate().orElse("0")) > 
+            Integer.parseInt(LocalDateUtils.getCustomDate(book.getPubDate()));
+
+        // 히스토리에 없는 책을 필터링하는 Predicate
+        Predicate<AladinBook> historyFilter = book -> {
+            List<History> histories = bookFilterDto.getHistories().orElseGet(ArrayList::new);
+            return histories.stream().noneMatch(history ->
+                book.getItemId() == history.getItemId() &&
+                LocalDate.now().isEqual(history.getCreated().toLocalDate())
+            );
+        };
+
+        // 모든 Predicate를 조합하여 필터링
+        aladinBooks = aladinBooks.stream()
+            .filter(categoryFilter)
+            .filter(publicationDateFilter)
+            .filter(historyFilter)
+            .collect(Collectors.toList());
+
+        log.info("필터링 후 책 수: {}", aladinBooks.size());
         return aladinBooks;
     }
 }
