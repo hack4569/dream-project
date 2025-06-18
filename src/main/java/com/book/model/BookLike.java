@@ -1,5 +1,6 @@
 package com.book.model;
 
+import com.book.like.service.response.BookLikeResponse;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,4 +23,14 @@ public class BookLike {
     @Column(name = "login_id")
     private String loginId;
     private LocalDateTime created;
+
+    public static BookLike create(Long bookLikeId, Long itemId, String loginId, LocalDateTime created) {
+        BookLike bookLike = new BookLike();
+
+        bookLike.bookLikeId = bookLikeId;
+        bookLike.itemId = itemId;
+        bookLike.loginId = loginId;
+        bookLike.created = created;
+        return bookLike;
+    }
 }
