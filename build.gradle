@@ -66,6 +66,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-webflux" // 여러분의 스프링 부트 버전에 맞게 조정
 	implementation "org.modelmapper:modelmapper:2.4.4"
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
 	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
  	runtimeOnly 'com.h2database:h2'
