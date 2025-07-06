@@ -54,22 +54,41 @@ dependencies {
 	implementation 'mysql:mysql-connector-java'
 	implementation 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	compileOnly 'org.projectlombok:lombok'
+	compileOnly   'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation "commons-lang:commons-lang:2.6"
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
-	implementation "org.springframework.boot:spring-boot-starter-webflux" // 여러분의 스프링 부트 버전에 맞게 조정
+	implementation "org.springframework.boot:spring-boot-starter-webflux" // 스프링 부트 버전에 맞게 조정
 	implementation "org.modelmapper:modelmapper:2.4.4"
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
-	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
- 	runtimeOnly 'com.h2database:h2'
+
+
+// JUnit 5
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+
+// Mockito
+	testImplementation 'org.mockito:mockito-core:4.5.1'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.5.1'
+	testImplementation 'org.mockito:mockito-inline:4.5.1'
+
+// WebFlux 테스트
+	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testImplementation 'io.projectreactor:reactor-test:3.4.12'
+
+// AssertJ
+	testImplementation 'org.assertj:assertj-core:3.22.0'
+
+// Testcontainers
+	testImplementation 'org.testcontainers:junit-jupiter:1.16.3'
+
+	runtimeOnly 'com.h2database:h2'
 }
 
 test {

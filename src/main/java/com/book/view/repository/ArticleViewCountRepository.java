@@ -16,7 +16,8 @@ public class ArticleViewCountRepository {
     }
 
     private String generateKey(Long articleId) {
-        return KEY_FORMAT.formatted(articleId);
+        //return KEY_FORMAT.formatted(articleId);
+        return String.format(KEY_FORMAT, articleId);
     }
 
     public Long read(Long articleId) {

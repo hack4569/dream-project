@@ -20,6 +20,7 @@ public class ArticleViewDistributedLockRepository {
     }
 
     private String generateKey(Long articleId, Long userId) {
-        return KEY_FORMAT.formatted(articleId, userId);
+        return String.format(KEY_FORMAT, articleId, userId);
+
     }
 }
