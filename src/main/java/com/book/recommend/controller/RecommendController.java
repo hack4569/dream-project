@@ -98,6 +98,7 @@ public class RecommendController {
 
             return "recommend/index";
         } catch (Exception e) {
+
             log.error("추천 페이지 로딩 중 에러 발생: {}", e.getMessage(), e);
             return "redirect:/recommend/error";
         }

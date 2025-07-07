@@ -34,6 +34,7 @@ public class AladinService {
      * @param bookFilterDto
      * @return
      */
+    //@Cacheable(value = "bookList", key = "#bookFilterDto.queryType + ':' + #bookFilterDto.startIdx + ':' + #bookFilterDto.filterType")
     public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
         ApiParam apiParam = ApiParam.builder()
                 .querytype(bookFilterDto.getQueryType())
