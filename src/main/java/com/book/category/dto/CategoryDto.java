@@ -1,5 +1,6 @@
 package com.book.category.dto;
 
+import com.book.model.Category;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,13 @@ public class CategoryDto {
         this.name = name;
         this.mall = mall;
         this.depth1 = depth1;
+    }
+
+    public Category createCategory() {
+        return Category.builder()
+                .cid(this.getCid())
+                .subCid(this.getSubCid())
+                .depth1(this.getDepth1())
+                .build();
     }
 }

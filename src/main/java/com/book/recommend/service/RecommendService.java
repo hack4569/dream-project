@@ -61,13 +61,13 @@ public class RecommendService {
         return slideRecommendList;
     }
 
-    private BookFilterDto createBookFilterDto(RecommendParam recommendParam) {
+     public BookFilterDto createBookFilterDto(RecommendParam recommendParam) {
         Member loginMember = recommendParam.getMember();
         CategoryDto categoryDto = recommendParam.getCategoryDto();
         List<History> histories = recommendParam.getHistories();
         HashSet<Integer> cids = recommendParam.getCids();
         int slideN = recommendParam.getSlideN();
-        Category category = modelMapper.map(categoryDto, Category.class);
+        Category category = categoryDto.createCategory();
         BookFilterDto bookFilterDto = BookFilterDto.builder()
                 .memberId(loginMember.getId())
                 .category(category)
@@ -265,17 +265,18 @@ public class RecommendService {
     public synchronized void customFilteredList(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
         int nullPageCount = 0;
-        while (aladinBooks.size() < RcmdConst.SHOW_BOOKS_COUNT) {
+        while (aladinBooks.size() < bookFilterDto.getShowBooksCount()) {
             List<AladinBook> filteredBooks = aladinService.bookList(bookFilterDto)
                     .orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
             FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
             List<AladinBook> result = filterService.filter(filteredBooks, bookFilterDto);
 
-            if (result != null) {
+            if (result.size() != 0) {
                 for (AladinBook book : result) {
-                    if (aladinBooks.size() >= RcmdConst.SHOW_BOOKS_COUNT) break;
+                    if (aladinBooks.size() >= bookFilterDto.getShowBooksCount()) break;
                     aladinBooks.add(book);
+                    nullPageCount = 0;
                 }
             } else {
                 if (nullPageCount == RcmdConst.NULL_PAGE_WAIT_COUNT) break;

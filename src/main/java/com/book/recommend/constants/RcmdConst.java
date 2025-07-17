@@ -16,7 +16,7 @@ public class RcmdConst {
     public static final int THREAD_START_IDX = 1;
     public static final int THREAD_END_IDX = 4;
 
-    public static final int NULL_PAGE_WAIT_COUNT = 5;
+    public static final int NULL_PAGE_WAIT_COUNT = 10;
 
     public static final int getThredRemain() {
         return THREAD_END_IDX - THREAD_START_IDX + 1;

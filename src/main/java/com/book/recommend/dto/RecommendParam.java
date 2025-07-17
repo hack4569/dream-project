@@ -16,7 +16,11 @@ import java.util.List;
 public class RecommendParam {
     private Member member;
     private CategoryDto categoryDto;
-    private int slideN;
+    private int slideN = 1;
     List<History> histories;
     HashSet<Integer> cids;
+
+    public int getSlideN() {
+        return slideN == 0 ? 1 : slideN;
+    }
 }

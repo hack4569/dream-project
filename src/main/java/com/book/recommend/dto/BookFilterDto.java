@@ -18,6 +18,7 @@ public class BookFilterDto {
     private int startIdx = 1;
     private int startN = 1;
     private int maxResults = 10;
+    private int showBooksCount = RcmdConst.SHOW_BOOKS_COUNT;
     private long memberId;
     private String queryType;
     private String filterType;
@@ -27,10 +28,18 @@ public class BookFilterDto {
     private Optional<List<History>> histories;
 
     public void setStartIdx(int startIdx) {
-        if (this.startN == startIdx % RcmdConst.THREAD_END_IDX + 1) {
+        if (getStartN() == startIdx % RcmdConst.THREAD_END_IDX + 1) {
             this.startIdx = startIdx;
         }else {
             setStartIdx(startIdx+1);
         }
+    }
+
+    public int getStartIdx() {
+        return startIdx == 0 ? 1 : startIdx;
+    }
+
+    public int getStartN() {
+        return startN == 0 ? 1 : startN;
     }
 }
