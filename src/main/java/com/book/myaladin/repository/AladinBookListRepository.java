@@ -7,6 +7,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import java.util.List;
 import java.util.Optional;
 
-public interface AladinBookListRepository extends JpaRepository<AladinBookList, Long>, QuerydslPredicateExecutor<AladinBookList> {
+public interface AladinBookListRepository extends JpaRepository<AladinBookList, Integer>, QuerydslPredicateExecutor<AladinBookList> {
     List<AladinBookList> findAllByItemIdIn(List<Integer> itemIds);
 }

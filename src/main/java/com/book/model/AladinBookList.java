@@ -27,4 +27,8 @@ public class AladinBookList {
     private String isbn13;
     @Column(name = "query_type")
     private String queryType;
+
+    public static AladinBookList create(int itemId, String pubDate, int categoryId, String isbn13, String queryType) {
+        return AladinBookList.builder().itemId(itemId).pubDate(pubDate).categoryId(categoryId).isbn13(isbn13).queryType(queryType).build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.book.batch;
 
+import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
 import com.book.aladin.service.AladinService;
 import com.book.category.dto.CategoryDto;
@@ -56,8 +57,14 @@ public class BookBatchScheduler {
             }
             List<Integer> finalAlreadyItemIds = alreadyItemIds;
             var newItems = customFilteredBooks.stream().filter(newItem -> !finalAlreadyItemIds.contains(newItem.getItemId())).collect(Collectors.toList());
-
-
+            List<AladinBookList> aladinBookLists = newItems.stream().map(bestBook -> AladinBookList.create(
+                    bestBook.getItemId(),
+                    bestBook.getPubDate(),
+                    bestBook.getCategoryId(),
+                    bestBook.getIsbn13(),
+                    AladinConstants.queryType
+            )).collect(Collectors.toList());
+            aladinBookListRepository.saveAll(aladinBookLists);
         }
 
         log.info("customFilteredBooks : {}", customFilteredBooks);
