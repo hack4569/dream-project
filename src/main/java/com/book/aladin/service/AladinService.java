@@ -5,6 +5,7 @@ import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.exception.AladinException;
 import com.book.common.ApiParam;
+import com.book.myaladin.repository.AladinBookRepository;
 import com.book.recommend.dto.BookFilterDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AladinService {
     private String ttbkey;
 
     private final WebClient aladinApi;
+    private final AladinBookRepository aladinBookRepository;
 
     /**
      * 상품 목록
@@ -35,7 +37,7 @@ public class AladinService {
      * @return
      */
     //@Cacheable(value = "bookList", key = "#bookFilterDto.queryType + ':' + #bookFilterDto.startIdx + ':' + #bookFilterDto.filterType")
-    public Optional<List<AladinBook>> bookList(BookFilterDto bookFilterDto) {
+    public Optional<List<AladinBook>> bookListForBatch(BookFilterDto bookFilterDto) {
         ApiParam apiParam = ApiParam.builder()
                 .querytype(bookFilterDto.getQueryType())
                 .start(bookFilterDto.getStartIdx())
@@ -48,6 +50,9 @@ public class AladinService {
         return aladinBooks;
     }
 
+    public List<AladinBook> bookList(BookFilterDto bookFilterDto) {
+        return aladinBookRepository.findAll();
+    }
     /**
      * 상품 상세 조회
      * @param apiParam

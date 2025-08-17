@@ -11,6 +11,7 @@ import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
 import com.book.gpt.domain.GptResponse;
 import com.book.gpt.service.GptService;
+import com.book.model.AladinBookList;
 import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Member;
@@ -266,7 +267,32 @@ public class RecommendService {
     {
         int nullPageCount = 0;
         while (aladinBooks.size() < bookFilterDto.getShowBooksCount()) {
-            List<AladinBook> filteredBooks = aladinService.bookList(bookFilterDto)
+//            List<AladinBook> filteredBooks = aladinService.bookList(bookFilterDto)
+//                    .orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
+            List<AladinBook> filteredBooks = aladinService.bookList(bookFilterDto);
+            FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
+            List<AladinBook> result = filterService.filter(filteredBooks, bookFilterDto);
+
+            if (result.size() != 0) {
+                for (AladinBook book : result) {
+                    if (aladinBooks.size() >= bookFilterDto.getShowBooksCount()) break;
+                    aladinBooks.add(book);
+                    nullPageCount = 0;
+                }
+            } else {
+                if (nullPageCount == RcmdConst.NULL_PAGE_WAIT_COUNT) break;
+                nullPageCount++;
+            }
+            // 다음 페이지 인덱스로 이동
+            bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
+        }
+    }
+
+    public void customFilteredListBatch(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
+    {
+        int nullPageCount = 0;
+        while (aladinBooks.size() < bookFilterDto.getShowBooksCount()) {
+            List<AladinBook> filteredBooks = aladinService.bookListForBatch(bookFilterDto)
                     .orElseThrow(() -> new AladinException("베스트 상품 조회중 에러가 발생하였습니다."));
 
             FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
