@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface AladinBookRepository extends JpaRepository<AladinBook, Integer>, QuerydslPredicateExecutor<AladinBook> {
     List<AladinBook> findAllByItemIdIn(List<Integer> itemIds);
+    List<AladinBook> findAllByItemIdNotIn(List<Integer> itemIds);
     //List<AladinBookList> findAll();
 }

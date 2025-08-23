@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
+import org.junit.Ignore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -42,14 +42,14 @@ public class AladinBook {
     private int customerReviewRank;
     private int bestRank;
 
+    @Transient
+    private SubInfo subInfo;
     //프리미엄
     private String fullDescription;
     private String fullDescription2;
     @OneToMany(mappedBy = "aladinBook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Review> reviewList;
     private String toc;
-    @OneToOne(mappedBy = "aladinBook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private SubInfo subInfo;
-
-
+    @OneToMany(mappedBy = "aladinBook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BookComment> bookCommentList;
 }

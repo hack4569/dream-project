@@ -19,7 +19,7 @@ public class HistoryService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void saveHistory(Member loginMember, long bookId) {
+    public void saveHistory(Member loginMember, int bookId) {
         List<History> historyList = historyRepository.findHistoriesByMemberIdAndItemId(loginMember.getId(), bookId);
         Member member = memberRepository.getById(loginMember.getId());
         if (historyList.isEmpty()) {

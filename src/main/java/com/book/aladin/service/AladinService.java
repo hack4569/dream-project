@@ -5,6 +5,7 @@ import com.book.aladin.domain.AladinBook;
 import com.book.aladin.domain.AladinMaster;
 import com.book.aladin.exception.AladinException;
 import com.book.common.ApiParam;
+import com.book.model.History;
 import com.book.myaladin.repository.AladinBookRepository;
 import com.book.recommend.dto.BookFilterDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -14,12 +15,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,6 +55,16 @@ public class AladinService {
 
     public List<AladinBook> bookList(BookFilterDto bookFilterDto) {
         return aladinBookRepository.findAll();
+    }
+
+    public List<AladinBook> filteredBookList(BookFilterDto bookFilterDto) {
+        var histories = bookFilterDto.getHistories();
+        if (!ObjectUtils.isEmpty(histories)) {
+            var historyItemIds = histories.stream().map(History::getItemId).collect(Collectors.toList());
+            return aladinBookRepository.findAllByItemIdNotIn(historyItemIds);
+        } else {
+            return this.bookList(bookFilterDto);
+        }
     }
     /**
      * 상품 상세 조회

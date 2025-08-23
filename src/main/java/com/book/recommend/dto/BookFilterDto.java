@@ -25,7 +25,7 @@ public class BookFilterDto {
     private Category category;
     private Optional<HashSet<Integer>> finalCids;
     private Optional<String> anchorDate;
-    private Optional<List<History>> histories;
+    private List<History> histories;
 
     public void setStartIdx(int startIdx) {
         if (getStartN() == startIdx % RcmdConst.THREAD_END_IDX + 1) {

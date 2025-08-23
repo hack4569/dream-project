@@ -5,6 +5,7 @@ import com.book.common.utils.LocalDateUtils;
 import com.book.model.History;
 import com.book.recommend.dto.BookFilterDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,7 +31,9 @@ public class DefaultFilter implements FilterService {
 
         // 히스토리에 없는 책을 필터링하는 Predicate
         Predicate<AladinBook> historyFilter = book -> {
-            List<History> histories = bookFilterDto.getHistories().orElseGet(ArrayList::new);
+            List<History> histories = bookFilterDto.getHistories();
+            if (ObjectUtils.isEmpty(histories)) return true;
+
             return histories.stream().noneMatch(history ->
                 book.getItemId() == history.getItemId() &&
                 LocalDate.now().isEqual(history.getCreated().toLocalDate())

@@ -2,6 +2,7 @@ package com.book.recommend.service;
 
 import com.book.aladin.constants.AladinConstants;
 import com.book.aladin.domain.AladinBook;
+import com.book.aladin.domain.BookComment;
 import com.book.aladin.domain.MdRecommend;
 import com.book.aladin.domain.Phrase;
 import com.book.aladin.exception.AladinException;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,7 +59,23 @@ public class RecommendService {
 
         this.customFilteredList(customFilteredBooks, bookFilterDto);
         //책소개
-        this.introduceBook(slideRecommendList, customFilteredBooks);
+        //this.introduceBook(slideRecommendList, customFilteredBooks);
+
+        return slideRecommendList;
+    }
+
+    @Transactional
+    public List<RecommendDto> getRecommendList2(RecommendParam recommendParam) {
+
+        List<RecommendDto> slideRecommendList = new ArrayList<>(); //사용자에게 보여줄 책추천리스트
+        List<AladinBook> customFilteredBooks = new ArrayList<>();
+
+        //category, loginId 세팅
+        BookFilterDto bookFilterDto = this.createBookFilterDto(recommendParam);
+
+        this.customFilteredList2(customFilteredBooks, bookFilterDto);
+        //책소개
+        //this.introduceBook(slideRecommendList, customFilteredBooks);
 
         return slideRecommendList;
     }
@@ -86,15 +104,15 @@ public class RecommendService {
 
         bookFilterDto.setFinalCids(Optional.ofNullable(cids));
         bookFilterDto.setAnchorDate(Optional.ofNullable(today));
-        bookFilterDto.setHistories(Optional.ofNullable(histories));
+        bookFilterDto.setHistories(histories);
         return bookFilterDto;
     }
 
-    public void introduceBook(List<RecommendDto> slideRecommendList, List<AladinBook> aladinBestSellerBooks) {
-        for (int i = 0; i < aladinBestSellerBooks.size(); i++) {
-            List<RecommendCommentDto> recommendCommentList = new ArrayList<>();
+    public List<BookComment> saveBookDetail(AladinBook aladinbook) {
+        List<BookComment> bookCommentList = new ArrayList<>();
+
             ApiParam apiParam1 = ApiParam.builder()
-                    .itemId(aladinBestSellerBooks.get(i).getIsbn13())
+                    .itemId(aladinbook.getIsbn13())
                     .ttbkey(ttbkey).build();
             List<AladinBook> aladinBooks = aladinService.getAladinDetail(apiParam1).orElseThrow(() -> new AladinException("상품 조회중 에러가 발생하였습니다."));
 
@@ -103,14 +121,14 @@ public class RecommendService {
             //책소개
             String fullDescription = StringUtils.hasText(book.getFullDescription()) ? book.getFullDescription() : book.getFullDescription2();
             if (StringUtils.hasText(fullDescription)) {
-                recommendCommentList = this.filterDescription(fullDescription, recommendCommentList, "description");
+                this.filterDescription(fullDescription, bookCommentList, "description");
             }
 
             //편집자 추천
             List<MdRecommend> mdRecommendList = book.getSubInfo().getMdRecommendList();
             if (!ObjectUtils.isEmpty(mdRecommendList)) {
                 for (MdRecommend mdRecommend : mdRecommendList) {
-                    recommendCommentList = this.filterDescription(mdRecommend.getComment(), recommendCommentList, "mdRecommend");
+                    this.filterDescription(mdRecommend.getComment(), bookCommentList, "mdRecommend");
                 }
             }
 
@@ -118,8 +136,6 @@ public class RecommendService {
             String bookName = book.getTitle() + " 책 속 명언 3개만 찾아서 '{quote1 : '명언1', quote2:'명언2'}'형태로 출력해줘";
 
             GptResponse gptResponse = gptService.chatGpt(bookName);
-
-
 
             String input = gptResponse != null && gptResponse.getChoices().size() > 0 ? gptResponse.getChoices().get(0).getMessage().getContent() : "";
 
@@ -137,12 +153,7 @@ public class RecommendService {
                 }
             }
             if (gptQuoteSb.length() != 0) {
-                RecommendCommentDto recommendCommentQuote = RecommendCommentDto.builder()
-                        .type("quote")
-                        .content(gptQuoteSb.toString())
-                        .build();
-
-                recommendCommentList.add(recommendCommentQuote);
+                bookCommentList.add(BookComment.create(gptQuoteSb.toString(), "quote"));
             }
 
             //책속에서 : 책 문장
@@ -162,20 +173,12 @@ public class RecommendService {
                     int phraseArrLen = phraseArr.length < RcmdConst.paragraphSlide ? phraseArr.length : RcmdConst.paragraphSlide;
                     for (int k = 0; k < phraseArrLen; k++) {
                         phraseContent.append(phraseArr[k])
-                                        .append(". ");
+                                .append(". ");
                     }
-                    String phraseContentValue = phraseContent.toString();
-                    RecommendCommentDto recommendCommentPhrase = RecommendCommentDto.builder()
-                            .type("phrase")
-                            .content(phraseContentValue)
-                            .originContent(filteredPhrase)
-                            .build();
 
-                    recommendCommentList.add(recommendCommentPhrase);
+                    bookCommentList.add(BookComment.create(phraseContent.toString(), "phrase"));
 
                 }
-
-                if (recommendCommentList.size() == 0) continue;
             }
 
             // 목차
@@ -183,29 +186,15 @@ public class RecommendService {
             if (StringUtils.hasText(toc)) {
                 toc = toc.replaceAll("<(/)?([pP]*)(\\s[pP]*=[^>]*)?(\\s)*(/)?>", "");
                 RecommendCommentDto recommendToc = RecommendCommentDto.builder()
-                                .type("toc")
-                                        .content(toc)
-                                                .build();
-                recommendCommentList.add(recommendToc);
+                        .type("toc")
+                        .content(toc)
+                        .build();
+                bookCommentList.add(BookComment.create(toc, "toc"));
             }
-
-
-            RecommendDto recommendDto = RecommendDto.builder()
-                    .itemId(book.getItemId())
-                    .title(book.getTitle())
-                    .link(book.getLink())
-                    .cover(book.getCover())
-                    .recommendCommentList(recommendCommentList)
-                    .author(book.getAuthor())
-                    .categoryName(book.getCategoryName())
-                    .build();
-            slideRecommendList.add(recommendDto);
-
-        }
+        return bookCommentList;
     }
 
-
-    private List<RecommendCommentDto> filterDescription(String description, List<RecommendCommentDto> recommendCommentList, String type) {
+    private void filterDescription(String description, List<BookComment> recommendCommentList, String type) {
         //설명 첫번재 문단은 삭제
         String descriptionParagraph = descriptionParagraphFunc(description);
 
@@ -231,17 +220,10 @@ public class RecommendService {
             }
             String contentValue = content.toString();
             if (StringUtils.hasText(content)) {
-                RecommendCommentDto recommendCommentDescription = RecommendCommentDto.builder()
-                        .type(type)
-                        .content(contentValue)
-                        .originContent(description)
-                        .build();
-
-                recommendCommentList.add(recommendCommentDescription);
+                recommendCommentList.add(BookComment.create(contentValue, type));
             }
         }
 
-        return recommendCommentList;
     }
 
     private String descriptionParagraphFunc(String originParagraph) {
@@ -286,6 +268,14 @@ public class RecommendService {
             // 다음 페이지 인덱스로 이동
             bookFilterDto.setStartIdx(bookFilterDto.getStartIdx() + 1);
         }
+    }
+
+    public synchronized void customFilteredList2(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
+    {
+        List<AladinBook> filteredBooks = aladinService.filteredBookList(bookFilterDto);
+        FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
+        List<AladinBook> result = filterService.filter(filteredBooks, bookFilterDto);
+        result.stream().forEach(aladinBooks::add);
     }
 
     public void customFilteredListBatch(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )

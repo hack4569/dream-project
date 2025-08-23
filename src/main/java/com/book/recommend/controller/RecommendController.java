@@ -57,29 +57,13 @@ public class RecommendController {
                 cids = categories.stream().filter(cate -> categoryDto.getSubCid().equals(cate.getSubCid())).map(c -> c.getCid()).collect(Collectors.toCollection(HashSet::new));
 
             HashSet<Integer> finalCids = cids;
-            List<CompletableFuture<List<RecommendDto>>> futures = IntStream.rangeClosed(RcmdConst.THREAD_START_IDX, RcmdConst.THREAD_END_IDX)
-                    .mapToObj(n -> CompletableFuture.supplyAsync(() ->
-                            recommendService.getRecommendList(RecommendParam.builder()
-                                    .member(loginMember)
-                                    .categoryDto(categoryDto)
-                                    .histories(histories)
-                                    .slideN(n)
-                                    .cids(finalCids)
-                                    .build()))
-                    )
-                    .collect(Collectors.toList());
 
-            CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-
-            allFutures.thenRun(() -> {
-                try {
-                    for (CompletableFuture<List<RecommendDto>> future : futures) {
-                        recommendList.addAll(future.get());
-                    }
-                } catch (Exception e) {
-                    log.error("error : {}", e.getMessage(), e);
-                }
-            }).join();
+            recommendList = recommendService.getRecommendList2(RecommendParam.builder()
+                    .member(loginMember)
+                    .categoryDto(categoryDto)
+                    .histories(histories)
+                    .cids(finalCids)
+                    .build());
 
 
             List<Category> fullCategoryList = categories.stream()

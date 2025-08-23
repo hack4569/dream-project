@@ -64,6 +64,9 @@ public class BookBatchScheduler {
                     }
                     List<Integer> finalAlreadyItemIds = alreadyItemIds;
                     var newItems = customFilteredBooks.stream().filter(newItem -> !finalAlreadyItemIds.contains(newItem.getItemId())).collect(Collectors.toList());
+                    newItems.forEach( aladinBook -> {
+                        aladinBook.setBookCommentList(recommendService.saveBookDetail(aladinBook));
+                    });
                     aladinBookRepository.saveAll(newItems);
 
                     //초기화

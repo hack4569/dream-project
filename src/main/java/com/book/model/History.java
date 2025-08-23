@@ -23,14 +23,14 @@ public class History extends BaseEntity{
     private Member member;
 
     @Column(name = "item_id")
-    private long itemId;
+    private int itemId;
 
     public void setMember(Member member) {
         this.member = member;
         member.getHistories().add(this);
     }
 
-    public static History createHistory(long bookId, Member member) {
+    public static History createHistory(int bookId, Member member) {
         History history = new History();
         history.setItemId(bookId);
         history.setMember(member);
