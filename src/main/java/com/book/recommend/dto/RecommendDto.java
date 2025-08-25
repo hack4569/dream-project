@@ -1,5 +1,6 @@
 package com.book.recommend.dto;
 
+import com.book.aladin.domain.BookComment;
 import com.book.recommend.dto.RecommendCommentDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.List;
 @Slf4j
 public class RecommendDto {
     private long itemId;
-    private List<RecommendCommentDto> recommendCommentList;
+    private List<BookComment> recommendCommentList;
     private String title;
     private String link;
     private String cover;

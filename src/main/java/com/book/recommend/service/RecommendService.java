@@ -12,13 +12,13 @@ import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
 import com.book.gpt.domain.GptResponse;
 import com.book.gpt.service.GptService;
-import com.book.model.AladinBookList;
 import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Member;
+import com.book.myaladin.repository.AladinBookRepository;
+import com.book.myaladin.repository.BookCommentRepository;
 import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
-import com.book.recommend.dto.RecommendCommentDto;
 import com.book.recommend.dto.RecommendDto;
 import com.book.recommend.dto.RecommendParam;
 import com.book.recommend.enumeration.BookFilter;
@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,6 +44,8 @@ public class RecommendService {
     private final AladinService aladinService;
     private final GptService gptService;
     private final ModelMapper modelMapper = new ModelMapper();
+    private final AladinBookRepository aladinBookRepository;
+    private final BookCommentRepository bookCommentRepository;
     @Value("${aladin.ttbkey}")
     private String ttbkey;
 
@@ -75,12 +76,28 @@ public class RecommendService {
 
         this.customFilteredList2(customFilteredBooks, bookFilterDto);
         //책소개
-        //this.introduceBook(slideRecommendList, customFilteredBooks);
+        return this.showUserData(customFilteredBooks);
+    }
 
+    private List<RecommendDto> showUserData(List<AladinBook> customFilteredBooks) {
+        List<RecommendDto> slideRecommendList = new ArrayList<>();
+        for (int i = 0; i < RcmdConst.THREAD_END_IDX; i++) {
+            var book = customFilteredBooks.get(i);
+            RecommendDto recommendDto = RecommendDto.builder()
+                    .itemId(book.getItemId())
+                    .title(book.getTitle())
+                    .link(book.getLink())
+                    .cover(book.getCover())
+                    .recommendCommentList(book.getBookCommentList())
+                    .author(book.getAuthor())
+                    .categoryName(book.getCategoryName())
+                    .build();
+            slideRecommendList.add(recommendDto);
+        }
         return slideRecommendList;
     }
 
-     public BookFilterDto createBookFilterDto(RecommendParam recommendParam) {
+    public BookFilterDto createBookFilterDto(RecommendParam recommendParam) {
         Member loginMember = recommendParam.getMember();
         CategoryDto categoryDto = recommendParam.getCategoryDto();
         List<History> histories = recommendParam.getHistories();
@@ -102,8 +119,8 @@ public class RecommendService {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
         String today = dateFormatter.format(cal.getTime());
 
-        bookFilterDto.setFinalCids(Optional.ofNullable(cids));
-        bookFilterDto.setAnchorDate(Optional.ofNullable(today));
+        bookFilterDto.setFinalCids(cids);
+        bookFilterDto.setAnchorDate(today);
         bookFilterDto.setHistories(histories);
         return bookFilterDto;
     }
@@ -185,10 +202,6 @@ public class RecommendService {
             String toc = book.getSubInfo().getToc();
             if (StringUtils.hasText(toc)) {
                 toc = toc.replaceAll("<(/)?([pP]*)(\\s[pP]*=[^>]*)?(\\s)*(/)?>", "");
-                RecommendCommentDto recommendToc = RecommendCommentDto.builder()
-                        .type("toc")
-                        .content(toc)
-                        .build();
                 bookCommentList.add(BookComment.create(toc, "toc"));
             }
         return bookCommentList;
@@ -274,7 +287,12 @@ public class RecommendService {
     {
         List<AladinBook> filteredBooks = aladinService.filteredBookList(bookFilterDto);
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
-        List<AladinBook> result = filterService.filter(filteredBooks, bookFilterDto);
+        List<AladinBook> result = filterService.filterForShow(filteredBooks, bookFilterDto);
+        result.stream().forEach(i -> {
+            var commentList = bookCommentRepository.findBookCommentsByAladinItemId(i.getItemId());
+            if (Objects.nonNull(commentList)) i.setBookCommentList(commentList);
+        });
+
         result.stream().forEach(aladinBooks::add);
     }
 

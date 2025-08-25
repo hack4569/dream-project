@@ -23,8 +23,8 @@ public class BookFilterDto {
     private String queryType;
     private String filterType;
     private Category category;
-    private Optional<HashSet<Integer>> finalCids;
-    private Optional<String> anchorDate;
+    private HashSet<Integer> finalCids;
+    private String anchorDate;
     private List<History> histories;
 
     public void setStartIdx(int startIdx) {

@@ -18,7 +18,7 @@ public class BookComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookCommentId;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String comment;
 
     private String type;
@@ -26,6 +26,8 @@ public class BookComment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private AladinBook aladinBook;
+
+    private int aladinItemId;
 
     public static BookComment create(String comment, String type) {
         BookComment bookComment = new BookComment();

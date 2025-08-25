@@ -31,7 +31,7 @@ public class BookBatchScheduler {
     private final CategoryService categoryService;
     private final AladinBookRepository aladinBookRepository;
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    //@Scheduled(cron = "0 */1 * * * ?")
     //@Scheduled(cron = "0 30 2 * * *", zone = "Asia/Seoul")
     public void scheduleBestSellerBatch() {
         log.info("베스트셀러 배치 작업 시작");

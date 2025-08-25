@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FilterService {
     List<AladinBook> filter(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto);
+    List<AladinBook> filterForShow(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto);
 }

@@ -18,7 +18,6 @@ import java.util.List;
 public class AladinBook {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int itemId;
     private String title;
     private String link;
@@ -52,4 +51,9 @@ public class AladinBook {
     private String toc;
     @OneToMany(mappedBy = "aladinBook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookComment> bookCommentList;
+
+    public void setBookCommentList(List<BookComment> bookCommentList) {
+        bookCommentList.forEach(i -> i.setAladinItemId(itemId));
+        this.bookCommentList = bookCommentList;
+    }
 }
