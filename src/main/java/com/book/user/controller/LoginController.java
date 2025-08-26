@@ -1,6 +1,7 @@
 package com.book.user.controller;
 
 import com.book.common.utils.ScriptUtils;
+import com.book.common.utils.SessionUtils;
 import com.book.model.Member;
 import com.book.password.PasswordManager;
 import com.book.policy.QueryType;
@@ -58,6 +59,7 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
         session.setMaxInactiveInterval(1800);
+        SessionUtils.setMemberId(loginMember.getId());
         if (form.isAutoLogin()) {
             //세션 아이디 저장
             loginMember.setSessionId(session.getId());

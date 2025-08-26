@@ -4,10 +4,10 @@
 <body class="device">
 <main th:class="${loginMember == null} ? 'app app--dimmed' : 'app'">
     <header class="global-header" id="mainHeader">
-        <a href="#" class="icon-button icon-button--on global-header__favorite-button">
-            <img class="icon-heart icon-heart--on icon-button__icon icon-button__icon--on" src="img/icon_heart--on.png" />
-            <img class="icon-heart icon-heart--off icon-button__icon icon-button__icon--off" src="img/icon_heart--off.png" />
-        </a>
+<!--        <a href="#" class="icon-button icon-button&#45;&#45;on global-header__favorite-button">-->
+<!--            <img class="icon-heart icon-heart&#45;&#45;on icon-button__icon icon-button__icon&#45;&#45;on" src="img/icon_heart&#45;&#45;on.png" />-->
+<!--            <img class="icon-heart icon-heart&#45;&#45;off icon-button__icon icon-button__icon&#45;&#45;off" src="img/icon_heart&#45;&#45;off.png" />-->
+<!--        </a>-->
         <button type="button" class="book-category-button global-header__page-title ">자기계발서</button>
         <ul class="book-category-list" role="menu">
             <li th:each="item : ${fullCategoryList}"

@@ -2,7 +2,9 @@ package com.book.recommend.service;
 
 import com.book.aladin.domain.AladinBook;
 import com.book.common.utils.LocalDateUtils;
+import com.book.common.utils.SessionUtils;
 import com.book.model.History;
+import com.book.recommend.constants.RcmdConst;
 import com.book.recommend.dto.BookFilterDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
@@ -36,7 +38,6 @@ public class DefaultFilter implements FilterService {
         aladinBooks = (List<AladinBook>) aladinBooks.stream()
                 .filter(historyFilter(bookFilterDto.getHistories()))
                 .collect(Collectors.toList());
-
         log.info("필터링 후 책 수: {}", aladinBooks.size());
         return aladinBooks;
     }

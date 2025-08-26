@@ -10,8 +10,10 @@ import com.book.aladin.service.AladinService;
 import com.book.category.dto.CategoryDto;
 import com.book.common.ApiParam;
 import com.book.common.BookRecommendUtil;
+import com.book.common.utils.SessionUtils;
 import com.book.gpt.domain.GptResponse;
 import com.book.gpt.service.GptService;
+import com.book.history.repository.HistoryRepository;
 import com.book.model.Category;
 import com.book.model.History;
 import com.book.model.Member;
@@ -46,6 +48,7 @@ public class RecommendService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final AladinBookRepository aladinBookRepository;
     private final BookCommentRepository bookCommentRepository;
+    private final HistoryRepository historyRepository;
     @Value("${aladin.ttbkey}")
     private String ttbkey;
 
@@ -283,11 +286,15 @@ public class RecommendService {
         }
     }
 
-    public synchronized void customFilteredList2(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
+    public void customFilteredList2(List<AladinBook> aladinBooks, BookFilterDto bookFilterDto )
     {
         List<AladinBook> filteredBooks = aladinService.filteredBookList(bookFilterDto);
         FilterService filterService = FilterFactory.createFilter(bookFilterDto.getFilterType());
         List<AladinBook> result = filterService.filterForShow(filteredBooks, bookFilterDto);
+        if (result.size() == 0) {
+            historyRepository.deleteHistoriesByMemberId(SessionUtils.getMemberId());
+            this.customFilteredList2(aladinBooks, bookFilterDto);
+        }
         result.stream().forEach(i -> {
             var commentList = bookCommentRepository.findBookCommentsByAladinItemId(i.getItemId());
             if (Objects.nonNull(commentList)) i.setBookCommentList(commentList);
